@@ -1,6 +1,6 @@
 {
   "name": "fl-logistics-functions",
-  "description": "FL Logistics automatic email (Gmail/Nodemailer) and SMS (Termii) order alerts",
+  "description": "DABOFFOODS & LOGISTICS SERVICES email and SMS shipment alerts",
   "engines": {
     "node": "20"
   },

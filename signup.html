@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Create Account — FL Logistics</title>
-<meta name="description" content="Create a free FL Logistics account to book faster, save addresses, track all your deliveries and reorder in one click.">
+<title>Create Account | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Create an account to save your profile and manage shipment requests.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230B3D91'/><text x='50' y='66' font-size='44' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>FL</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -18,7 +18,7 @@
 <section class="section" style="background:var(--bg)"><div class="container">
   <div class="auth-wrap wide">
     <div class="section-head" style="margin-bottom:22px">
-      <span class="kicker">Join FL Logistics</span>
+      <span class="kicker">Join DABOFFOODS &amp; LOGISTICS SERVICES</span>
       <h1 style="font-size:1.85rem">Create your free account</h1>
       <p>Book faster, save your addresses, track all your deliveries and repeat previous orders in one click.</p>
     </div>
@@ -36,7 +36,7 @@
 
         <div class="field">
           <label for="phone">Phone number <span class="req">*</span></label>
-          <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0813 740 7197 or +234…">
+          <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0802 431 1091 or +234…">
           <p class="field-error"></p>
         </div>
 
@@ -95,8 +95,8 @@
         </div>
 
         <div class="field">
-          <label for="area">City / area in Lagos <span class="muted">(optional)</span></label>
-          <input id="area" placeholder="e.g. Ogba, Ikeja, Lekki, Yaba">
+          <label for="area">City / area <span class="muted">(optional)</span></label>
+          <input id="area" placeholder="e.g. Ijebu Ode">
           <p class="field-error"></p>
         </div>
 
@@ -296,7 +296,7 @@ $("#signupForm").addEventListener("submit", async e => {
 
     const success = $("#formSuccess");
     success.innerHTML = `
-      <b>Welcome to FL Logistics, ${data.fullName.split(" ")[0]}!</b><br>
+      <b>Welcome to DABOFFOODS &amp; LOGISTICS SERVICES, ${data.fullName.split(" ")[0]}!</b><br>
       Your account has been created.
       ${verificationSent
         ? "We've sent a verification link to your email. Please verify when you can."
@@ -357,7 +357,7 @@ $("#googleBtn").addEventListener("click", async () => {
 
     const { profile, isNew } = await signInWithGoogle(extra);
 
-    toast(isNew ? "Account created. Welcome to FL Logistics!" : "Welcome back!", "success");
+    toast(isNew ? "Account created. Welcome to DABOFFOODS & LOGISTICS SERVICES!" : "Welcome back!", "success");
 
     if (profile?.role === "admin" || profile?.role === "rider") {
       redirectAfterLogin(profile);

@@ -1,11 +1,11 @@
 /* ============================================================
-   FL LOGISTICS — admin.js
+  DABOFFOODS & LOGISTICS SERVICES — admin.js
    Admin gate, real-time orders/customers/riders/alerts/inbox,
    order management, printable waybill, live riders map, CSV.
 ============================================================ */
 import { CONFIG, $, $$, esc, toast, confirmDialog, db, firebaseReady, fmtMoney,
   fmtDateTime, waLink, normalizeNgPhone, isValidNgPhone, isValidEmail,
-  genOrderId, estimatePrice, setFieldError } from "./app.js";
+  genOrderId, setFieldError } from "./app.js";
 import { watchAuth, signInWithEmail, signOutUser, friendlyAuthError, setupPasswordToggles } from "./auth.js";
 import { getApp, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth as getAuthFor, createUserWithEmailAndPassword, signOut as signOutAuth }
@@ -182,7 +182,7 @@ function syncDetailLinks(o) {
   $("#dTrack").href = link;
   const riderLine = o.riderName ? `\nYour rider: ${o.riderName} (${o.riderPhone || ""})` : "";
   const priceLine = o.finalPrice != null ? `\nConfirmed price: ${fmtMoney(o.finalPrice)}` : "";
-  const msg = `Hello ${o.senderName || "there"}, update on your FL Logistics order ${o.orderId}:\n\nStatus: ${o.status}\nPayment: ${o.paymentStatus || "Pending"}${priceLine}${riderLine}\n\nTrack live here: ${link}\n\nThank you for choosing FL Logistics.`;
+  const msg = `Hello ${o.senderName || "there"}, update on your DABOFFOODS & LOGISTICS SERVICES shipment ${o.orderId}:\n\nStatus: ${o.status}\nPayment: ${o.paymentStatus || "Pending"}${priceLine}${riderLine}\n\nTrack here: ${link}\n\nThank you for choosing DABOFFOODS & LOGISTICS SERVICES.`;
   $("#dWhatsApp").href = waLink(msg, normalizeNgPhone(o.senderPhone || "").replace("+", ""));
 }
 ["dStatus","dPayStatus","dFinalPrice","dRider"].forEach(id => $("#" + id).addEventListener("change", () => { if (S.current) syncDetailLinks(detailOrderMerged()); }));
@@ -252,7 +252,7 @@ $("#dPrint").addEventListener("click", () => {
   const o = detailOrderMerged(), link = liveLink(o.orderId);
   $("#waybillPrint").innerHTML = `
     <div style="display:flex;justify-content:space-between;border-bottom:3px solid #0B3D91;padding-bottom:10px">
-      <div><h1 style="color:#0B3D91;font-size:26px">FL LOGISTICS</h1><p>${esc(CONFIG.tagline)}</p></div>
+      <div><h1 style="color:#0B3D91;font-size:26px">${esc(CONFIG.businessName)}</h1><p>${esc(CONFIG.tagline)}</p></div>
       <div style="text-align:right"><h2 style="color:#FF7A00">WAYBILL</h2><p><b>${esc(o.orderId)}</b></p><p>${fmtDateTime(o.createdAt)}</p></div></div>
     <p style="margin:12px 0"><b>Track this delivery:</b> ${link}</p>
     <table style="width:100%;border-collapse:collapse">
@@ -285,7 +285,7 @@ $("#manualForm").addEventListener("submit", async e => {
   try {
     let id = genOrderId();
     for (let i = 0; i < 5 && (await getDoc(doc(db, "orders", id))).exists(); i++) id = genOrderId();
-    const est = estimatePrice($("#mService").value, $("#mWeight").value, $("#mZone").value);
+    const est = null;
     const order = { orderId: id, customerUid: null, senderName: g("mSenderName"), senderPhone: g("mSenderPhone"),
       senderEmail: g("mSenderEmail").toLowerCase(), customerEmail: g("mSenderEmail").toLowerCase(), customerPhone: normalizeNgPhone(g("mSenderPhone")),
       pickupAddress: g("mPickup"), receiverName: g("mReceiverName"), receiverPhone: g("mReceiverPhone"),
@@ -491,9 +491,9 @@ function renderAlerts() {
 }
 async function loadTemplates() {
   const defaults = {
-    emailSubject: "FL Logistics update: Order {orderId} is {status}",
-    sms: "FL Logistics: Order {orderId} is {status}. Track: {trackingLink}",
-    whatsapp: "Hello {customerName}, your FL Logistics order {orderId} is now {status}. Track it here: {trackingLink}" };
+    emailSubject: "DABOFFOODS shipment update: {orderId} is {status}",
+    sms: "DABOFFOODS: Shipment {orderId} is {status}. Track: {trackingLink}",
+    whatsapp: "Hello {customerName}, your DABOFFOODS shipment {orderId} is now {status}. Track it here: {trackingLink}" };
   try {
     const s = await getDoc(doc(db, "settings", "alertTemplates"));
     const t = s.exists() ? { ...defaults, ...s.data() } : defaults;
@@ -517,7 +517,7 @@ function renderInbox() {
     <span class="badge ${m.read ? "badge-grey" : "badge-orange"}">${m.read ? "Read" : "New"}</span></div>
     <p class="small muted">${fmtDateTime(m.createdAt)} · ${esc(m.email || "")} · ${esc(m.phone || "")}${m.subject ? " · <b>" + esc(m.subject) + "</b>" : ""}</p>
     <p style="margin:10px 0">${esc(m.message || "")}</p>
-    <div class="btn-row">${m.phone ? `<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${m.name || ""}, thanks for contacting FL Logistics.`, normalizeNgPhone(m.phone).replace("+", ""))}"><i class="fa-brands fa-whatsapp"></i> Reply WhatsApp</a>` : ""}
+    <div class="btn-row">${m.phone ? `<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${m.name || ""}, thanks for contacting DABOFFOODS & LOGISTICS SERVICES.`, normalizeNgPhone(m.phone).replace("+", ""))}"><i class="fa-brands fa-whatsapp"></i> Reply WhatsApp</a>` : ""}
     ${m.email ? `<a class="btn btn-ghost btn-sm" href="mailto:${esc(m.email)}">Reply email</a>` : ""}
     <button class="btn btn-outline btn-sm" data-msg-read="${esc(m.id)}">${m.read ? "Mark unread" : "Mark read"}</button>
     <button class="btn btn-danger btn-sm" data-msg-del="${esc(m.id)}">Delete</button></div></article>`).join("")
@@ -531,7 +531,7 @@ function renderApps() {
     <span class="badge ${a.status === "reviewed" ? "badge-green" : "badge-orange"}">${esc(a.status || "new")}</span></div>
     <p class="small muted">${fmtDateTime(a.createdAt)} · ${esc(a.phone || "")} · ${esc(a.location || "")} · Vehicle: ${esc(a.vehicleType || "—")}</p>
     <p style="margin:10px 0" class="small"><b>Experience:</b> ${esc(a.experience || "—")}</p>
-    <div class="btn-row">${a.phone ? `<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${a.name || ""}, thanks for applying to ride with FL Logistics.`, normalizeNgPhone(a.phone).replace("+", ""))}"><i class="fa-brands fa-whatsapp"></i> WhatsApp applicant</a>` : ""}
+    <div class="btn-row">${a.phone ? `<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${a.name || ""}, thanks for applying to ride with DABOFFOODS & LOGISTICS SERVICES.`, normalizeNgPhone(a.phone).replace("+", ""))}"><i class="fa-brands fa-whatsapp"></i> WhatsApp applicant</a>` : ""}
     <button class="btn btn-blue btn-sm" data-app-create="${esc(a.id)}">Create rider from this</button>
     <button class="btn btn-outline btn-sm" data-app-review="${esc(a.id)}">${a.status === "reviewed" ? "Mark new" : "Mark reviewed"}</button>
     <button class="btn btn-danger btn-sm" data-app-del="${esc(a.id)}">Delete</button></div></article>`).join("")

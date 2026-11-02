@@ -1,5 +1,5 @@
 /* ============================================================
-   FL LOGISTICS — track.js
+  DABOFFOODS & LOGISTICS SERVICES — track.js
    Real-time order tracking (onSnapshot) + Leaflet live rider map.
    riderLocations/{orderId} schema (written by rider.js, Part 4):
    { riderId, riderName, lat, lng, speed, heading, accuracy,
@@ -43,7 +43,7 @@ $("#trackForm").addEventListener("submit", e => {
   startTracking(id);
 });
 
-/* Auto-open shared links: track.html?id=FLG-XXXXX */
+/* Auto-open shared links: track.html?id=shipment-reference */
 const paramId = new URLSearchParams(location.search).get("id");
 if (paramId) { $("#orderIdInput").value = paramId.toUpperCase(); startTracking(paramId.toUpperCase()); }
 
@@ -78,7 +78,7 @@ function startTracking(id) {
 function showNotFound(id) {
   $("#result").classList.add("hidden");
   $("#notFound").classList.remove("hidden");
-  $("#notFoundWa").href = waLink(`Hello FL Logistics, I need help tracking my order. Order ID: ${id || "(I don't have it)"}`);
+  $("#notFoundWa").href = waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help tracking a shipment. Tracking number: ${id || "(I don't have it)"}`);
   unsubLoc?.(); hideMapCards();
 }
 
@@ -123,7 +123,7 @@ function renderOrder(o) {
     $("#riderPhoneText").textContent = "· " + o.riderPhone;
     $("#callRider").href = "tel:" + normalizeNgPhone(o.riderPhone);
     $("#waRider").href = waLink(
-      `Hello ${o.riderName}, I'm contacting you about my FL Logistics delivery (Order ${o.orderId}).`,
+      `Hello ${o.riderName}, I'm contacting you about my DABOFFOODS & LOGISTICS SERVICES shipment (${o.orderId}).`,
       normalizeNgPhone(o.riderPhone).replace("+", ""));
     $("#mapRiderName").textContent = o.riderName;
   }
@@ -153,11 +153,11 @@ function renderOrder(o) {
     ${extras.map((s, i) => `<p class="small" style="padding:8px 0;border-bottom:1px dashed var(--line)">
       <b>${i + 2}.</b> ${esc(s.receiverName)} · ${esc(s.receiverPhone)}<br><span class="muted">${esc(s.dropoffAddress)}</span></p>`).join("")}` : "";
 
-  $("#helpWa").href = waLink(`Hello FL Logistics, I need help with order ${o.orderId} (currently: ${o.status}).`);
+  $("#helpWa").href = waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help with shipment ${o.orderId} (currently: ${o.status}).`);
   $("#shareBtn").onclick = async () => {
     const url = new URL(`track.html?id=${o.orderId}`, location.href).href;
-    const text = `Track my FL Logistics delivery (${o.orderId}) live here: ${url}`;
-    if (navigator.share) { try { await navigator.share({ title: "FL Logistics Tracking", text, url }); } catch {} }
+    const text = `Track my DABOFFOODS & LOGISTICS SERVICES shipment (${o.orderId}) here: ${url}`;
+    if (navigator.share) { try { await navigator.share({ title: "DABOFFOODS Shipment Tracking", text, url }); } catch {} }
     else copyText(url, "Tracking link copied — send it to your receiver!");
   };
 

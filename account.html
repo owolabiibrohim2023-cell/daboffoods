@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Dashboard — FL Logistics</title>
-<meta name="description" content="View your FL Logistics orders, track deliveries, reorder, manage saved addresses and update your profile.">
+<title>My Dashboard | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="View shipment requests, track shipments, manage saved addresses and update your profile.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230B3D91'/><text x='50' y='66' font-size='44' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>FL</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -178,7 +178,7 @@
 
           <div class="field">
             <label for="profilePhone">Phone number <span class="req">*</span></label>
-            <input id="profilePhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0813 740 7197 or +234…">
+            <input id="profilePhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0802 431 1091 or +234…">
             <p class="field-error"></p>
           </div>
 
@@ -204,8 +204,8 @@
           </div>
 
           <div class="field">
-            <label for="profileArea">City / area in Lagos</label>
-            <input id="profileArea" placeholder="e.g. Ogba, Ikeja, Lekki">
+            <label for="profileArea">City / area</label>
+            <input id="profileArea" placeholder="e.g. Ijebu Ode">
             <p class="field-error"></p>
           </div>
 
@@ -283,7 +283,7 @@
         <h2 style="font-size:1.25rem;color:var(--red)"><i class="fa-solid fa-triangle-exclamation"></i> Danger zone</h2>
         <p class="muted" style="margin:8px 0 14px">
           Deleting your account removes your profile and saved addresses and signs you out permanently.
-          Past delivery records may be kept by FL Logistics for business/payment records.
+          Past shipment records may be retained by DABOFFOODS &amp; LOGISTICS SERVICES for business records.
         </p>
 
         <div class="field hidden" id="deletePasswordWrap">
@@ -416,7 +416,7 @@ watchAuth(async (user, profile) => {
     const name = currentProfile.fullName || user.displayName || "there";
     const el = $("#welcomeAlert");
     el.innerHTML = `
-      <b>Welcome to FL Logistics, ${esc(String(name).split(" ")[0])}!</b>
+      <b>Welcome to DABOFFOODS &amp; LOGISTICS SERVICES, ${esc(String(name).split(" ")[0])}!</b>
       Your dashboard is ready. Book a delivery, save your addresses and track everything here.`;
     el.classList.add("show");
   }
@@ -572,7 +572,7 @@ function orderCardHtml(o) {
         <i class="fa-solid fa-rotate-right"></i> Reorder / Repeat this delivery
       </button>
       <a class="btn btn-wa btn-sm" target="_blank" rel="noopener"
-         href="${waLink(`Hello FL Logistics, I need help with my order ${o.orderId}.`)}">
+         href="${waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help with my shipment ${o.orderId}.`)}">
         <i class="fa-brands fa-whatsapp"></i> Help
       </a>
     </div>
@@ -1048,7 +1048,7 @@ $("#deleteAccountBtn").addEventListener("click", async () => {
   setFieldError($("#deletePassword"), "");
 
   const yes = await confirmDialog(
-    "Delete your FL Logistics account?",
+    "Delete your DABOFFOODS & LOGISTICS SERVICES account?",
     "This permanently removes your profile and saved addresses. You will no longer be able to sign in with this account. This cannot be undone.",
     "Yes, delete my account"
   );

@@ -1,5 +1,5 @@
 /* ============================================================
-   FL LOGISTICS — app.js
+  DABOFFOODS & LOGISTICS SERVICES — app.js
    Shared module: CONFIG, Firebase init, navbar/footer, helpers.
    Every page imports from this file. Loaded as type="module".
 ============================================================ */
@@ -28,58 +28,39 @@ const firebaseConfig = {
    ⭐⭐ EDIT HERE #2 — ALL BUSINESS DETAILS ⭐⭐
 ============================================================ */
 export const CONFIG = {
-  businessName: "FL Logistics",
-  tagline: "Reliable and affordable logistics. Your goods are safe until they reach their final destination.",
-  phoneDisplay: "0813 740 7197",
-  phoneIntl: "+2348137407197",
-  whatsappNumber: "2348137407197", // digits only, no +
-  email: "info@example.com", // EDIT: your business email
-  address: "Ste 48, Ogba Shopping Arcade (LSDPC), Ijaiye Road, Ogba, Lagos 101233, Lagos State, Nigeria",
-  mapsQuery: "Ogba Shopping Arcade LSDPC Ijaiye Road Ogba Lagos",
-  // Working hours (24h clock). Open daily.
-  openHour: 8,   // ⭐ EDIT opening time (8 = 8:00 AM)
-  closeHour: 18, // 18 = 6:00 PM
-  siteUrl: "https://example.com", // EDIT after deploy (used in tracking links)
-  // Bank details shown on Payment page — EDIT
-  bank: { accountName: "FL Logistics", accountNumber: "0123456789", bankName: "Your Bank Name" },
+  businessName: "DABOFFOODS & LOGISTICS SERVICES",
+  tagline: "International logistics, freight forwarding, food sales and export solutions.",
+  description: "At DABOFFOODS & LOGISTICS SERVICES, we offer seamless logistics solutions, food sales, food exports, international express delivery through our international carrier partners, and customs clearance support at destination countries. We provide various shipping options for international shipments. We specialise in export solutions and freight forwarding. We also offer cargo services to the United Kingdom and United States. All our international logistics services are doorstep deliveries. We are diligent, passionate and dedicated to our business services. We are always available and ready to solve your export needs.",
+  phoneDisplay: "0802 431 1091",
+  phoneIntl: "+2348024311091",
+  whatsappNumber: "2348024311091", // digits only, no +
+  address: "24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria",
+  mapsQuery: "24 Ibadan Road, behind Tala book shop, Ijebu Ode, Ogun State, Nigeria",
+  hoursText: "Listed as open; closes at 5:00 PM. Please call to confirm current hours.",
+  siteUrl: location.origin === "null" ? "" : location.origin,
+  // Business has not supplied verified bank-transfer details.
+  bank: null,
   // Feature switches
   features: { emailAlerts: true, smsAlerts: true },
   // EmailJS FALLBACK (only if Cloud Functions not deployed). See Part 6 notes.
   emailjs: { enabled: false, publicKey: "PASTE_EMAILJS_PUBLIC_KEY", serviceId: "PASTE_SERVICE_ID", templateId: "PASTE_TEMPLATE_ID" },
-  socials: { instagram: "https://instagram.com/", facebook: "https://facebook.com/", x: "https://x.com/" }, // EDIT
+  socials: {},
   // Order statuses, in order (timeline). "Cancelled" handled separately.
   statuses: ["Order Placed", "Confirmed", "Picked Up", "In Transit", "Out for Delivery", "Delivered"],
   paymentStatuses: ["Pending", "Paid", "COD"],
-  services: ["Same-day", "Express", "Interstate", "Standard"],
+  services: ["International Shipping", "Freight Forwarding", "Food Export Services", "UK Cargo", "USA Cargo", "Customs Clearance Support", "Food Sales", "Doorstep Delivery"],
   packageTypes: ["Documents", "Parcel", "Food", "Clothing", "Electronics", "Fragile", "Other"],
   /* Price ESTIMATOR (editable; final price always confirmed on WhatsApp).
      base = first 1kg, perKg = each extra kg. zone multiplier applied. */
-  pricing: {
-    "Same-day":  { base: 3000, perKg: 600 },
-    "Express":   { base: 5000, perKg: 900 },
-    "Interstate":{ base: 6500, perKg: 1200 },
-    "Standard":  { base: 2000, perKg: 400 }
-  },
-  zones: { "Lagos Mainland": 1.0, "Lagos Island": 1.3, "Outskirts": 1.6, "Interstate": 1.0 },
+  pricing: {},
+  zones: { "United Kingdom": 1, "United States": 1, "Other international destination": 1 },
   // Rate table shown on pricing.html (admin can later override from Firestore "pricing/main")
-  rateTable: [
-    { service: "Standard (Lagos, next day)", w1: "₦2,000", w5: "₦3,600", w10: "₦5,600" },
-    { service: "Same-day (Lagos)",          w1: "₦3,000", w5: "₦5,400", w10: "₦8,400" },
-    { service: "Express (2–4 hrs, Lagos)",  w1: "₦5,000", w5: "₦8,600", w10: "₦13,100" },
-    { service: "Interstate (per parcel)",   w1: "₦6,500", w5: "₦11,300", w10: "₦17,300" }
-  ],
-  coverage: ["Lagos (all areas)", "Abuja (FCT)", "Oyo (Ibadan)", "Rivers (Port Harcourt)",
-    "Ogun (Abeokuta, Sango-Ota)", "Delta (Asaba, Warri)", "Anambra (Onitsha, Awka)",
-    "Enugu", "Kano", "Kaduna", "Kwara (Ilorin)", "Ondo (Akure)", "Osun (Osogbo)", "Edo (Benin City)"],
+  rateTable: [],
+  coverage: ["United Kingdom", "United States", "Other international destinations (confirm availability)"],
   prohibitedItems: ["Cash, jewellery and precious stones", "Illegal drugs and contraband",
     "Weapons, ammunition and explosives", "Flammable liquids, gases and chemicals",
     "Live animals", "Perishable food without cold packaging", "Stolen or illegal goods"],
-  // EDIT these placeholder testimonials
-  testimonials: [
-    { name: "Adaeze, Online Vendor — Ikeja", text: "FL Logistics picks up my customers' orders every day. Fast, careful and they always communicate. My repeat customers have doubled." },
-    { name: "Tunde, Yaba", text: "I tracked my parcel live on my phone and the rider called before arriving. Delivered same day, no stories. Highly recommended." },
-    { name: "Blessing, Lekki", text: "Affordable interstate delivery to Abuja. I got SMS and email updates at every step until it was delivered. Very professional." }
-  ]
+  testimonials: []
 };
 
 /* ---------------- Firebase init (safe if not configured) ---------------- */
@@ -127,31 +108,23 @@ export function normalizeNgPhone(raw = "") {
 }
 export const isValidEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e).trim());
 
-/** Order ID: FLG-XXXXX (unambiguous characters) */
+/** Shipment reference: DAB-XXXXX (unambiguous characters) */
 export function genOrderId() {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   let s = "";
   for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return "FLG-" + s;
+  return "DAB-" + s;
 }
 
 /** Estimated price (final price confirmed on WhatsApp) */
 export function estimatePrice(serviceType, weightKg, zone = "Lagos Mainland", stops = 1) {
-  const p = CONFIG.pricing[serviceType] || CONFIG.pricing["Standard"];
-  const w = Math.max(1, Number(weightKg) || 1);
-  const zoneMult = serviceType === "Interstate" ? 1 : (CONFIG.zones[zone] || 1);
-  const base = (p.base + (w - 1) * p.perKg) * zoneMult;
-  const extraStops = Math.max(0, stops - 1) * 1200; // per extra drop-off
-  return Math.round((base + extraStops) / 100) * 100;
+  // International shipping costs depend on destination, carrier and shipment details.
+  return null;
 }
 
 /** Open / closed right now (Africa/Lagos) */
-export function businessOpen() {
-  const hour = Number(new Date().toLocaleString("en-US", { timeZone: "Africa/Lagos", hour: "numeric", hour12: false }));
-  return hour >= CONFIG.openHour && hour < CONFIG.closeHour;
-}
-const fmtHour = h => { const hh = ((h + 11) % 12) + 1; return `${hh}:00 ${h < 12 ? "AM" : "PM"}`; };
-export const hoursText = () => `Open daily, ${fmtHour(CONFIG.openHour)} – ${fmtHour(CONFIG.closeHour)}`;
+export function businessOpen() { return false; }
+export const hoursText = () => CONFIG.hoursText;
 
 /* ---------------- Toasts ---------------- */
 export function toast(message, type = "info") {
@@ -205,7 +178,7 @@ export const recentOrderIds = () => { try { return JSON.parse(localStorage.getIt
 
 /** Prefilled WhatsApp booking message (exact agreed format) */
 export function bookingWhatsAppMessage(o) {
-  return `Hello FL Logistics, I'd like to book a delivery.
+  return `Hello ${CONFIG.businessName}, I'd like to request a shipment quotation.
 
 Order ID: ${o.orderId}
 Name: ${o.senderName}
@@ -217,7 +190,7 @@ Package: ${o.packageType}${o.packageDescription ? " — " + o.packageDescription
 Service: ${o.serviceType}
 Date: ${o.pickupDate || ""} ${o.pickupTime || ""}
 
-Please confirm the price and payment details.`;
+Please confirm availability, shipping options, applicable customs requirements and a quotation.`;
 }
 
 /* ============================================================
@@ -229,19 +202,18 @@ const NAV_LINKS = [
   ["track.html", "Track Order"], ["about.html", "About"], ["faq.html", "FAQ"], ["contact.html", "Contact"]
 ];
 export function renderChrome(active = "") {
-  const open = businessOpen();
   const headerEl = $("#siteHeader");
   if (headerEl) {
     headerEl.innerHTML = `
     <div class="topbar"><div class="container">
-      <span><i class="fa-solid fa-location-dot"></i> Ogba, Lagos &nbsp;·&nbsp; ${hoursText()}</span>
-      <span><span class="open-badge ${open ? "open" : "closed"}">${open ? "Open now · until " + fmtHour(CONFIG.closeHour) : "Closed now · Opens " + fmtHour(CONFIG.openHour)}</span>
+      <span><i class="fa-solid fa-location-dot"></i> Ijebu Ode, Ogun State &nbsp;·&nbsp; ${hoursText()}</span>
+      <span>
       &nbsp;<a href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> ${CONFIG.phoneDisplay}</a></span>
     </div></div>
     <header class="site"><div class="container nav-wrap">
-      <a class="logo" href="index.html" aria-label="FL Logistics home">
-        <span class="logo-mark" aria-hidden="true"><span>F</span><b>L</b></span>
-        <span class="logo-copy"><span class="logo-name">FL <b>LOGISTICS</b></span><small>Reliable · Affordable · Safe</small></span></a>
+      <a class="logo" href="index.html" aria-label="DABOFFOODS &amp; LOGISTICS SERVICES home">
+        <span class="logo-mark" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
+        <span class="logo-copy"><span class="logo-name"><b>DABOFFOODS</b></span><small>&amp; LOGISTICS SERVICES</small></span></a>
       <nav class="main-nav" aria-label="Main">
         ${NAV_LINKS.map(([h, t]) => `<a href="${h}" ${active === h ? 'aria-current="page" style="background:var(--blue-light);color:var(--blue)"' : ""}>${t}</a>`).join("")}
       </nav>
@@ -271,12 +243,9 @@ export function renderChrome(active = "") {
     footerEl.innerHTML = `
     <footer class="site"><div class="container">
       <div class="grid grid-4">
-        <div><h4>FL Logistics</h4><p style="font-size:.93rem">${esc(CONFIG.tagline)}</p>
+        <div><h4>${esc(CONFIG.businessName)}</h4><p style="font-size:.93rem">${esc(CONFIG.tagline)}</p>
           <div class="social-row">
-            <a href="${CONFIG.socials.instagram}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="${CONFIG.socials.facebook}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="${CONFIG.socials.x}" target="_blank" rel="noopener" aria-label="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
-            <a href="${waLink("Hello FL Logistics, I have a question.")}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="${waLink(`Hello ${CONFIG.businessName}, I have a general enquiry.`)}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
           </div></div>
         <div><h4>Quick Links</h4><ul>
           <li><a href="book.html">Book a Delivery</a></li><li><a href="track.html">Track Order</a></li>
@@ -289,21 +258,21 @@ export function renderChrome(active = "") {
         <div><h4>Contact</h4><ul>
           <li><i class="fa-solid fa-location-dot"></i> ${esc(CONFIG.address)}</li>
           <li><a href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> ${CONFIG.phoneDisplay}</a></li>
-          <li><a href="${waLink("Hello FL Logistics!")}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a></li>
+          <li><a href="${waLink(`Hello ${CONFIG.businessName}!`)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a></li>
           <li><i class="fa-regular fa-clock"></i> ${hoursText()}</li>
           <li><a href="${mapsUrl}" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Get Directions (Google Maps)</a></li></ul></div>
       </div>
-      <div class="footer-bottom">© ${new Date().getFullYear()} FL Logistics, Ogba Lagos, Nigeria. All rights reserved.</div>
+      <div class="footer-bottom">© ${new Date().getFullYear()} ${esc(CONFIG.businessName)}, Ijebu Ode, Ogun State, Nigeria. All rights reserved.</div>
     </div></footer>`;
   }
   /* Floating WhatsApp + back-to-top + mobile sticky CTA */
   document.body.insertAdjacentHTML("beforeend", `
     <a class="wa-float" data-tip="Chat with us" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener"
-       href="${waLink("Hello FL Logistics, I need help with a delivery.")}"><i class="fa-brands fa-whatsapp"></i></a>
+      href="${waLink(`Hello ${CONFIG.businessName}, I have a logistics enquiry.`)}"><i class="fa-brands fa-whatsapp"></i></a>
     <button id="backTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <div class="mobile-cta">
       <a class="btn btn-blue" href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> Call Now</a>
-      <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Book a Delivery</a>
+      <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Request a Shipment</a>
     </div>`);
   const bt = $("#backTop");
   addEventListener("scroll", () => bt.classList.toggle("show", scrollY > 600), { passive: true });

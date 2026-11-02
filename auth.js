@@ -1,5 +1,5 @@
 /* ============================================================
-   FL LOGISTICS — auth.js
+  DABOFFOODS & LOGISTICS SERVICES — auth.js
    Shared Firebase Authentication + user-profile helpers.
    Used by signup.html, login.html, account.html, rider.html
    and admin.html.
@@ -56,13 +56,13 @@ export function friendlyAuthError(error) {
     "auth/account-exists-with-different-credential":
       "This email is already registered with a password. Please sign in with your email and password.",
     "auth/operation-not-allowed":
-      "This sign-in method has not been enabled yet. Please contact FL Logistics on WhatsApp.",
+      "This sign-in method has not been enabled yet. Please contact DABOFFOODS & LOGISTICS SERVICES on WhatsApp.",
     "auth/user-disabled":
-      "This account has been disabled. Please contact FL Logistics on WhatsApp for help.",
+      "This account has been disabled. Please contact DABOFFOODS & LOGISTICS SERVICES on WhatsApp for help.",
     "auth/requires-recent-login":
       "For your security, please sign out and sign in again before making this change.",
     "app/account-disabled":
-      "This account has been disabled. Please contact FL Logistics on WhatsApp for help.",
+      "This account has been disabled. Please contact DABOFFOODS & LOGISTICS SERVICES on WhatsApp for help.",
     "app/firebase-not-ready":
       " Online accounts are not connected yet. Please book as a guest or chat with us on WhatsApp."
   };

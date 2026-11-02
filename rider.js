@@ -1,5 +1,5 @@
 /* ============================================================
-   FL LOGISTICS — rider.js
+  DABOFFOODS & LOGISTICS SERVICES — rider.js
    Rider login, availability, assigned jobs, status updates,
    and live GPS sharing (watchPosition → riderLocations/{orderId}).
 ============================================================ */
@@ -58,7 +58,7 @@ watchAuth(async (user, profile) => {
   if (!profile || profile.role !== "rider" || profile.disabled) {
     $("#riderDenied").classList.remove("hidden");
     $("#riderDeniedText").textContent = profile?.disabled
-      ? "This rider account has been deactivated. Please contact the FL Logistics office."
+      ? "This rider account has been deactivated. Please contact the DABOFFOODS & LOGISTICS SERVICES office."
       : profile?.role === "admin"
         ? "You are signed in as Admin. Please use the Admin Dashboard to manage riders."
         : "This account is not a rider account. Rider accounts are created by the office.";
@@ -168,9 +168,9 @@ function jobCard(o, done = false) {
     ${done ? "" : `
     <div class="btn-row" style="margin-top:12px">
       <a class="btn btn-blue btn-sm" href="${telHref(o.senderPhone)}"><i class="fa-solid fa-phone"></i> Call customer</a>
-      <a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${o.senderName || ""}, this is ${riderProfile?.fullName || "your FL Logistics rider"} about order ${o.orderId}.`, waNum(o.senderPhone))}"><i class="fa-brands fa-whatsapp"></i> WhatsApp customer</a>
+      <a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${o.senderName || ""}, this is ${riderProfile?.fullName || "your DABOFFOODS & LOGISTICS SERVICES rider"} about shipment ${o.orderId}.`, waNum(o.senderPhone))}"><i class="fa-brands fa-whatsapp"></i> WhatsApp customer</a>
       <a class="btn btn-ghost btn-sm" href="${telHref(o.receiverPhone)}"><i class="fa-solid fa-phone"></i> Call receiver</a>
-      <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${o.receiverName || ""}, this is your FL Logistics rider. I have your delivery (${o.orderId}).`, waNum(o.receiverPhone))}"><i class="fa-brands fa-whatsapp"></i> WhatsApp receiver</a>
+      <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${waLink(`Hello ${o.receiverName || ""}, this is your DABOFFOODS & LOGISTICS SERVICES rider about shipment ${o.orderId}.`, waNum(o.receiverPhone))}"><i class="fa-brands fa-whatsapp"></i> WhatsApp receiver</a>
     </div>
     <div style="border-top:1px dashed var(--line);margin-top:14px;padding-top:14px">
       ${isSharing
@@ -237,7 +237,7 @@ async function startTrip(order) {
   }
   if (!sessionStorage.getItem("fl_gps_explained")) {
     const yes = await confirmDialog("Share live location?",
-      `The customer for order ${order.orderId} and the FL Logistics office will see your live location on a map (updated every 5–10 seconds) only while this trip is on. Keep this page open — closing it stops sharing. Location is deleted when delivered.`,
+      `The customer for shipment ${order.orderId} and the DABOFFOODS & LOGISTICS SERVICES office will see your live location on a map only while this trip is on. Keep this page open — closing it stops sharing. Location is deleted when delivered.`,
       "I understand — start");
     if (!yes) return;
     sessionStorage.setItem("fl_gps_explained", "1");

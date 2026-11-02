@@ -1,5 +1,5 @@
 /* ============================================================
-   FL LOGISTICS — functions/index.js  (Cloud Functions v2)
+  DABOFFOODS & LOGISTICS SERVICES — functions/index.js  (Cloud Functions v2)
    Automatic customer + receiver alerts on order events:
      • Order placed          (onDocumentCreated)
      • Confirmed / Picked Up / In Transit / Out for Delivery
@@ -22,11 +22,11 @@ const nodemailer = require("nodemailer");
    ⭐⭐ EDIT HERE — backend business settings ⭐⭐
    SITE_URL must match CONFIG.siteUrl in app.js (no trailing /)
 ============================================================ */
-const SITE_URL = "https://example.com"; // ⭐ EDIT after hosting deploy
-const BUSINESS_NAME = "FL Logistics";
-const BUSINESS_PHONE = "0813 740 7197";
-const WHATSAPP_NUMBER = "2348137407197";
-const BUSINESS_ADDRESS = "Ste 48, Ogba Shopping Arcade (LSDPC), Ijaiye Road, Ogba, Lagos 101233, Nigeria";
+const SITE_URL = ""; // Set to the deployed site origin before enabling email tracking links.
+const BUSINESS_NAME = "DABOFFOODS & LOGISTICS SERVICES";
+const BUSINESS_PHONE = "0802 431 1091";
+const WHATSAPP_NUMBER = "2348024311091";
+const BUSINESS_ADDRESS = "24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria";
 /* Master switches — mirror CONFIG.features in app.js */
 const EMAIL_ALERTS = true;
 const SMS_ALERTS = true;
@@ -67,9 +67,9 @@ function fill(tpl = "", vars = {}) {
   return out;
 }
 const DEFAULT_TEMPLATES = {
-  emailSubject: "FL Logistics update: Order {orderId} is {status}",
-  sms: "FL Logistics: Order {orderId} is {status}. Track: {trackingLink}",
-  whatsapp: "Hello {customerName}, your FL Logistics order {orderId} is now {status}. Track it here: {trackingLink}"
+  emailSubject: "DABOFFOODS shipment update: {orderId} is {status}",
+  sms: "DABOFFOODS: Shipment {orderId} is {status}. Track: {trackingLink}",
+  whatsapp: "Hello {customerName}, your DABOFFOODS shipment {orderId} is now {status}. Track it here: {trackingLink}"
 };
 async function getTemplates() {
   try {
@@ -98,10 +98,10 @@ function buildMessages(order, event, templates) {
   let sms = fill(templates.sms, vars);
   /* Out-for-delivery SMS should carry rider contact (your agreed example format) */
   if (event.key === "Out for Delivery" && order.riderName) {
-    sms = `FL Logistics: Order ${order.orderId} is OUT FOR DELIVERY. Rider: ${order.riderName} ${order.riderPhone || ""}. Track: ${link}`.trim();
+    sms = `DABOFFOODS: Shipment ${order.orderId} is OUT FOR DELIVERY. Rider: ${order.riderName} ${order.riderPhone || ""}. Track: ${link}`.trim();
   }
   if (event.key === "Payment Paid") {
-    sms = `FL Logistics: Payment received for order ${order.orderId}. Thank you! Track: ${link}`;
+    sms = `DABOFFOODS: Payment received for shipment ${order.orderId}. Thank you! Track: ${link}`;
   }
   if (sms.length > 459) sms = sms.slice(0, 456) + "..."; // hard cap ≈ 3 SMS parts
 
@@ -119,21 +119,21 @@ function buildMessages(order, event, templates) {
   }[event.key] || `Order update: ${event.displayStatus}`;
 
   const intro = {
-    "Order Placed": "Thanks for booking with FL Logistics. We\u2019ll confirm your final price and pickup time on WhatsApp shortly. Keep your Order ID safe.",
+    "Order Placed": "Thanks for your shipment request to DABOFFOODS & LOGISTICS SERVICES. Our team will review your details and contact you about shipping options and a quotation. Keep your reference safe.",
     "Confirmed": `Your delivery is confirmed at <b>${esc(priceText)}</b>. If you haven\u2019t paid yet, please use the payment details confirmed with you on WhatsApp and send your proof of payment there.`,
     "Payment Paid": "We\u2019ve confirmed your payment. No further payment is needed for this order (unless agreed otherwise on WhatsApp).",
     "Picked Up": "Our rider has collected your parcel. You can follow its journey live from the tracking page.",
     "In Transit": "Your parcel is on the move. Watch your rider live on the tracking map.",
     "Out for Delivery": `Your parcel is out for delivery${order.riderName ? ` with <b>${esc(order.riderName)}</b>${order.riderPhone ? ` (${esc(order.riderPhone)})` : ""}` : ""}. Please keep your phone close.`,
-    "Delivered": "Your parcel has reached its final destination. Thank you for choosing FL Logistics — we\u2019d love to serve you again.",
+    "Delivered": "Your shipment has been marked delivered. Thank you for choosing DABOFFOODS & LOGISTICS SERVICES.",
     "Cancelled": "This order has been cancelled. If you already paid or believe this is a mistake, please contact us immediately on WhatsApp."
   }[event.key] || "";
 
   const html = `<!doctype html><html><body style="margin:0;background:#f6f9ff;font-family:Arial,Helvetica,sans-serif">
   <div style="max-width:600px;margin:0 auto;padding:22px 12px">
     <div style="background:#0B3D91;border-radius:16px 16px 0 0;padding:24px;text-align:center">
-      <div style="color:#fff;font-size:26px;font-weight:800;letter-spacing:.02em">FL <span style="color:#FF7A00">LOGISTICS</span></div>
-      <div style="color:#bcd3ff;font-size:13px;margin-top:4px">Reliable · Affordable · Safe to the final destination</div>
+      <div style="color:#fff;font-size:22px;font-weight:800;letter-spacing:.02em">DABOFFOODS &amp; LOGISTICS SERVICES</div>
+      <div style="color:#bcd3ff;font-size:13px;margin-top:4px">International logistics · Freight forwarding · Export solutions</div>
     </div>
     <div style="background:#fff;border-radius:0 0 16px 16px;padding:26px 24px;border:1px solid #dbe4f0">
       <h1 style="font-size:21px;color:#072a66;margin:0 0 6px">${heading}</h1>
@@ -157,9 +157,9 @@ function buildMessages(order, event, templates) {
       <p style="text-align:center;color:#5b6b85;font-size:13px;margin:0 0 6px">or copy this link: <a href="${link}" style="color:#0B3D91">${link}</a></p>
       <hr style="border:none;border-top:1px solid #dbe4f0;margin:18px 0">
       <p style="color:#5b6b85;font-size:13px;line-height:1.6;margin:0">Need help? WhatsApp us: <a href="https://wa.me/${WHATSAPP_NUMBER}" style="color:#0B3D91;font-weight:700">${BUSINESS_PHONE}</a><br>
-      ${esc(BUSINESS_NAME)} · ${esc(BUSINESS_ADDRESS)}<br>Open daily until 6:00 PM.</p>
+      ${esc(BUSINESS_NAME)} · ${esc(BUSINESS_ADDRESS)}</p>
     </div>
-    <p style="text-align:center;color:#93a5c4;font-size:12px;margin:14px 0">You\u2019re receiving this because an FL Logistics delivery was booked with this contact.</p>
+    <p style="text-align:center;color:#93a5c4;font-size:12px;margin:14px 0">You\u2019re receiving this because a shipment request was booked with this contact.</p>
   </div></body></html>`;
 
   return { subject, sms, html };

@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Payment Info — FL Logistics</title>
-<meta name="description" content="How payment works at FL Logistics: confirm on WhatsApp, then bank transfer, cash on delivery or pay on pickup. Official bank details and payment status meanings.">
+<title>Quotations &amp; Payment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Request an international shipping quotation from DABOFFOODS & LOGISTICS SERVICES. Confirm payment instructions directly with the business.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230B3D91'/><text x='50' y='66' font-size='44' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>FL</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -15,64 +15,32 @@
 <main>
 <section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
   <div class="container text-center">
-    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Payment Info</span>
-    <h1 style="color:#fff;font-size:2rem">Simple, safe payment — confirmed with a real person</h1>
-    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">No card details online, no payment gateway. You only pay after we've confirmed your exact price on WhatsApp.</p>
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Quotations &amp; Payment</span>
+    <h1 style="color:#fff;font-size:2rem">Confirm your shipment quotation and payment safely</h1>
+    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">Contact DABOFFOODS &amp; LOGISTICS SERVICES directly for a shipment quotation and verified payment instructions.</p>
   </div>
 </section>
 
 <section class="section"><div class="container" style="max-width:920px">
-  <div class="section-head reveal"><span class="kicker">How It Works</span><h2>Pay in 4 easy steps</h2></div>
+  <div class="section-head reveal"><span class="kicker">How It Works</span><h2>Request a quote before payment</h2></div>
   <div class="lp-steps" style="grid-template-columns:1fr" >
     <div style="display:grid;gap:16px" class="grid grid-4">
-      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-pen-to-square"></i></div><h3>1. Book online</h3><p class="muted">Fill the booking form and get your Order ID + an instant price estimate.</p></div>
-      <div class="card lp-step reveal"><div class="ic"><i class="fa-brands fa-whatsapp"></i></div><h3>2. Confirm on WhatsApp</h3><p class="muted">We confirm the <b>final price</b>, pickup time and payment method with you in chat.</p></div>
-      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-building-columns"></i></div><h3>3. Make payment</h3><p class="muted">Bank transfer, cash on delivery, or pay cash to the rider on pickup.</p></div>
-      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-receipt"></i></div><h3>4. Send proof</h3><p class="muted">Send your transfer receipt/screenshot in the same WhatsApp chat. We mark your order <b>Paid</b>.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-pen-to-square"></i></div><h3>1. Send your details</h3><p class="muted">Tell us the origin, destination, goods and shipment weight.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-file-invoice"></i></div><h3>2. Receive a quotation</h3><p class="muted">Our team reviews your request and confirms available shipping options and quotation.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-brands fa-whatsapp"></i></div><h3>3. Confirm directly</h3><p class="muted">Confirm applicable shipping and customs requirements with the business.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-shield-halved"></i></div><h3>4. Verify payment details</h3><p class="muted">Use only payment instructions verified directly with DABOFFOODS &amp; LOGISTICS SERVICES.</p></div>
     </div>
   </div>
 
-  <!-- Bank details (from CONFIG) -->
-  <div class="card reveal" style="margin-top:30px;border:2px solid var(--blue);padding:28px">
-    <h2 style="font-size:1.35rem"><i class="fa-solid fa-building-columns" style="color:var(--blue)"></i> Official bank transfer details</h2>
-    <dl class="kv" style="margin:16px 0">
-      <div><dt>Account name</dt><dd id="bankName">—</dd></div>
-      <div><dt>Account number</dt><dd id="bankNumber" style="font-size:1.25rem;letter-spacing:.04em">—</dd></div>
-      <div><dt>Bank</dt><dd id="bankBank">—</dd></div>
-      <div><dt>Use as transfer narration</dt><dd>Your Order ID (e.g. FLG-4A8K2)</dd></div>
-    </dl>
-    <div class="btn-row">
-      <button class="btn btn-blue" id="copyAcctBtn"><i class="fa-regular fa-copy"></i> Copy account number</button>
-      <button class="btn btn-ghost" id="copyAllBtn">Copy all bank details</button>
-      <a class="btn btn-wa" id="proofWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> I've paid — send proof</a>
-    </div>
-    <div class="alert alert-error show" style="margin-top:18px;margin-bottom:0">
-      <b>Stay safe:</b> Only pay into the account above, and only after confirming on our official WhatsApp number
-      <b id="officialPhone">0813 740 7197</b>. FL Logistics will never ask you to pay into a personal account with a different name.
-    </div>
-  </div>
+  <div class="card reveal" style="margin-top:30px;border:2px solid var(--blue);padding:28px"><h2 style="font-size:1.35rem"><i class="fa-solid fa-shield-halved" style="color:var(--blue)"></i> Payment safety</h2><p class="muted">No bank account details have been published on this website. Contact the business on <a href="tel:+2348024311091">0802 431 1091</a> to request and verify payment instructions after receiving your quotation. Do not send funds to unverified accounts.</p><a class="btn btn-wa" id="proofWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask for verified payment instructions</a></div>
 
-  <div class="grid grid-2" style="margin-top:24px">
-    <div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-money-bill-wave"></i></div>
-      <h3>Cash on Delivery (COD)</h3>
-      <p class="muted">Your receiver pays the rider in cash when the parcel arrives. Please tell your receiver the exact confirmed amount in advance so delivery is smooth. COD is agreed with you on WhatsApp before dispatch — some routes/items may require part-payment first.</p></div>
-    <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-      <h3>Pay on Pickup</h3>
-      <p class="muted">Pay our rider in cash (or instant transfer) when they collect the parcel from you. The rider confirms receipt to the office, and your order is marked Paid.</p></div>
-  </div>
-
-  <h2 class="reveal" style="margin-top:34px;font-size:1.35rem">Payment status meanings</h2>
-  <div class="grid grid-3 reveal" style="margin-top:14px">
-    <div class="card"><span class="badge badge-amber">Payment: Pending</span><p class="muted" style="margin-top:10px">We've not confirmed payment yet. If you just transferred, send the receipt on WhatsApp and give us a few minutes to verify.</p></div>
-    <div class="card"><span class="badge badge-green">Payment: Paid</span><p class="muted" style="margin-top:10px">Payment received and confirmed. You'll also get an automatic SMS/email alert when we mark it Paid.</p></div>
-    <div class="card"><span class="badge badge-orange">Payment: COD</span><p class="muted" style="margin-top:10px">Cash on delivery agreed. The receiver will pay the rider the confirmed amount at the door.</p></div>
-  </div>
+  <div class="grid grid-2" style="margin-top:24px"><div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-file-invoice-dollar"></i></div><h3>Shipping quotations</h3><p class="muted">Prices are not estimated by the website. Ask our team for a quotation based on your shipment and destination.</p></div><div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-globe"></i></div><h3>Customs requirements</h3><p class="muted">Food exports and restricted goods are subject to applicable shipping and customs requirements.</p></div></div>
 
   <div class="cta-banner reveal" style="margin-top:30px">
     <h2>Questions about payment?</h2>
-    <p style="margin:8px auto 18px;max-width:480px">We reply fast during working hours (open daily until 6:00 PM).</p>
+    <p style="margin:8px auto 18px;max-width:480px">Call us to confirm current opening hours and discuss your shipment.</p>
     <div class="btn-row" style="justify-content:center">
-      <a class="btn btn-blue" href="book.html">Book a Delivery</a>
+      <a class="btn btn-blue" href="book.html">Request a Shipment</a>
       <a class="btn btn-wa" id="payQWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp</a>
     </div>
   </div>
@@ -81,18 +49,10 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, $, copyText, waLink } from "./app.js";
+import { renderChrome, $, waLink } from "./app.js";
 renderChrome("payment.html");
-$("#bankName").textContent = CONFIG.bank.accountName;
-$("#bankNumber").textContent = CONFIG.bank.accountNumber;
-$("#bankBank").textContent = CONFIG.bank.bankName;
-$("#officialPhone").textContent = CONFIG.phoneDisplay;
-$("#copyAcctBtn").onclick = () => copyText(CONFIG.bank.accountNumber, "Account number copied!");
-$("#copyAllBtn").onclick = () => copyText(
-  `${CONFIG.businessName} bank details:\nAccount Name: ${CONFIG.bank.accountName}\nAccount Number: ${CONFIG.bank.accountNumber}\nBank: ${CONFIG.bank.bankName}\n(Please use your Order ID as the transfer narration)`,
-  "Bank details copied!");
-$("#proofWa").href = waLink("Hello FL Logistics, I have made payment for my delivery. My Order ID is: \n(Proof of payment attached)");
-$("#payQWa").href = waLink("Hello FL Logistics, I have a question about payment.");
+$("#proofWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to request verified payment instructions for my shipment.");
+$("#payQWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I have a question about a shipment quotation or payment.");
 </script>
 </body>
 </html>
