@@ -395,7 +395,7 @@ $("#detailForm").addEventListener("submit", async e => {
     await updateDoc(doc(db, "orders", before.orderId), updates);
     const newCustomerId = $("#dCustomer").value;
     if (newCustomerId && newCustomerId !== before.customerUid) {
-      await apiCall("/api/admin/link-order", { orderId: before.orderId, customerId: newCustomerId }, firebaseAuth);
+      await apiCall("/api/admin/payments", { action: "link-order", orderId: before.orderId, customerId: newCustomerId }, firebaseAuth);
     }
     if (["Delivered", "Cancelled"].includes(after.status)) { try { await deleteDoc(doc(db, "riderLocations", before.orderId)); } catch {} }
     await emailFallback(before, after);

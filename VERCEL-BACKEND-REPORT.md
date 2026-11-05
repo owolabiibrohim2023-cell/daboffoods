@@ -18,8 +18,7 @@ Date: 2026-11-05. Firebase Auth + Firestore kept; Cloud Functions is no longer u
 - `api/shipment/ups-refresh.js` — POST {shipmentId} (owner or admin). Mirrors `trackUpsShipment`.
 - `api/shipment/ups-check.js` — POST {} → {ready:true} (admin only, no token leak). Mirrors `getUpsAccessToken`.
 - `api/admin/shipments.js` — POST {action: create|update|add-event|list}. Mirrors `createShipment` / `updateShipment` / `addTrackingEvent` / `adminListShipments`.
-- `api/admin/payments.js` — POST {action:"list"}. Mirrors `adminListPayments`.
-- `api/admin/link-order.js` — POST {orderId, customerId} (admin only). Mirrors `linkOrderToCustomer`.
+- `api/admin/payments.js` — POST {action:"list"} OR {action:"link-order", orderId, customerId}. Mirrors `adminListPayments` + `linkOrderToCustomer`. Merged into one function to fit the 12-function Hobby limit (former `api/admin/link-order.js` removed).
 - `api/promote-admin.js` — refactored to shared lib (same behaviour).
 
 ## Files modified
