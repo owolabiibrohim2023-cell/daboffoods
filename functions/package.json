@@ -1,8 +1,8 @@
 {
   "name": "fl-logistics-functions",
-  "description": "DABOFFOODS & LOGISTICS SERVICES email and SMS shipment alerts",
+  "description": "DABOFFOODS & LOGISTICS SERVICES Firebase alerts, payments and shipment tracking",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "index.js",
   "private": true,

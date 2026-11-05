@@ -6,7 +6,7 @@
 <title>Track Your Shipment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="description" content="Look up recorded status updates for your DABOFFOODS & LOGISTICS SERVICES shipment using its tracking number.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -52,7 +52,7 @@
   <div id="notFound" class="card hidden text-center" style="margin-top:18px;padding:34px 22px">
     <div style="font-size:2.4rem;color:var(--orange)"><i class="fa-solid fa-box-open"></i></div>
     <h2 style="margin-top:8px">Order not found</h2>
-    <p class="muted">We couldn't find a shipment with that tracking number. Please check the reference provided by our team and try again.</p>
+    <p class="muted" id="notFoundMessage">We couldn't find a shipment with that tracking number. Please check it and try again.</p>
     <a class="btn btn-wa" id="notFoundWa" target="_blank" rel="noopener" style="margin-top:16px">
       <i class="fa-brands fa-whatsapp"></i> Ask us on WhatsApp
     </a>
@@ -63,7 +63,7 @@
     <div class="card" style="margin-bottom:16px">
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
         <div>
-          <div class="small muted" style="font-weight:700;letter-spacing:.05em">ORDER</div>
+          <div class="small muted" style="font-weight:700;letter-spacing:.05em">TRACKING NUMBER</div>
           <div style="font-size:1.5rem;font-weight:800;color:var(--blue-dark)" id="rOrderId">—</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -72,6 +72,7 @@
         </div>
       </div>
       <div class="alert alert-error" id="cancelledBanner"></div>
+      <button class="btn btn-ghost btn-sm hidden" id="refreshUpsTracking" type="button" style="margin-top:12px"><i class="fa-solid fa-rotate"></i> Refresh UPS tracking</button>
 
       <!-- Timeline -->
       <ol class="timeline" id="timeline"></ol>

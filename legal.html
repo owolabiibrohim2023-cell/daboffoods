@@ -5,7 +5,7 @@
 <title>Terms, Privacy &amp; Policies | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="description" content="Terms, privacy and shipping policy information for DABOFFOODS & LOGISTICS SERVICES. Confirm legal and shipment terms directly before booking.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -39,7 +39,8 @@
     </ul>
     <h3>Payment</h3>
     <ul>
-      <li>Payment options and instructions are confirmed directly with the business after a quotation. Do not rely on unverified bank details.</li>
+      <li>Where online payment is offered, the customer is redirected to Paystack checkout for a confirmed order amount. Payment status is updated only after server-side verification with Paystack.</li>
+      <li>Cash on delivery is available only where offered. A COD order remains unpaid until collection is recorded by authorised staff. Shipment status is separate from payment status.</li>
     </ul>
     <h3>Shipping and delivery</h3>
     <ul><li>Shipping methods, delivery estimates, customs processes and fees vary by destination, carrier and goods, and will be discussed with you before confirmation.</li><li>Doorstep delivery options are available for international logistics services; confirm the service scope for your shipment.</li></ul>
@@ -59,7 +60,7 @@
     <h3>What we collect</h3>
     <ul>
       <li>Account details: name, email, phone, business name (if any), saved addresses, notification preferences.</li>
-      <li>Order details: pickup/drop-off addresses, receiver contact, package description/weight, payment status (we <b>never</b> collect card numbers — there is no card payment here).</li>
+      <li>Order details: pickup/drop-off addresses, receiver contact, package description/weight and payment status. Paystack processes card details; this website does not store card numbers, PINs or one-time passwords. We store transaction references and payment verification/status information.</li>
       <li>Messages you send via forms or WhatsApp.</li>
     </ul>
     <h3>Delivery alerts</h3>
@@ -70,7 +71,7 @@
     <ul>
       <li>To pick up, route, deliver, communicate and support your orders; to prevent fraud; and to improve our service.</li>
       <li>Your rider receives the pickup/drop-off details and phone numbers needed for the job.</li>
-      <li>Service providers: Google Firebase (secure hosting/database/login), our SMS provider, email service, and maps providers (OpenStreetMap/Google Maps when you open directions).</li>
+      <li>Service providers: Google Firebase (hosting/database/login), Paystack (online payment processing), UPS (tracking for UPS-carried shipments), our SMS provider, email service, and maps providers (OpenStreetMap/Google Maps when you open directions).</li>
       <li>We do <b>not</b> sell your personal data. We may disclose data where required by Nigerian law.</li>
     </ul>
     <h3>Storage, security &amp; your rights</h3>
@@ -87,9 +88,8 @@
     <h2>3. Shipping &amp; Prohibited Items Policy</h2>
     <h3>Packaging</h3>
     <p>Package goods according to applicable carrier and destination requirements. Confirm acceptance and packaging instructions with our team before shipping.</p>
-    <h3>Prohibited items</h3>
-    <ul id="legalProhibited"></ul>
-    <p>Goods must comply with Nigerian export rules, carrier policies and destination-country import regulations. Contact us before sending goods you are unsure about.</p>
+    <h3>Restricted and prohibited goods</h3>
+    <p>Goods must comply with Nigerian export rules, carrier policies and destination-country import regulations. Acceptance depends on the item and route. Contact us before sending goods you are unsure about.</p>
     <h3>Restricted (ask first)</h3>
     <p>Food products and restricted goods require prior review and may need permits, documentation or specific handling. Ask the team about requirements for your goods and destination.</p>
     <h3>Weight &amp; size</h3>
@@ -119,12 +119,11 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, $, esc } from "./app.js";
+import { renderChrome, $ } from "./app.js";
 renderChrome("legal.html");
 $("#updatedLine").textContent =
   "Last updated: " + new Date().toLocaleDateString("en-NG", { month: "long", year: "numeric" }) +
   " · DABOFFOODS & LOGISTICS SERVICES, Ijebu Ode, Ogun State, Nigeria.";
-$("#legalProhibited").innerHTML = CONFIG.prohibitedItems.map(i => `<li>${esc(i)}</li>`).join("");
 
 /* If linked as legal.html#privacy, ensure the section is nicely in view */
 if (location.hash) {

@@ -1,50 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Dashboard | DABOFFOODS &amp; LOGISTICS SERVICES</title>
-<meta name="description" content="View shipment requests, track shipments, manage saved addresses and update your profile.">
-<meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="siteHeader"></div>
-
-<main>
-<section class="section" style="background:var(--bg)"><div class="container" style="max-width:980px">
-
-  <!-- Loading state -->
-  <div id="accountLoading" class="card">
-    <div class="skeleton" style="width:45%"></div>
-    <div class="skeleton" style="width:75%;margin-top:14px"></div>
-    <div class="skeleton" style="width:60%;margin-top:14px"></div>
-    <p class="muted small" style="margin-top:16px">Loading your dashboard…</p>
-  </div>
-
-  <div id="accountApp" class="hidden">
-    <div class="alert alert-success" id="welcomeAlert"></div>
-
-    <div class="alert alert-info" id="verifyAlert">
-      <b>Verify your email address.</b>
-      <span>Your account works, but verification helps secure it and improves email-alert delivery.</span>
-      <div style="margin-top:10px">
-        <button type="button" class="btn btn-blue btn-sm" id="resendVerifyBtn">
-          <i class="fa-solid fa-envelope"></i> Resend verification email
-        </button>
-      </div>
-    </div>
-
-    <!-- Header -->
-    <div class="card" style="margin-bottom:18px">
-      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-        <div id="avatar" style="width:64px;height:64px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:1.45rem;font-weight:800;flex:none">FL</div>
-        <div style="flex:1;min-width:220px">
-          <h1 style="font-size:1.55rem" id="welcomeTitle">Welcome back</h1>
-          <p class="muted" id="accountMeta">—</p>
+}
         </div>
         <div class="btn-row">
           <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Book a new delivery</a>
@@ -86,6 +40,11 @@
 
     <!-- ORDERS PANEL -->
     <section id="panel-orders">
+      <div class="grid grid-3" id="paymentTotals" style="margin-bottom:16px">
+        <div class="stat-card"><div class="n" id="paidTotal">₦0</div><div class="l">Verified payments</div></div>
+        <div class="stat-card"><div class="n" id="unpaidTotal">₦0</div><div class="l">Unpaid confirmed orders</div></div>
+        <div class="stat-card"><div class="n" id="codTotal">₦0</div><div class="l">Cash on delivery due</div></div>
+      </div>
       <div id="ordersLoading" class="card">
         <div class="skeleton" style="width:55%"></div>
         <div class="skeleton" style="width:85%;margin-top:12px"></div>
@@ -102,6 +61,16 @@
       </div>
 
       <div id="ordersList"></div>
+      <section class="card" id="paymentHistoryCard" style="margin-top:16px">
+        <h2 style="font-size:1.2rem"><i class="fa-solid fa-credit-card" style="color:var(--blue)"></i> Payment history</h2>
+        <p class="small muted" style="margin:4px 0 12px">Payment status is updated only after secure backend verification.</p>
+        <div id="paymentHistory"><p class="muted small">Loading payments…</p></div>
+      </section>
+      <section class="card" id="shipmentHistoryCard" style="margin-top:16px">
+        <h2 style="font-size:1.2rem"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue)"></i> Shipments</h2>
+        <p class="small muted" style="margin:4px 0 12px">Carrier and tracking details appear after a shipment is registered.</p>
+        <div id="shipmentHistory"><p class="muted small">Loading shipments…</p></div>
+      </section>
     </section>
 
     <!-- ADDRESSES PANEL -->
@@ -234,55 +203,7 @@
 
         <button type="submit" class="btn btn-blue" id="profileSaveBtn">
           <i class="fa-solid fa-floppy-disk"></i> Save profile changes
-        </button>
-      </form>
-
-      <!-- Change password: only for email/password accounts -->
-      <form class="form-card hidden" id="passwordForm" novalidate style="margin-bottom:18px">
-        <h2 style="font-size:1.3rem">Change password</h2>
-        <p class="muted small" style="margin-bottom:18px">Use at least 8 characters.</p>
-
-        <div class="form-grid">
-          <div class="field span-2">
-            <label for="currentPassword">Current password <span class="req">*</span></label>
-            <div class="pw-wrap">
-              <input id="currentPassword" type="password" autocomplete="current-password">
-              <button type="button" class="pw-toggle" data-target="currentPassword">Show</button>
-            </div>
-            <p class="field-error"></p>
-          </div>
-
-          <div class="field">
-            <label for="newPassword">New password <span class="req">*</span></label>
-            <div class="pw-wrap">
-              <input id="newPassword" type="password" autocomplete="new-password">
-              <button type="button" class="pw-toggle" data-target="newPassword">Show</button>
-            </div>
-            <div class="pw-strength"><i id="newPwBar"></i></div>
-            <p class="small muted" id="newPwLabel" style="margin-top:6px"></p>
-            <p class="field-error"></p>
-          </div>
-
-          <div class="field">
-            <label for="confirmNewPassword">Confirm new password <span class="req">*</span></label>
-            <div class="pw-wrap">
-              <input id="confirmNewPassword" type="password" autocomplete="new-password">
-              <button type="button" class="pw-toggle" data-target="confirmNewPassword">Show</button>
-            </div>
-            <p class="field-error"></p>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-outline" id="passwordSaveBtn">
-          <i class="fa-solid fa-key"></i> Update password
-        </button>
-      </form>
-
-      <!-- Danger zone -->
-      <div class="card" style="border-color:#f0b7ae;background:#fff8f7">
-        <h2 style="font-size:1.25rem;color:var(--red)"><i class="fa-solid fa-triangle-exclamation"></i> Danger zone</h2>
-        <p class="muted" style="margin:8px 0 14px">
-          Deleting your account removes your profile and saved addresses and signs you out permanently.
+        }
           Past shipment records may be retained by DABOFFOODS &amp; LOGISTICS SERVICES for business records.
         </p>
 
@@ -333,6 +254,7 @@ import {
   doc, updateDoc, collection, query, where, onSnapshot,
   addDoc, deleteDoc, writeBatch, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
 renderChrome("account.html");
 setupPasswordToggles();
@@ -343,6 +265,7 @@ let listenersStarted = false;
 let profileFilled = false;
 let ordersById = {};
 let addressesById = {};
+const functions = getFunctions();
 
 /* ---------------- Tabs ---------------- */
 function activateTab(name, updateHash = true) {
@@ -427,6 +350,9 @@ watchAuth(async (user, profile) => {
     listenersStarted = true;
     listenToOrders(user.uid);
     listenToAddresses(user.uid);
+    listenToPayments(user.uid);
+    listenToShipments();
+    verifyPaymentReturn();
   }
 });
 
@@ -468,54 +394,73 @@ function orderMillis(order) {
   if (order.createdAt?.seconds) return order.createdAt.seconds * 1000;
   return 0;
 }
-
 function listenToOrders(uid) {
-  /*
-    where() only + client-side sorting:
-    this avoids needing a custom composite Firestore index.
-  */
   const q = query(collection(db, "orders"), where("customerUid", "==", uid));
-
   onSnapshot(q, snap => {
     const orders = [];
     snap.forEach(d => orders.push({ orderId: d.id, ...d.data() }));
     orders.sort((a, b) => orderMillis(b) - orderMillis(a));
-
     ordersById = {};
     orders.forEach(o => (ordersById[o.orderId] = o));
-
-    const active = orders.filter(
-      o => !["Delivered", "Cancelled"].includes(o.status)
-    ).length;
-    const delivered = orders.filter(o => o.status === "Delivered").length;
-
-    $("#statActive").textContent = active;
-    $("#statDelivered").textContent = delivered;
+    $("#statActive").textContent = orders.filter(o => !["Delivered", "Cancelled"].includes(o.status)).length;
+    $("#statDelivered").textContent = orders.filter(o => o.status === "Delivered").length;
     $("#statTotal").textContent = orders.length;
-
+    const confirmedAmount = order => Number.isFinite(Number(order.finalPrice)) ? Number(order.finalPrice) : 0;
+    $("#paidTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus === "Paid").reduce((sum, o) => sum + confirmedAmount(o), 0));
+    $("#unpaidTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus !== "Paid" && o.paymentStatus !== "COD" && o.paymentOption !== "Cash on delivery").reduce((sum, o) => sum + confirmedAmount(o), 0));
+    $("#codTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus === "COD" || o.paymentOption === "Cash on delivery").reduce((sum, o) => sum + confirmedAmount(o), 0));
     $("#ordersLoading").classList.add("hidden");
     $("#ordersEmpty").classList.toggle("hidden", orders.length > 0);
     $("#ordersList").innerHTML = orders.map(orderCardHtml).join("");
-
     bindOrderButtons();
   }, err => {
     console.error(err);
-    $("#ordersLoading").innerHTML = `
-      <h3>Couldn't load your orders</h3>
-      <p class="muted">Please check your network connection and refresh this page.</p>`;
+    $("#ordersLoading").innerHTML = `<h3>Couldn't load your orders</h3><p class="muted">Please check your network connection and refresh this page.</p>`;
   });
 }
-
 function shortAddress(address = "") {
   const text = String(address).trim();
   return text.length > 90 ? text.slice(0, 90) + "…" : text;
+}
+function bindOrderButtons() {
+  $$('[data-pay]').forEach(btn => btn.addEventListener("click", async () => {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> Connecting to Paystack…`;
+    try {
+      const initializePayment = httpsCallable(functions, "initializePaystackPayment");
+      const result = await initializePayment({ orderId: btn.dataset.pay });
+      const checkoutUrl = result.data?.authorizationUrl;
+      if (!checkoutUrl || !checkoutUrl.startsWith("https://checkout.paystack.com/")) throw new Error("Paystack did not return a valid checkout URL.");
+      location.assign(checkoutUrl);
+    } catch (error) {
+      console.error(error);
+      toast(error.message || "Could not start payment. Please try again.", "error");
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }
+  }));
+  $$('[data-reorder]').forEach(btn => btn.addEventListener("click", () => {
+    const o = ordersById[btn.dataset.reorder];
+    if (!o) return;
+    sessionStorage.setItem("fl_reorder", JSON.stringify({
+      senderName: o.senderName || "", senderPhone: o.senderPhone || "",
+      senderEmail: o.senderEmail || o.customerEmail || "", pickupAddress: o.pickupAddress || "",
+      receiverName: o.receiverName || "", receiverPhone: o.receiverPhone || "",
+      receiverEmail: o.receiverEmail || "", dropoffAddress: o.dropoffAddress || "",
+      packageType: o.packageType || "", packageDescription: o.packageDescription || "",
+      weightKg: o.weightKg || 1, serviceType: o.serviceType || "", zone: o.zone || "",
+      instructions: o.instructions || ""
+    }));
+    location.href = "book.html";
+  }));
 }
 
 function orderCardHtml(o) {
   const price =
     o.finalPrice != null
       ? `${fmtMoney(o.finalPrice)} confirmed`
-      : `${fmtMoney(o.estimatedPrice)} estimate`;
+      : o.estimatedPrice != null ? `${fmtMoney(o.estimatedPrice)} estimate` : "Quotation requested";
 
   const payClass =
     o.paymentStatus === "Paid"
@@ -565,11 +510,12 @@ function orderCardHtml(o) {
     </div>
 
     <div class="btn-row">
+      ${o.finalPrice != null && o.paymentStatus !== "Paid" && o.paymentOption !== "Cash on delivery" ? `<button type="button" class="btn btn-orange btn-sm" data-pay="${esc(o.orderId)}"><i class="fa-solid fa-lock"></i> Pay now · ${fmtMoney(o.finalPrice)}</button>` : ""}
       <a class="btn btn-blue btn-sm" href="track.html?id=${encodeURIComponent(o.orderId)}">
         <i class="fa-solid fa-location-crosshairs"></i> Track
       </a>
       <button type="button" class="btn btn-ghost btn-sm" data-reorder="${esc(o.orderId)}">
-        <i class="fa-solid fa-rotate-right"></i> Reorder / Repeat this delivery
+        <i class="fa-solid fa-rotate-right"></i> Repeat this shipment request
       </button>
       <a class="btn btn-wa btn-sm" target="_blank" rel="noopener"
          href="${waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help with my shipment ${o.orderId}.`)}">
@@ -579,36 +525,73 @@ function orderCardHtml(o) {
   </article>`;
 }
 
-function bindOrderButtons() {
-  $$("[data-reorder]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const o = ordersById[btn.dataset.reorder];
-      if (!o) return;
-
-      const reorderData = {
-        senderName: o.senderName || "",
-        senderPhone: o.senderPhone || "",
-        senderEmail: o.senderEmail || o.customerEmail || "",
-        pickupAddress: o.pickupAddress || "",
-        receiverName: o.receiverName || "",
-        receiverPhone: o.receiverPhone || "",
-        receiverEmail: o.receiverEmail || "",
-        dropoffAddress: o.dropoffAddress || "",
-        packageType: o.packageType || "",
-        packageDescription: o.packageDescription || "",
-        weightKg: o.weightKg || 1,
-        serviceType: o.serviceType || "",
-        zone: o.zone || "",
-        instructions: o.instructions || ""
-      };
-
-      sessionStorage.setItem("fl_reorder", JSON.stringify(reorderData));
-      location.href = "book.html";
-    });
+/* ---------------- Saved addresses ---------------- */
+function listenToPayments(uid) {
+  const paymentQuery = query(collection(db, "payments"), where("customerUid", "==", uid));
+  onSnapshot(paymentQuery, snapshot => {
+    const payments = [];
+    snapshot.forEach(payment => payments.push({ id: payment.id, ...payment.data() }));
+    const timestamp = value => value?.toMillis ? value.toMillis() : value?.seconds ? value.seconds * 1000 : 0;
+    payments.sort((a, b) => timestamp(b.createdAt) - timestamp(a.createdAt));
+    $("#paymentHistory").innerHTML = payments.length ? payments.map(payment => `
+      <article class="order-row" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+          <div><b>${esc(payment.orderId || "Order")}</b><div class="small muted">Reference: ${esc(payment.reference || payment.id)}</div></div>
+          <span class="badge ${payment.status === "success" ? "badge-green" : payment.status === "failed" || payment.status === "duplicate_success" ? "badge-red" : "badge-amber"}">${esc(payment.status === "duplicate_success" ? "duplicate success · support review" : payment.status || "pending")}</span>
+        </div>
+        <p class="small muted" style="margin-top:7px">${esc(payment.currency || "NGN")} · ${payment.amountNaira == null ? "Amount unavailable" : fmtMoney(payment.amountNaira)} · ${payment.paidAt ? `Paid ${fmtDateTime(payment.paidAt)}` : `Started ${fmtDateTime(payment.createdAt)}`}</p>
+      </article>`).join("") : `<p class="muted small">No online payments recorded yet.</p>`;
+  }, error => {
+    console.error(error);
+    $("#paymentHistory").innerHTML = `<p class="muted small">Payment history is unavailable right now. Refresh the page to retry.</p>`;
   });
 }
 
-/* ---------------- Saved addresses ---------------- */
+async function listenToShipments() {
+  try {
+    const listShipments = httpsCallable(functions, "listMyShipments");
+    const result = await listShipments({});
+    const shipments = result.data?.shipments || [];
+    $("#shipmentHistory").innerHTML = shipments.length ? shipments.map(shipment => `
+      <article class="order-row" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+          <div><b>${esc(shipment.trackingNumber || shipment.orderId)}</b><div class="small muted">${esc(shipment.carrier || "Carrier pending")} · Order ${esc(shipment.orderId || "—")}</div></div>
+          <span class="badge ${shipment.shipmentStatus === "Delivered" ? "badge-green" : ["In Transit", "Out for Delivery"].includes(shipment.shipmentStatus) ? "badge-orange" : "badge-blue"}">${esc(shipment.shipmentStatus || "Shipment Registered")}</span>
+        </div>
+        <p class="small muted" style="margin:7px 0">${esc(shipment.origin || "Origin not provided")} → ${esc(shipment.destination || "Destination not provided")} · Estimated delivery: ${shipment.estimatedDelivery ? fmtDateTime(shipment.estimatedDelivery) : "Not available"}</p>
+        <div class="btn-row"><a class="btn btn-blue btn-sm" href="track.html?id=${encodeURIComponent(shipment.trackingNumber || shipment.orderId)}"><i class="fa-solid fa-location-crosshairs"></i> Track shipment</a></div>
+      </article>`).join("") : `<p class="muted small">No carrier shipments have been registered for your orders yet.</p>`;
+  } catch (error) {
+    console.error(error);
+    $("#shipmentHistory").innerHTML = `<p class="muted small">Shipment list is unavailable right now. Refresh the page to retry.</p>`;
+  }
+}
+
+async function verifyPaymentReturn() {
+  const params = new URLSearchParams(location.search);
+  const reference = params.get("payment_reference") || params.get("reference") || params.get("trxref");
+  if (!reference) return;
+  const notice = document.createElement("div");
+  notice.className = "alert alert-info show";
+  notice.textContent = "Verifying your Paystack payment securely…";
+  $("#panel-orders").prepend(notice);
+  try {
+    const verifyPayment = httpsCallable(functions, "verifyPaystackPayment");
+    const result = await verifyPayment({ reference });
+    notice.className = `alert ${result.data?.verified ? "alert-success" : "alert-info"} show`;
+    notice.textContent = result.data?.verified
+      ? "Payment verified successfully. Your order payment status is updated."
+      : `Payment status: ${result.data?.status || "pending"}. If you completed checkout, refresh shortly or contact support.`;
+  } catch (error) {
+    console.error(error);
+    notice.className = "alert alert-error show";
+    notice.textContent = error.message || "Payment verification is unavailable. Please contact support.";
+  } finally {
+    params.delete("payment_reference"); params.delete("reference"); params.delete("trxref");
+    history.replaceState(null, "", `${location.pathname}${params.toString() ? `?${params}` : ""}${location.hash}`);
+  }
+}
+
 function listenToAddresses(uid) {
   onSnapshot(collection(db, "users", uid, "addresses"), snap => {
     const addresses = [];

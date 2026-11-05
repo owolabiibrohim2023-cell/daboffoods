@@ -22,7 +22,7 @@ const nodemailer = require("nodemailer");
    ⭐⭐ EDIT HERE — backend business settings ⭐⭐
    SITE_URL must match CONFIG.siteUrl in app.js (no trailing /)
 ============================================================ */
-const SITE_URL = ""; // Set to the deployed site origin before enabling email tracking links.
+const SITE_URL = process.env.SITE_URL || ""; // Configure the deployed site origin before enabling email tracking links.
 const BUSINESS_NAME = "DABOFFOODS & LOGISTICS SERVICES";
 const BUSINESS_PHONE = "0802 431 1091";
 const WHATSAPP_NUMBER = "2348024311091";
@@ -43,6 +43,7 @@ const ALL_SECRETS = [GMAIL_USER, GMAIL_APP_PASSWORD, TERMII_API_KEY, TERMII_SEND
   getFunctions() with no region, which targets us-central1.
 */
 setGlobalOptions({ region: "us-central1", maxInstances: 10 });
+process.env.UPS_ENVIRONMENT = process.env.UPS_ENVIRONMENT || "sandbox";
 
 initializeApp();
 const db = getFirestore();
@@ -51,7 +52,7 @@ const db = getFirestore();
 const esc = (s = "") => String(s).replace(/[&<>"']/g, c =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const money = n => "₦" + Number(n || 0).toLocaleString("en-NG");
-const trackingLink = id => `${SITE_URL}/track.html?id=${id}`;
+const trackingLink = id => SITE_URL ? `${SITE_URL.replace(/\/$/, "")}/track.html?id=${encodeURIComponent(id)}` : "";
 const validEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
 
 /* Termii wants international digits WITHOUT +  e.g. 2348137407197 */
@@ -83,7 +84,7 @@ function buildMessages(order, event, templates) {
   const link = trackingLink(order.orderId);
   const priceText = order.finalPrice != null
     ? `${money(order.finalPrice)} (confirmed)`
-    : `${money(order.estimatedPrice)} (estimate — final price confirmed on WhatsApp)`;
+    : order.estimatedPrice != null ? `${money(order.estimatedPrice)} (estimate)` : "Quotation requested";
   const vars = {
     orderId: order.orderId,
     status: event.displayStatus,
@@ -120,7 +121,7 @@ function buildMessages(order, event, templates) {
 
   const intro = {
     "Order Placed": "Thanks for your shipment request to DABOFFOODS & LOGISTICS SERVICES. Our team will review your details and contact you about shipping options and a quotation. Keep your reference safe.",
-    "Confirmed": `Your delivery is confirmed at <b>${esc(priceText)}</b>. If you haven\u2019t paid yet, please use the payment details confirmed with you on WhatsApp and send your proof of payment there.`,
+    "Confirmed": `Your shipment is confirmed${order.finalPrice != null ? ` at <b>${esc(priceText)}</b>` : ""}. Please confirm payment instructions directly with our team.`,
     "Payment Paid": "We\u2019ve confirmed your payment. No further payment is needed for this order (unless agreed otherwise on WhatsApp).",
     "Picked Up": "Our rider has collected your parcel. You can follow its journey live from the tracking page.",
     "In Transit": "Your parcel is on the move. Watch your rider live on the tracking map.",
@@ -151,10 +152,9 @@ function buildMessages(order, event, templates) {
         ${row("Payment", `${order.paymentStatus || "Pending"}${order.paymentOption ? " · " + order.paymentOption : ""}`)}
         ${order.riderName ? row("Rider", `${order.riderName}${order.riderPhone ? " · " + order.riderPhone : ""}`) : ""}
       </table>
-      <p style="text-align:center;margin:0 0 18px">
+      ${link ? `<p style="text-align:center;margin:0 0 18px">
         <a href="${link}" style="display:inline-block;background:#FF7A00;color:#fff;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px">Track My Delivery</a>
-      </p>
-      <p style="text-align:center;color:#5b6b85;font-size:13px;margin:0 0 6px">or copy this link: <a href="${link}" style="color:#0B3D91">${link}</a></p>
+      </p><p style="text-align:center;color:#5b6b85;font-size:13px;margin:0 0 6px">or copy this link: <a href="${link}" style="color:#1769AA">${link}</a></p>` : ""}
       <hr style="border:none;border-top:1px solid #dbe4f0;margin:18px 0">
       <p style="color:#5b6b85;font-size:13px;line-height:1.6;margin:0">Need help? WhatsApp us: <a href="https://wa.me/${WHATSAPP_NUMBER}" style="color:#0B3D91;font-weight:700">${BUSINESS_PHONE}</a><br>
       ${esc(BUSINESS_NAME)} · ${esc(BUSINESS_ADDRESS)}</p>
@@ -311,3 +311,8 @@ exports.resendAlert = onCall({ secrets: ALL_SECRETS }, async (request) => {
   if (!result.ok) throw new HttpsError("internal", `Resend failed: ${result.error || "unknown error"}. See the new failed entry in the alert log.`);
   return { ok: true, newAlertId: result.alertId };
 });
+
+/* Payment, UPS, and carrier-independent shipment workflows. */
+const paymentFunctions = require("./payments");
+const shippingFunctions = require("./shipping");
+Object.assign(exports, paymentFunctions, shippingFunctions);

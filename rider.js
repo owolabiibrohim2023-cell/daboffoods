@@ -164,7 +164,7 @@ function jobCard(o, done = false) {
         <a class="btn btn-ghost btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="${mapsDir(s.dropoffAddress || "")}"><i class="fa-solid fa-diamond-turn-right"></i> Navigate to drop-off</a></div>`).join("")}
     </div>
     ${codInfo(o)}
-    <p class="small muted">Payment: <b>${esc(o.paymentStatus || "Pending")}</b> · ${esc(o.paymentOption || "")} · ${o.finalPrice != null ? fmtMoney(o.finalPrice) + " confirmed" : fmtMoney(o.estimatedPrice) + " estimate"}</p>
+    <p class="small muted">Payment: <b>${esc(o.paymentStatus || "Pending")}</b> · ${esc(o.paymentOption || "")} · ${o.finalPrice != null ? fmtMoney(o.finalPrice) + " confirmed" : o.estimatedPrice != null ? fmtMoney(o.estimatedPrice) + " estimate" : "Quotation required"}</p>
     ${done ? "" : `
     <div class="btn-row" style="margin-top:12px">
       <a class="btn btn-blue btn-sm" href="${telHref(o.senderPhone)}"><i class="fa-solid fa-phone"></i> Call customer</a>

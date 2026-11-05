@@ -5,7 +5,7 @@
 <title>Shipping Quotations &amp; Destinations | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="description" content="Request an international shipping quotation for freight forwarding, food exports and cargo services to the UK and USA.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -28,18 +28,13 @@
 
 <section class="section alt"><div class="container">
   <div class="section-head reveal"><span class="kicker">International services</span><h2>Shipping and export support</h2><p>Food exports are subject to applicable shipping and customs requirements. Customs clearance support is available at destination countries.</p></div>
-  <div class="card reveal"><b style="color:var(--blue-dark)">States &amp; cities served</b>
+  <div class="card reveal"><b style="color:var(--blue-dark)">Destinations</b>
     <div class="chips" id="coverageChips" style="margin-top:12px"></div>
     <p class="small muted" style="margin-top:14px">Need to confirm a destination? <a id="covWa" target="_blank" rel="noopener">Ask us on WhatsApp</a>.</p></div>
 </div></section>
 
 <section class="section"><div class="container" style="max-width:860px">
-  <div class="card reveal" style="border-color:#f0b7ae">
-    <h2 style="color:var(--red);font-size:1.3rem"><i class="fa-solid fa-ban"></i> Items we cannot carry</h2>
-    <p class="muted" style="margin:8px 0 12px">Restricted goods must be discussed with our team before booking. Food exports and all shipments are subject to applicable shipping and customs rules.</p>
-    <ul class="lp-check" id="prohibitedList" style="margin:0"></ul>
-    <p class="small muted" style="margin-top:12px">If you are unsure whether goods can be shipped, contact us before submitting a request. See <a href="legal.html#shipping">Shipping &amp; Prohibited Items Policy</a>.</p>
-  </div>
+  <div class="card reveal" style="border-color:#f0b7ae"><h2 style="color:var(--red);font-size:1.3rem"><i class="fa-solid fa-circle-info"></i> Restricted goods &amp; requirements</h2><p class="muted" style="margin:8px 0 12px">Acceptance depends on carrier policies and destination-country regulations. Food exports and restricted goods are subject to applicable shipping and customs requirements. Contact us before booking to confirm your shipment can be accepted.</p><p class="small muted">See <a href="legal.html#shipping">Shipping &amp; Prohibited Items Policy</a>.</p></div>
   <div class="cta-banner reveal" style="margin-top:24px">
     <h2>Ready to ship beyond borders?</h2>
     <p style="margin:8px auto 18px;max-width:480px">Request a shipment quotation from our team.</p>
@@ -57,8 +52,6 @@ $("#covWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like t
 
 $("#coverageChips").innerHTML = CONFIG.coverage.map(c =>
   `<span class="chip" style="cursor:default"><i class="fa-solid fa-location-dot"></i> ${esc(c)}</span>`).join("");
-$("#prohibitedList").innerHTML = CONFIG.prohibitedItems.map(i =>
-  `<li style="padding:5px 0"><span class="ci" style="background:var(--red-bg);color:var(--red);width:32px;height:32px;border-radius:9px"><i class="fa-solid fa-xmark"></i></span><span><b style="color:var(--ink)">${esc(i)}</b></span></li>`).join("");
 </script>
 </body>
 </html>

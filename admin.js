@@ -11,21 +11,29 @@ import { getApp, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.
 import { getAuth as getAuthFor, createUserWithEmailAndPassword, signOut as signOutAuth }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+import { auth as firebaseAuth } from "./app.js";
 import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot,
   arrayUnion, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 setupPasswordToggles();
 
-const S = { orders: [], users: [], alerts: [], messages: [], apps: [], locs: [],
+const S = { orders: [], users: [], alerts: [], messages: [], apps: [], locs: [], payments: [], shipments: [], trackingEvents: [],
   current: null, customerUid: "", customerLabel: "", started: false, map: null, markers: {} };
 const ALL_STATUSES = [...CONFIG.statuses, "Cancelled"];
+const SHIPMENT_STATUS_ICONS = {
+  "Shipment Registered": "fa-box", "Awaiting Pickup": "fa-clock", "Picked Up": "fa-hand",
+  "In Transit": "fa-truck-fast", "Customs Clearance": "fa-file-circle-check",
+  "Out for Delivery": "fa-motorcycle", Delivered: "fa-house-circle-check",
+  "Delivery Attempted": "fa-triangle-exclamation", Exception: "fa-circle-exclamation",
+  "On Hold": "fa-pause", Returned: "fa-rotate-left"
+};
 const millis = ts => ts?.toMillis ? ts.toMillis() : ts?.seconds ? ts.seconds * 1000 : ts ? new Date(ts).getTime() || 0 : 0;
 const dateKey = ts => millis(ts) ? new Date(millis(ts)).toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" }) : "";
 const liveLink = id => location.protocol.startsWith("http") ? new URL(`track.html?id=${id}`, location.href).href : `${CONFIG.siteUrl}/track.html?id=${id}`;
 const badgeCls = s => s === "Delivered" ? "badge-green" : s === "Cancelled" ? "badge-red" : ["In Transit", "Out for Delivery"].includes(s) ? "badge-orange" : "badge-blue";
 const riders = () => S.users.filter(u => u.role === "rider");
-const customers = () => S.users.filter(u => u.role === "customer");
+const customers = () => S.users.filter(u => u.role === "customer" || u.role === "admin");
 
 /* ---------------- Login / gate ---------------- */
 $("#adminLogin").addEventListener("submit", async e => {
@@ -62,7 +70,7 @@ function initAdmin() {
   fillSelect($("#fStatus"), ALL_STATUSES, "All statuses");
   fillSelect($("#fPayment"), CONFIG.paymentStatuses, "All payments");
   fillSelect($("#fService"), CONFIG.services, "All services");
-  fillSelect($("#dStatus"), ALL_STATUSES); fillSelect($("#dPayStatus"), CONFIG.paymentStatuses);
+  fillSelect($("#dStatus"), ALL_STATUSES);
   fillSelect($("#dService"), CONFIG.services);
   fillSelect($("#mPkgType"), CONFIG.packageTypes); fillSelect($("#mService"), CONFIG.services);
   fillSelect($("#mZone"), Object.keys(CONFIG.zones));
@@ -70,19 +78,22 @@ function initAdmin() {
   $("#alertConfigInfo").innerHTML = `<b>Automatic alerts:</b> Email <b>${CONFIG.features.emailAlerts ? "ON" : "OFF"}</b> · SMS <b>${CONFIG.features.smsAlerts ? "ON" : "OFF"}</b> (switches live in <code>app.js → CONFIG.features</code>).
     ${CONFIG.emailjs.enabled ? "<br><b>EmailJS fallback is ON</b> — status emails are sent from this dashboard. Turn it OFF once Cloud Functions is deployed to avoid duplicate emails." : "Status emails/SMS are sent by Cloud Functions (Part 6)."} Resend needs Cloud Functions deployed.`;
 
-  onSnapshot(collection(db, "orders"), s => { S.orders = []; s.forEach(d => S.orders.push({ orderId: d.id, ...d.data() })); renderStats(); renderOrders(); renderCustomers(); renderRiders(); }, e => toast("Orders failed to load: " + e.message, "error"));
-  onSnapshot(collection(db, "users"), s => { S.users = []; s.forEach(d => S.users.push({ uid: d.id, ...d.data() })); renderStats(); renderCustomers(); renderRiders(); });
+  onSnapshot(collection(db, "orders"), s => { S.orders = []; s.forEach(d => S.orders.push({ orderId: d.id, ...d.data() })); renderStats(); renderOrders(); renderCustomers(); renderRiders(); renderShipments(); }, e => toast("Orders failed to load: " + e.message, "error"));
+  onSnapshot(collection(db, "users"), s => { S.users = []; s.forEach(d => S.users.push({ uid: d.id, ...d.data() })); renderStats(); renderCustomers(); renderRiders(); renderShipments(); });
   onSnapshot(collection(db, "alerts"), s => { S.alerts = []; s.forEach(d => S.alerts.push({ id: d.id, ...d.data() })); S.alerts.sort((a, b) => millis(b.createdAt || b.time || b.at) - millis(a.createdAt || a.time || a.at)); renderAlerts(); });
   onSnapshot(collection(db, "messages"), s => { S.messages = []; s.forEach(d => S.messages.push({ id: d.id, ...d.data() })); S.messages.sort((a, b) => millis(b.createdAt) - millis(a.createdAt)); renderInbox(); });
   onSnapshot(collection(db, "applications"), s => { S.apps = []; s.forEach(d => S.apps.push({ id: d.id, ...d.data() })); S.apps.sort((a, b) => millis(b.createdAt) - millis(a.createdAt)); renderApps(); });
   onSnapshot(collection(db, "riderLocations"), s => { S.locs = []; s.forEach(d => S.locs.push({ orderId: d.id, ...d.data() })); renderLive(); });
+  onSnapshot(collection(db, "payments"), s => { S.payments = []; s.forEach(d => S.payments.push({ id: d.id, ...d.data() })); renderPayments(); });
+  onSnapshot(collection(db, "shipments"), s => { S.shipments = []; s.forEach(d => S.shipments.push({ shipmentId: d.id, ...d.data() })); renderShipments(); });
+  onSnapshot(collection(db, "trackingEvents"), s => { S.trackingEvents = []; s.forEach(d => S.trackingEvents.push({ eventId: d.id, ...d.data() })); renderShipments(); });
   loadTemplates(); loadPricing();
 }
 
 /* Tabs */
 $$(".tab-btn").forEach(b => b.addEventListener("click", () => {
   $$(".tab-btn").forEach(x => x.classList.toggle("active", x === b));
-  ["orders","customers","riders","live","alerts","inbox","pricing"].forEach(t => $("#panel-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+  ["orders","customers","riders","live","alerts","inbox","payments","shipments","pricing"].forEach(t => $("#panel-" + t).classList.toggle("hidden", t !== b.dataset.tab));
   if (b.dataset.tab === "live") setTimeout(initLiveMap, 60);
 }));
 
@@ -98,6 +109,161 @@ function renderStats() {
   $("#stToday").textContent = o.filter(x => dateKey(x.createdAt) === today).length;
   $("#stCustomers").textContent = customers().length;
 }
+
+/* ---------------- Payments and carrier shipments ---------------- */
+function renderPayments() {
+  if (!$("#paymentsBody")) return;
+  const search = $("#paymentSearch").value.trim().toLowerCase();
+  const status = $("#paymentStatusFilter").value;
+  const list = S.payments.filter(payment => {
+    const order = S.orders.find(item => item.orderId === payment.orderId);
+    const haystack = [payment.orderId, payment.reference, payment.id, payment.customerUid,
+      payment.email, order?.senderName, order?.senderEmail].join(" ").toLowerCase();
+    return (!status || payment.status === status) && (!search || haystack.includes(search));
+  }).sort((a, b) => millis(b.createdAt) - millis(a.createdAt));
+  $("#paymentsBody").innerHTML = list.length ? list.map(payment => `
+    <tr><td><b>${esc(payment.orderId || "—")}</b></td>
+      <td>${esc(payment.customerUid || "Guest / COD")}</td>
+      <td>${esc(payment.method || "Paystack")}<br><span class="badge ${payment.status === "success" ? "badge-green" : payment.status === "failed" || payment.status === "duplicate_success" ? "badge-red" : "badge-amber"}">${esc(payment.status === "duplicate_success" ? "duplicate success · review" : payment.status || "pending")}</span></td>
+      <td>${payment.amountNaira == null ? "—" : fmtMoney(payment.amountNaira)} ${esc(payment.currency || "NGN")}</td>
+      <td><code>${esc(payment.reference || payment.id)}</code></td>
+      <td>${fmtDateTime(payment.createdAt)}${payment.paidAt ? `<br><span class="small muted">Paid ${fmtDateTime(payment.paidAt)}</span>` : ""}</td></tr>`).join("")
+    : `<tr><td colspan="6" class="text-center muted" style="padding:24px">No payment records match these filters.</td></tr>`;
+}
+$("#paymentSearch").addEventListener("input", renderPayments);
+$("#paymentStatusFilter").addEventListener("change", renderPayments);
+
+function syncShipmentSelects() {
+  const orderSelect = $("#shipmentOrder"), eventSelect = $("#eventShipment");
+  const oldOrder = orderSelect.value, oldShipment = eventSelect.value;
+  const availableOrders = S.orders.filter(order => order.status !== "Cancelled");
+  orderSelect.innerHTML = availableOrders.map(order => `<option value="${esc(order.orderId)}">${esc(order.orderId)} · ${esc(order.senderName || "Customer")}</option>`).join("");
+  if (availableOrders.some(order => order.orderId === oldOrder)) orderSelect.value = oldOrder;
+  eventSelect.innerHTML = S.shipments.map(shipment => `<option value="${esc(shipment.shipmentId)}">${esc(shipment.trackingNumber)} · ${esc(shipment.carrier)} · ${esc(shipment.orderId)}</option>`).join("");
+  if (S.shipments.some(shipment => shipment.shipmentId === oldShipment)) eventSelect.value = oldShipment;
+}
+
+function renderShipments() {
+  if (!$("#shipmentsBody")) return;
+  syncShipmentSelects();
+  const search = $("#shipmentSearch").value.trim().toLowerCase();
+  const carrier = $("#shipmentCarrierFilter").value;
+  const status = $("#shipmentStatusFilter").value;
+  const list = S.shipments.filter(shipment => {
+    const order = S.orders.find(item => item.orderId === shipment.orderId);
+    const customer = S.users.find(item => item.uid === shipment.customerId);
+    const haystack = [shipment.trackingNumber, shipment.orderId, shipment.customerId,
+      customer?.fullName, customer?.email, order?.senderName].join(" ").toLowerCase();
+    return (!carrier || shipment.carrier === carrier) && (!status || shipment.shipmentStatus === status)
+      && (!search || haystack.includes(search));
+  }).sort((a, b) => millis(b.createdAt) - millis(a.createdAt));
+  $("#shipmentsBody").innerHTML = list.length ? list.map(shipment => {
+    const latestEvent = S.trackingEvents.filter(event => event.shipmentId === shipment.shipmentId)
+      .sort((a, b) => millis(b.occurredAt) - millis(a.occurredAt))[0];
+    return `<tr><td><b>${esc(shipment.trackingNumber)}</b><br><span class="small muted">${esc(shipment.shipmentId)}</span></td>
+      <td><b>${esc(shipment.orderId)}</b><br><span class="small muted">${esc(S.users.find(user => user.uid === shipment.customerId)?.fullName || "Guest / walk-in")}</span></td>
+      <td>${esc(shipment.carrier)}</td>
+      <td><span class="badge ${badgeCls(shipment.shipmentStatus)}">${esc(shipment.shipmentStatus)}</span><br><span class="small muted">${esc(latestEvent?.description || shipment.latestUpdate || "—")}</span></td>
+      <td>${esc(shipment.origin || "—")} → ${esc(shipment.destination || "—")}</td>
+      <td>${shipment.estimatedDelivery ? fmtDateTime(shipment.estimatedDelivery) : "Not provided"}</td>
+      <td><div class="btn-row"><button type="button" class="btn btn-ghost btn-sm" data-shipment-history="${esc(shipment.shipmentId)}">History</button><button type="button" class="btn btn-ghost btn-sm" data-edit-shipment="${esc(shipment.shipmentId)}">Edit</button>
+        ${shipment.carrier === "UPS" ? `<button type="button" class="btn btn-blue btn-sm" data-ups-refresh="${esc(shipment.shipmentId)}">Refresh UPS</button>` : ""}
+      </div></td></tr>`;
+  }).join("") : `<tr><td colspan="7" class="text-center muted" style="padding:24px">No shipments match these filters.</td></tr>`;
+  $$('[data-edit-shipment]').forEach(button => button.onclick = () => {
+    const shipment = S.shipments.find(item => item.shipmentId === button.dataset.editShipment);
+    if (!shipment) return;
+    $("#shipmentEditId").value = shipment.shipmentId;
+    $("#shipmentOrder").value = shipment.orderId;
+    $("#shipmentCarrier").value = shipment.carrier;
+    $("#shipmentTracking").value = shipment.trackingNumber;
+    $("#shipmentStatus").value = shipment.shipmentStatus;
+    $("#shipmentOrigin").value = shipment.origin || "";
+    $("#shipmentDestination").value = shipment.destination || "";
+    $("#shipmentEta").value = shipment.estimatedDelivery?.toDate
+      ? shipment.estimatedDelivery.toDate().toISOString().slice(0, 10)
+      : shipment.estimatedDelivery ? new Date(shipment.estimatedDelivery).toISOString().slice(0, 10) : "";
+    $("#shipmentCreateBtn").innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save shipment changes`;
+    $("#shipmentForm").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  $$('[data-shipment-history]').forEach(button => button.onclick = () => {
+    const shipmentId = button.dataset.shipmentHistory;
+    const shipment = S.shipments.find(item => item.shipmentId === shipmentId);
+    const events = S.trackingEvents.filter(event => event.shipmentId === shipmentId)
+      .sort((a, b) => millis(a.occurredAt) - millis(b.occurredAt));
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay open";
+    overlay.innerHTML = `<div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h3>Tracking history · ${esc(shipment?.trackingNumber || shipmentId)}</h3><button type="button" class="btn btn-ghost btn-sm" data-history-close>Close</button></div>
+      ${events.length ? `<ol class="timeline">${events.map(event => `<li><span class="t-dot"><i class="fa-solid ${SHIPMENT_STATUS_ICONS[event.status] || "fa-circle"}"></i></span><div class="t-body"><b>${esc(event.status || "Update")}</b><span>${esc(event.description || "")}${event.location ? ` · ${esc(event.location)}` : ""}</span><span>${fmtDateTime(event.occurredAt)} · ${esc(event.source || "unknown source")}</span></div></li>`).join("")}</ol>` : `<p class="muted" style="margin-top:14px">No tracking events have been recorded for this shipment.</p>`}
+    </div>`;
+    document.body.appendChild(overlay);
+    const close = () => overlay.remove();
+    overlay.querySelector("[data-history-close]").addEventListener("click", close);
+    overlay.addEventListener("click", event => { if (event.target === overlay) close(); });
+  });
+  $$('[data-ups-refresh]').forEach(button => button.onclick = async () => {
+    button.disabled = true;
+    const old = button.innerHTML; button.innerHTML = `<span class="spinner"></span>`;
+    try {
+      const refresh = httpsCallable(getFunctions(), "trackUpsShipment");
+      await refresh({ shipmentId: button.dataset.upsRefresh });
+      toast("UPS tracking information refreshed.", "success");
+    } catch (error) { toast(error.message || "UPS tracking refresh failed.", "error"); }
+    finally { button.disabled = false; button.innerHTML = old; }
+  });
+}
+["shipmentSearch", "shipmentCarrierFilter", "shipmentStatusFilter"].forEach(id => $("#" + id).addEventListener("input", renderShipments));
+
+$("#shipmentForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const shipmentId = $("#shipmentEditId").value;
+  const data = {
+    orderId: $("#shipmentOrder").value, carrier: $("#shipmentCarrier").value,
+    trackingNumber: $("#shipmentTracking").value.trim(), shipmentStatus: $("#shipmentStatus").value,
+    origin: $("#shipmentOrigin").value.trim(), destination: $("#shipmentDestination").value.trim(),
+    estimatedDelivery: $("#shipmentEta").value ? new Date(`${$("#shipmentEta").value}T23:59:59`).toISOString() : null
+  };
+  const button = $("#shipmentCreateBtn"), old = button.innerHTML;
+  button.disabled = true; button.innerHTML = `<span class="spinner"></span> Saving…`;
+  try {
+    if (shipmentId) {
+      const update = httpsCallable(getFunctions(), "updateShipment");
+      await update({ shipmentId, carrier: data.carrier, trackingNumber: data.trackingNumber, origin: data.origin,
+        destination: data.destination, shipmentStatus: data.shipmentStatus, estimatedDelivery: data.estimatedDelivery });
+      toast("Shipment updated.", "success");
+    } else {
+      const create = httpsCallable(getFunctions(), "createShipment");
+      const result = await create(data);
+      toast(`Shipment ${result.data.shipmentId} registered.`, "success");
+    }
+    event.target.reset(); $("#shipmentEditId").value = "";
+    button.innerHTML = `<i class="fa-solid fa-plus"></i> Create shipment`;
+  } catch (error) { toast(error.message || "Shipment could not be saved.", "error"); }
+  finally { button.disabled = false; if (button.innerHTML.includes("spinner")) button.innerHTML = old; }
+});
+
+$("#trackingEventForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  try {
+    const addEvent = httpsCallable(getFunctions(), "addTrackingEvent");
+    const occurredAt = $("#eventTime").value ? new Date($("#eventTime").value).toISOString() : null;
+    const result = await addEvent({ shipmentId: $("#eventShipment").value, status: $("#eventStatus").value,
+      description: $("#eventDescription").value.trim(), location: $("#eventLocation").value.trim(), occurredAt });
+    toast(result.data.duplicate ? "This tracking event already exists." : "Tracking event added.", result.data.duplicate ? "info" : "success");
+    event.target.reset();
+  } catch (error) { toast(error.message || "Tracking event could not be added.", "error"); }
+});
+
+$("#refreshUpsBtn").addEventListener("click", async () => {
+  const shipmentId = $("#eventShipment").value;
+  if (!shipmentId) return toast("Select an existing shipment first.", "error");
+  try {
+    const refresh = httpsCallable(getFunctions(), "trackUpsShipment");
+    await refresh({ shipmentId });
+    toast("UPS tracking information refreshed.", "success");
+  } catch (error) { toast(error.message || "UPS tracking refresh failed.", "error"); }
+});
 
 /* ---------------- Orders table ---------------- */
 ["fSearch","fStatus","fPayment","fService","fDate","fSort"].forEach(id => $("#" + id).addEventListener("input", renderOrders));
@@ -130,7 +296,7 @@ function renderOrders() {
     <td>${esc(o.serviceType || "—")}<br><span class="small muted">${esc(o.packageType || "")} ${esc(o.weightKg || 1)}kg</span></td>
     <td><span class="badge ${badgeCls(o.status)}">${esc(o.status || "—")}</span></td>
     <td><span class="badge ${o.paymentStatus === "Paid" ? "badge-green" : o.paymentStatus === "COD" ? "badge-orange" : "badge-amber"}">${esc(o.paymentStatus || "Pending")}</span><br><span class="small muted">${esc(o.paymentOption || "")}</span></td>
-    <td><b>${fmtMoney(o.finalPrice ?? o.estimatedPrice ?? 0)}</b><br><span class="small muted">${o.finalPrice != null ? "final" : "estimate"}</span></td>
+    <td><b>${o.finalPrice != null ? fmtMoney(o.finalPrice) : o.estimatedPrice != null ? fmtMoney(o.estimatedPrice) : "Quote needed"}</b><br><span class="small muted">${o.finalPrice != null ? "confirmed" : o.estimatedPrice != null ? "estimate" : "quotation"}</span></td>
     <td>${esc(o.riderName || "—")}</td>
     <td><button type="button" class="btn btn-blue btn-sm" data-details="${esc(o.orderId)}">Details</button></td></tr>`).join("")
   : `<tr><td colspan="8" class="text-center muted" style="padding:26px">No orders match. Create one manually above or wait for website bookings.</td></tr>`;
@@ -142,20 +308,31 @@ function openDetails(id) {
   const o = S.orders.find(x => x.orderId === id); if (!o) return;
   S.current = o;
   $("#dTitle").textContent = "Order " + o.orderId;
-  $("#dMeta").textContent = `Booked ${fmtDateTime(o.createdAt)} · Source: ${o.source || "website"} · Estimate: ${fmtMoney(o.estimatedPrice || 0)} · Pickup: ${o.pickupDate || "—"} ${o.pickupTime || ""}`;
+  $("#dMeta").textContent = `Booked ${fmtDateTime(o.createdAt)} · Source: ${o.source || "website"} · ${o.finalPrice != null ? "Quote: " + fmtMoney(o.finalPrice) : o.estimatedPrice != null ? "Estimate: " + fmtMoney(o.estimatedPrice) : "Quotation required"} · Date: ${o.pickupDate || "—"}`;
   const set = (i, v) => $("#" + i).value = v ?? "";
   set("dSenderName", o.senderName); set("dSenderPhone", o.senderPhone); set("dSenderEmail", o.senderEmail || o.customerEmail);
   set("dReceiverName", o.receiverName); set("dReceiverPhone", o.receiverPhone); set("dReceiverEmail", o.receiverEmail);
   set("dPickup", o.pickupAddress); set("dDropoff", o.dropoffAddress);
   set("dPkg", [o.packageType, o.packageDescription].filter(Boolean).join(" — "));
   set("dWeight", o.weightKg || 1); set("dService", o.serviceType || "Standard");
-  set("dFinalPrice", o.finalPrice ?? ""); set("dStatus", o.status); set("dPayStatus", o.paymentStatus || "Pending");
+  set("dFinalPrice", o.finalPrice ?? ""); set("dStatus", o.status);
+  $("#dPayStatus").textContent = o.paymentStatus || "Pending";
+  $("#dPayStatus").className = `badge ${o.paymentStatus === "Paid" ? "badge-green" : o.paymentStatus === "COD" ? "badge-orange" : "badge-amber"}`;
+  $("#dCollectCod").classList.toggle("hidden", !(["COD", "Pending"].includes(o.paymentStatus)
+    && o.paymentOption === "Cash on delivery" && Number(o.finalPrice) > 0));
+  $("#dCustomer").innerHTML = `<option value="">— Guest order —</option>` + customers().filter(customer => !customer.disabled)
+    .map(customer => `<option value="${esc(customer.uid)}">${esc(customer.fullName || customer.email || customer.uid)}</option>`).join("");
+  $("#dCustomer").value = o.customerUid || "";
   set("dNotes", o.internalNotes);
   $("#dRider").innerHTML = `<option value="">— No rider assigned —</option>` +
     riders().filter(r => !r.disabled).map(r => `<option value="${esc(r.uid)}" ${r.uid === o.riderId ? "selected" : ""}>${esc(r.fullName || r.name || r.email)}${r.vehicle ? " · " + esc(r.vehicle) : ""}${r.available ? " (Online)" : ""}</option>`).join("");
   const extras = (o.stops || []).slice(1);
   $("#dStops").innerHTML = extras.length ? `<b>Extra drop-offs:</b><br>` + extras.map((s, i) => `${i + 2}. ${esc(s.receiverName)} · ${esc(s.receiverPhone)} — ${esc(s.dropoffAddress)}`).join("<br>") : "";
   $("#dHistory").innerHTML = `<b>Status history:</b><br>` + (o.statusHistory || []).map(h => `• ${esc(h.status)} — ${fmtDateTime(h.at)}${h.note ? " (" + esc(h.note) + ")" : ""}`).join("<br>");
+  const paymentRecords = S.payments.filter(payment => payment.orderId === o.orderId);
+  $("#dPaymentHistory").innerHTML = `<b>Payment history:</b><br>` + (paymentRecords.length
+    ? paymentRecords.map(payment => `• ${esc(payment.method || "Paystack")} · ${esc(payment.status || "pending")} · ${payment.amountNaira == null ? "—" : fmtMoney(payment.amountNaira)} · ${esc(payment.reference || payment.id)} · ${fmtDateTime(payment.paidAt || payment.createdAt)}`).join("<br>")
+    : "No recorded payment transactions.");
   syncDetailLinks(o);
   $("#detailModal").classList.add("open");
 }
@@ -173,7 +350,7 @@ function detailOrderMerged() {
     packageType: (pkgType || o.packageType || "Parcel").trim(), packageDescription: desc.join(" — ").trim(),
     weightKg: Number($("#dWeight").value) || 1, serviceType: $("#dService").value,
     finalPrice: $("#dFinalPrice").value === "" ? null : Number($("#dFinalPrice").value),
-    status: $("#dStatus").value, paymentStatus: $("#dPayStatus").value,
+    status: $("#dStatus").value, paymentStatus: o.paymentStatus,
     riderId: rUid || null, riderName: r ? (r.fullName || r.name || "") : "", riderPhone: r ? (r.phone || "") : "",
     internalNotes: $("#dNotes").value.trim() };
 }
@@ -185,7 +362,7 @@ function syncDetailLinks(o) {
   const msg = `Hello ${o.senderName || "there"}, update on your DABOFFOODS & LOGISTICS SERVICES shipment ${o.orderId}:\n\nStatus: ${o.status}\nPayment: ${o.paymentStatus || "Pending"}${priceLine}${riderLine}\n\nTrack here: ${link}\n\nThank you for choosing DABOFFOODS & LOGISTICS SERVICES.`;
   $("#dWhatsApp").href = waLink(msg, normalizeNgPhone(o.senderPhone || "").replace("+", ""));
 }
-["dStatus","dPayStatus","dFinalPrice","dRider"].forEach(id => $("#" + id).addEventListener("change", () => { if (S.current) syncDetailLinks(detailOrderMerged()); }));
+["dStatus","dFinalPrice","dRider"].forEach(id => $("#" + id).addEventListener("change", () => { if (S.current) syncDetailLinks(detailOrderMerged()); }));
 const closeDetails = () => $("#detailModal").classList.remove("open");
 $("#dClose").addEventListener("click", closeDetails);
 $("#detailModal").addEventListener("click", e => { if (e.target.id === "detailModal") closeDetails(); });
@@ -211,6 +388,7 @@ $("#detailForm").addEventListener("submit", async e => {
   const before = S.current, after = detailOrderMerged();
   const updates = { ...after, updatedAt: serverTimestamp() };
   delete updates.orderId; delete updates.createdAt; delete updates.statusHistory;
+  delete updates.customerUid;
   if (before.status !== after.status)
     updates.statusHistory = arrayUnion({ status: after.status, at: new Date().toISOString(), note: "Updated by admin" });
   // Keep the first stop in sync with the main receiver fields
@@ -219,6 +397,11 @@ $("#detailForm").addEventListener("submit", async e => {
   const b = $("#dSave"), o = b.innerHTML; b.disabled = true; b.innerHTML = `<span class="spinner"></span> Saving…`;
   try {
     await updateDoc(doc(db, "orders", before.orderId), updates);
+    const newCustomerId = $("#dCustomer").value;
+    if (newCustomerId && newCustomerId !== before.customerUid) {
+      const linkOrder = httpsCallable(getFunctions(), "linkOrderToCustomer");
+      await linkOrder({ orderId: before.orderId, customerId: newCustomerId });
+    }
     if (["Delivered", "Cancelled"].includes(after.status)) { try { await deleteDoc(doc(db, "riderLocations", before.orderId)); } catch {} }
     await emailFallback(before, after);
     toast(`Order ${before.orderId} saved.${before.status !== after.status ? " Customer alerts triggered." : ""}`, "success");
@@ -293,7 +476,7 @@ $("#manualForm").addEventListener("submit", async e => {
       stops: [{ receiverName: g("mReceiverName"), receiverPhone: g("mReceiverPhone"), dropoffAddress: g("mDropoff") }],
       packageType: $("#mPkgType").value, packageDescription: g("mPkgDesc"), weightKg: Number($("#mWeight").value) || 1,
       serviceType: $("#mService").value, zone: $("#mZone").value, pickupDate: $("#mDate").value, pickupTime: "",
-      paymentOption: $("#mPayOpt").value, paymentStatus: "Pending", insurance: false, instructions: "",
+      paymentOption: $("#mPayOpt").value, paymentStatus: $("#mPayOpt").value === "Cash on delivery" ? "COD" : "Pending", insurance: false, instructions: "",
       estimatedPrice: est, finalPrice: $("#mFinalPrice").value === "" ? null : Number($("#mFinalPrice").value),
       status: "Order Placed", statusHistory: [{ status: "Order Placed", at: new Date().toISOString(), note: "Created manually by admin" }],
       riderId: null, riderName: "", riderPhone: "", internalNotes: "",
@@ -336,7 +519,10 @@ function renderCustomers() {
     <td><b>${S.orders.filter(o => o.customerUid === c.uid).length}</b></td><td>${fmtDateTime(c.createdAt)}</td>
     <td><span class="badge ${c.disabled ? "badge-red" : "badge-green"}">${c.disabled ? "Disabled" : "Active"}</span></td>
     <td><div class="btn-row"><button class="btn btn-ghost btn-sm" data-cust-orders="${esc(c.uid)}">View orders</button>
-    <button class="btn ${c.disabled ? "btn-blue" : "btn-outline"} btn-sm" data-cust-toggle="${esc(c.uid)}">${c.disabled ? "Enable" : "Disable"}</button></div></td></tr>`).join("")
+    <button class="btn ${c.disabled ? "btn-blue" : "btn-outline"} btn-sm" data-cust-toggle="${esc(c.uid)}">${c.disabled ? "Enable" : "Disable"}</button>
+    ${c.role === "admin"
+      ? `<button class="btn btn-outline btn-sm" data-cust-demote="${esc(c.uid)}"><i class="fa-solid fa-user-slash"></i> Remove admin</button>`
+      : `<button class="btn btn-orange btn-sm" data-cust-promote="${esc(c.uid)}"><i class="fa-solid fa-user-shield"></i> Make admin</button>`}</div></td></tr>`).join("")
   : `<tr><td colspan="7" class="text-center muted" style="padding:24px">No registered customers yet.</td></tr>`;
   $$("[data-cust-orders]").forEach(b => b.onclick = () => {
     const c = customers().find(x => x.uid === b.dataset.custOrders);
@@ -351,6 +537,37 @@ function renderCustomers() {
       `Yes, ${action}`)) return;
     try { await updateDoc(doc(db, "users", c.uid), { disabled: !c.disabled, updatedAt: serverTimestamp() }); toast("Customer " + action + "d.", "success"); }
     catch (e) { toast("Failed: " + e.message, "error"); }
+  });
+  // Admin-only promotion via Vercel serverless endpoint (server re-checks caller is admin).
+  // Targets an EXISTING account only; the server verifies the Auth user exists.
+  // No Cloud Functions involved. No self-promotion (server enforces).
+  const doRoleChange = async (c, action, verb) => {
+    if (!await confirmDialog(`${verb} administrator?`,
+      `${c.fullName || c.email} (${c.email}) — the server will verify you are an admin before applying this.`,
+      `Yes, ${verb.toLowerCase()}`)) return;
+    try {
+      const token = firebaseAuth?.currentUser ? await firebaseAuth.currentUser.getIdToken(true) : "";
+      if (!token) throw new Error("Please sign in again.");
+      const res = await fetch("/api/promote-admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ targetUid: c.uid, action }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || data.error || `Request failed (${res.status})`);
+      toast(action === "promote"
+        ? (data.alreadyAdmin ? `${c.email} is already an admin.` : `${c.email} is now an administrator. Ask them to sign out and sign in again.`)
+        : `${c.email} is now a customer again.`, "success");
+      renderCustomers();
+    } catch (e) { toast(`Failed: ${e.message || "unknown error"}`, "error"); }
+  };
+  $$("[data-cust-promote]").forEach(b => b.onclick = () => {
+    const c = S.users.find(x => x.uid === b.dataset.custPromote);
+    if (c) doRoleChange(c, "promote", "Promote to");
+  });
+  $$("[data-cust-demote]").forEach(b => b.onclick = () => {
+    const c = S.users.find(x => x.uid === b.dataset.custDemote);
+    if (c) doRoleChange(c, "demote", "Remove from");
   });
 }
 
@@ -581,4 +798,18 @@ $("#pricingForm").addEventListener("submit", async e => {
     await setDoc(doc(db, "pricing", "main"), { ...pricingState, updatedAt: serverTimestamp() });
     toast("Pricing saved to Firestore. The public Pricing page will use it.", "success"); renderRateRows();
   } catch (err) { toast("Pricing save failed: " + err.message, "error"); }
+});
+
+$("#dCollectCod").addEventListener("click", async () => {
+  if (!S.current) return;
+  if (!await confirmDialog("Record COD collection?", `Confirm that cash was actually collected for order ${S.current.orderId}.`, "Yes, cash collected")) return;
+  const button = $("#dCollectCod"), original = button.innerHTML;
+  button.disabled = true; button.innerHTML = `<span class="spinner"></span> Recording…`;
+  try {
+    const record = httpsCallable(getFunctions(), "recordCodCollection");
+    await record({ orderId: S.current.orderId });
+    toast("COD collection recorded by the backend.", "success");
+  } catch (error) {
+    toast(error.message || "Could not record COD collection.", "error");
+  } finally { button.disabled = false; button.innerHTML = original; }
 });

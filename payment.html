@@ -5,7 +5,7 @@
 <title>Quotations &amp; Payment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="description" content="Request an international shipping quotation from DABOFFOODS & LOGISTICS SERVICES. Confirm payment instructions directly with the business.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -17,22 +17,22 @@
   <div class="container text-center">
     <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Quotations &amp; Payment</span>
     <h1 style="color:#fff;font-size:2rem">Confirm your shipment quotation and payment safely</h1>
-    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">Contact DABOFFOODS &amp; LOGISTICS SERVICES directly for a shipment quotation and verified payment instructions.</p>
+    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">Get a confirmed shipment quotation, then pay securely online through Paystack from your customer dashboard, or choose cash on delivery where offered.</p>
   </div>
 </section>
 
 <section class="section"><div class="container" style="max-width:920px">
-  <div class="section-head reveal"><span class="kicker">How It Works</span><h2>Request a quote before payment</h2></div>
+  <div class="section-head reveal"><span class="kicker">How It Works</span><h2>Confirm your quote before payment</h2></div>
   <div class="lp-steps" style="grid-template-columns:1fr" >
     <div style="display:grid;gap:16px" class="grid grid-4">
       <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-pen-to-square"></i></div><h3>1. Send your details</h3><p class="muted">Tell us the origin, destination, goods and shipment weight.</p></div>
       <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-file-invoice"></i></div><h3>2. Receive a quotation</h3><p class="muted">Our team reviews your request and confirms available shipping options and quotation.</p></div>
       <div class="card lp-step reveal"><div class="ic"><i class="fa-brands fa-whatsapp"></i></div><h3>3. Confirm directly</h3><p class="muted">Confirm applicable shipping and customs requirements with the business.</p></div>
-      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-shield-halved"></i></div><h3>4. Verify payment details</h3><p class="muted">Use only payment instructions verified directly with DABOFFOODS &amp; LOGISTICS SERVICES.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-shield-halved"></i></div><h3>4. Pay securely</h3><p class="muted">After your final amount is confirmed, sign in and pay through Paystack. The website updates payment status only after backend verification.</p></div>
     </div>
   </div>
 
-  <div class="card reveal" style="margin-top:30px;border:2px solid var(--blue);padding:28px"><h2 style="font-size:1.35rem"><i class="fa-solid fa-shield-halved" style="color:var(--blue)"></i> Payment safety</h2><p class="muted">No bank account details have been published on this website. Contact the business on <a href="tel:+2348024311091">0802 431 1091</a> to request and verify payment instructions after receiving your quotation. Do not send funds to unverified accounts.</p><a class="btn btn-wa" id="proofWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask for verified payment instructions</a></div>
+  <div class="card reveal" style="margin-top:30px;border:2px solid var(--blue);padding:28px"><h2 style="font-size:1.35rem"><i class="fa-solid fa-shield-halved" style="color:var(--blue)"></i> Payment safety</h2><p class="muted">Card details are handled by Paystack and are not stored by this website. Never share your card PIN or one-time password with anyone. Cash-on-delivery orders remain unpaid until collection is recorded.</p><a class="btn btn-blue" href="login.html?next=account.html"><i class="fa-solid fa-lock"></i> Sign in to pay for a confirmed order</a></div>
 
   <div class="grid grid-2" style="margin-top:24px"><div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-file-invoice-dollar"></i></div><h3>Shipping quotations</h3><p class="muted">Prices are not estimated by the website. Ask our team for a quotation based on your shipment and destination.</p></div><div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-globe"></i></div><h3>Customs requirements</h3><p class="muted">Food exports and restricted goods are subject to applicable shipping and customs requirements.</p></div></div>
 
@@ -51,7 +51,6 @@
 <script type="module">
 import { renderChrome, $, waLink } from "./app.js";
 renderChrome("payment.html");
-$("#proofWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to request verified payment instructions for my shipment.");
 $("#payQWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I have a question about a shipment quotation or payment.");
 </script>
 </body>

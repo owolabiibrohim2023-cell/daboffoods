@@ -46,9 +46,11 @@ service cloud.firestore {
 
     /* ---------- Orders ---------- */
     match /orders/{orderId} {
-      // Anyone may fetch ONE order by its ID — the Order ID is the
-      // guest tracking credential (share links only with trusted people).
-      allow get: if true;
+      // Guest shipment lookup is served by a rate-limited callable that returns
+      // a sanitized projection, never by exposing a raw order document.
+      allow get: if isAdmin()
+        || (signedIn() && (resource.data.customerUid == request.auth.uid
+          || (isRider() && resource.data.riderId == request.auth.uid)));
 
       // Listing is restricted (queries must match these constraints).
       allow list: if isAdmin()
@@ -57,30 +59,43 @@ service cloud.firestore {
 
       // Guests signed-out may create an order, but cannot forge
       // another user's uid, a rider, a final status or Paid payment.
-      allow create: if isAdmin()
+      allow create: if (isAdmin()
+          && request.resource.data.paymentStatus in ['Pending', 'COD'])
         || (
           request.resource.data.orderId == orderId
           && request.resource.data.status == 'Order Placed'
-          && request.resource.data.paymentStatus == 'Pending'
+          && request.resource.data.paymentStatus in ['Pending', 'COD']
+          && (request.resource.data.paymentStatus != 'COD'
+            || request.resource.data.paymentOption == 'Cash on delivery')
+          && request.resource.data.get('finalPrice', null) == null
+          && request.resource.data.get('estimatedPrice', null) == null
+          && request.resource.data.get('paymentOption', 'Quotation required') in ['Quotation required', 'Cash on delivery']
           && request.resource.data.get('riderId', null) == null
-          && request.resource.data.get('statusHistory', []).size() <= 1
+          && request.resource.data.get('statusHistory', []).size() == 1
+          && request.resource.data.statusHistory[0].status == 'Order Placed'
           && (
             request.resource.data.get('customerUid', null) == null
             || (signedIn() && request.resource.data.customerUid == request.auth.uid)
           )
         );
 
-      // Admins manage everything. Assigned riders may ONLY move the
-      // journey forward: status + history + timestamp.
-      allow update: if isAdmin()
+      // Verified online payment status is changed only by trusted Functions.
+      // Admins may manage order/shipment details but may not mark payments paid.
+      allow update: if (isAdmin()
+          && request.resource.data.paymentStatus == resource.data.paymentStatus
+          && (resource.data.get('activePaymentReference', null) == null
+            || (request.resource.data.finalPrice == resource.data.finalPrice
+              && request.resource.data.paymentOption == resource.data.paymentOption
+              && request.resource.data.status == resource.data.status)))
         || (
           isRider()
           && resource.data.riderId == request.auth.uid
           && request.resource.data.diff(resource.data).affectedKeys()
                .hasOnly(['status', 'statusHistory', 'updatedAt'])
+          && request.resource.data.paymentStatus == resource.data.paymentStatus
         );
 
-      allow delete: if isAdmin();
+      allow delete: if isAdmin() && resource.data.get('activePaymentReference', null) == null;
     }
 
     /* ---------- Rider profiles mirror ---------- */
@@ -93,9 +108,9 @@ service cloud.firestore {
 
     /* ---------- Live rider locations (doc ID = orderId) ---------- */
     match /riderLocations/{orderId} {
-      // Readable by whoever holds the Order ID (customer/receiver link)
-      allow get: if true;
-      // …but only admins can list every live rider (Live Riders map).
+      // Live GPS is returned only as a minimal projection by shipment lookup.
+      allow get: if isAdmin()
+        || (isRider() && resource.data.riderId == request.auth.uid);
       allow list: if isAdmin();
 
       // Only the rider assigned to that exact order may write their GPS.
@@ -110,6 +125,37 @@ service cloud.firestore {
           isRider()
           && get(/databases/$(database)/documents/orders/$(orderId)).data.riderId == request.auth.uid
         );
+    }
+
+    /* ---------- Payments (verified state is Functions-only) ---------- */
+    match /payments/{paymentId} {
+      allow get, list: if isAdmin()
+        || (signedIn() && resource.data.customerUid == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    /* ---------- Carrier-independent shipments ---------- */
+    match /shipments/{shipmentId} {
+      // Customer shipment summaries are returned by listMyShipments.
+      allow get, list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    /* ---------- Tracking events (private raw records; expose via callable) ---------- */
+    match /trackingEvents/{eventId} {
+      // Customer timelines are returned by a sanitized tracking callable.
+      allow get, list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    /* ---------- Rate-limit records (Cloud Functions only) ---------- */
+    match /trackingLookupLimits/{limitId} {
+      allow read, write: if false;
+    }
+
+    /* ---------- Paystack webhook idempotency records (Functions only) ---------- */
+    match /paymentWebhookEvents/{eventId} {
+      allow read, write: if false;
     }
 
     /* ---------- Public pricing (Admin → Pricing editor) ---------- */

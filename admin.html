@@ -6,7 +6,7 @@
 <title>Admin Dashboard | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -22,7 +22,8 @@
 
 <header style="background:var(--blue-dark);color:#fff;position:sticky;top:0;z-index:900">
   <div class="container" style="display:flex;align-items:center;gap:10px;padding-top:12px;padding-bottom:12px;max-width:1280px">
-    <b style="font-size:1.08rem"><i class="fa-solid fa-gauge-high" style="color:var(--orange)"></i> DABOFFOODS ADMIN</b>
+    <img class="staff-brand-logo" src="daboffoods_logo_wordmark.png" alt="DABOFFOODS &amp; LOGISTICS SERVICES official logo" width="180" height="76">
+    <b style="font-size:1.08rem"><i class="fa-solid fa-gauge-high" style="color:var(--orange)"></i> ADMIN</b>
     <span class="small hidden" id="adminName" style="color:#bcd3ff"></span>
     <span style="margin-left:auto;display:flex;gap:8px">
       <a class="btn btn-ghost btn-sm" href="index.html"><i class="fa-solid fa-globe"></i> View site</a>
@@ -73,6 +74,8 @@
       <button class="tab-btn" data-tab="live" type="button"><i class="fa-solid fa-map-location-dot"></i> Live Riders</button>
       <button class="tab-btn" data-tab="alerts" type="button"><i class="fa-solid fa-bell"></i> Notifications</button>
       <button class="tab-btn" data-tab="inbox" type="button"><i class="fa-solid fa-inbox"></i> Messages &amp; Applications</button>
+      <button class="tab-btn" data-tab="payments" type="button"><i class="fa-solid fa-credit-card"></i> Payments</button>
+      <button class="tab-btn" data-tab="shipments" type="button"><i class="fa-solid fa-boxes-stacked"></i> Shipments</button>
       <button class="tab-btn" data-tab="pricing" type="button"><i class="fa-solid fa-tags"></i> Pricing</button>
     </div>
 
@@ -125,6 +128,54 @@
         <thead><tr><th>Order</th><th>Customer → Receiver</th><th>Service</th><th>Status</th><th>Payment</th><th>Price</th><th>Rider</th><th></th></tr></thead>
         <tbody id="ordersBody"><tr><td colspan="8">Loading orders…</td></tr></tbody>
       </table></div>
+    </section>
+
+    <!-- ============ PAYMENTS ============ -->
+    <section id="panel-payments" class="hidden">
+      <div class="section-head" style="text-align:left;margin:0 0 16px;max-width:none">
+        <h2>Payment records</h2><p>Paystack payments are changed only after verified backend settlement. COD remains unpaid until collection is recorded.</p>
+      </div>
+      <div class="filters" style="grid-template-columns:2fr 1fr">
+        <input id="paymentSearch" placeholder="Search order, customer UID or reference" aria-label="Search payments">
+        <select id="paymentStatusFilter"><option value="">All statuses</option><option>pending</option><option>initializing</option><option>success</option><option>failed</option><option>duplicate_success</option></select>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer UID</th><th>Method / Status</th><th>Amount</th><th>Reference</th><th>Created / Paid</th></tr></thead><tbody id="paymentsBody"><tr><td colspan="6">Loading payments…</td></tr></tbody></table></div>
+    </section>
+
+    <!-- ============ SHIPMENTS ============ -->
+    <section id="panel-shipments" class="hidden">
+      <form class="form-card" id="shipmentForm" style="margin-bottom:18px">
+        <input id="shipmentEditId" type="hidden">
+        <h2 style="font-size:1.25rem">Register a shipment</h2>
+        <p class="small muted" style="margin:5px 0 14px">Register carrier details separately from order payment and delivery statuses.</p>
+        <div class="form-grid">
+          <div class="field"><label for="shipmentOrder">Order</label><select id="shipmentOrder" required></select></div>
+          <div class="field"><label for="shipmentCarrier">Carrier</label><select id="shipmentCarrier"><option>UPS</option><option>DHL</option><option>FedEx</option><option>Other / Manual Carrier</option></select></div>
+          <div class="field"><label for="shipmentTracking">Tracking number</label><input id="shipmentTracking" required maxlength="80"></div>
+          <div class="field"><label for="shipmentStatus">Initial shipment status</label><select id="shipmentStatus"><option>Shipment Registered</option><option>Awaiting Pickup</option><option>Picked Up</option><option>In Transit</option></select></div>
+          <div class="field"><label for="shipmentOrigin">Origin</label><input id="shipmentOrigin" required></div>
+          <div class="field"><label for="shipmentDestination">Destination</label><input id="shipmentDestination" required></div>
+          <div class="field"><label for="shipmentEta">Estimated delivery (if known)</label><input id="shipmentEta" type="date"></div>
+        </div>
+        <button class="btn btn-blue" type="submit" id="shipmentCreateBtn"><i class="fa-solid fa-plus"></i> Create shipment</button>
+      </form>
+      <form class="form-card" id="trackingEventForm" style="margin-bottom:18px">
+        <h2 style="font-size:1.2rem">Add manual tracking update</h2>
+        <div class="form-grid">
+          <div class="field"><label for="eventShipment">Shipment</label><select id="eventShipment"></select></div>
+          <div class="field"><label for="eventStatus">Status</label><select id="eventStatus"><option>Shipment Registered</option><option>Awaiting Pickup</option><option>Picked Up</option><option>In Transit</option><option>Customs Clearance</option><option>Out for Delivery</option><option>Delivered</option><option>Delivery Attempted</option><option>Exception</option><option>On Hold</option><option>Returned</option></select></div>
+          <div class="field span-2"><label for="eventDescription">Update description</label><input id="eventDescription" required maxlength="300"></div>
+          <div class="field"><label for="eventLocation">Location (optional)</label><input id="eventLocation" maxlength="180"></div>
+          <div class="field"><label for="eventTime">Event date/time (optional)</label><input id="eventTime" type="datetime-local"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-blue" type="submit"><i class="fa-solid fa-clock-rotate-left"></i> Add tracking event</button><button class="btn btn-ghost" id="refreshUpsBtn" type="button"><i class="fa-solid fa-rotate"></i> Refresh from UPS</button></div>
+      </form>
+      <div class="filters" style="grid-template-columns:2fr 1fr 1fr">
+        <input id="shipmentSearch" placeholder="Search tracking, order or customer" aria-label="Search shipments">
+        <select id="shipmentCarrierFilter"><option value="">All carriers</option><option>UPS</option><option>DHL</option><option>FedEx</option><option>Other / Manual Carrier</option></select>
+        <select id="shipmentStatusFilter"><option value="">All statuses</option><option>Shipment Registered</option><option>Awaiting Pickup</option><option>Picked Up</option><option>In Transit</option><option>Customs Clearance</option><option>Out for Delivery</option><option>Delivered</option><option>Delivery Attempted</option><option>Exception</option><option>On Hold</option><option>Returned</option></select>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Shipment</th><th>Order / Customer</th><th>Carrier</th><th>Status / Latest update</th><th>Origin → Destination</th><th>ETA</th><th>Actions</th></tr></thead><tbody id="shipmentsBody"><tr><td colspan="7">Loading shipments…</td></tr></tbody></table></div>
     </section>
 
     <!-- ============ CUSTOMERS ============ -->
@@ -241,14 +292,17 @@
         <div class="field"><label>Service</label><select id="dService"></select></div>
         <div class="field"><label>Final agreed price (₦)</label><input id="dFinalPrice" type="number" min="0" placeholder="Estimate shown to customer until set"></div>
         <div class="field"><label>Delivery status</label><select id="dStatus"></select></div>
-        <div class="field"><label>Payment status</label><select id="dPayStatus"></select></div>
+        <div class="field"><label>Payment status (verified)</label><p id="dPayStatus" class="badge badge-amber">Pending</p></div>
+        <div class="field span-2"><label for="dCustomer">Customer account (required for online payment)</label><select id="dCustomer"></select><p class="small muted">Guest orders must be linked to a customer account before Pay Now can be enabled.</p></div>
         <div class="field span-2"><label>Assign rider</label><select id="dRider"></select></div>
         <div class="field span-2"><label>Internal notes (office only — customer never sees this)</label><textarea id="dNotes" style="min-height:64px"></textarea></div>
       </div>
       <div id="dStops" class="small" style="margin-bottom:10px"></div>
       <div id="dHistory" class="small muted" style="margin-bottom:14px"></div>
+      <div id="dPaymentHistory" class="small muted" style="margin-bottom:14px"></div>
       <div class="btn-row">
         <button class="btn btn-blue" id="dSave" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save changes (sends alerts)</button>
+        <button class="btn btn-orange hidden" id="dCollectCod" type="button"><i class="fa-solid fa-money-bill-wave"></i> Record COD collected</button>
         <a class="btn btn-wa" id="dWhatsApp" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Message customer</a>
       </div>
       <div class="btn-row" style="margin-top:10px">

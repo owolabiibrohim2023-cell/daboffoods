@@ -30,10 +30,11 @@ const firebaseConfig = {
 export const CONFIG = {
   businessName: "DABOFFOODS & LOGISTICS SERVICES",
   tagline: "International logistics, freight forwarding, food sales and export solutions.",
-  description: "At DABOFFOODS & LOGISTICS SERVICES, we offer seamless logistics solutions, food sales, food exports, international express delivery through our international carrier partners, and customs clearance support at destination countries. We provide various shipping options for international shipments. We specialise in export solutions and freight forwarding. We also offer cargo services to the United Kingdom and United States. All our international logistics services are doorstep deliveries. We are diligent, passionate and dedicated to our business services. We are always available and ready to solve your export needs.",
+  description: "DABOFFOODS & LOGISTICS SERVICES provides food sales, Nigerian food products, food export solutions, international express delivery and freight forwarding services. Through our international carrier partners, we help individuals and businesses access convenient shipping options, customs clearance support and doorstep deliveries. We are dedicated to providing reliable solutions for your food sourcing, export and international logistics needs.",
   phoneDisplay: "0802 431 1091",
   phoneIntl: "+2348024311091",
   whatsappNumber: "2348024311091", // digits only, no +
+  paystackPublicKey: "pk_test_REPLACE_WITH_YOUR_PAYSTACK_PUBLIC_KEY",
   address: "24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria",
   mapsQuery: "24 Ibadan Road, behind Tala book shop, Ijebu Ode, Ogun State, Nigeria",
   hoursText: "Listed as open; closes at 5:00 PM. Please call to confirm current hours.",
@@ -57,9 +58,6 @@ export const CONFIG = {
   // Rate table shown on pricing.html (admin can later override from Firestore "pricing/main")
   rateTable: [],
   coverage: ["United Kingdom", "United States", "Other international destinations (confirm availability)"],
-  prohibitedItems: ["Cash, jewellery and precious stones", "Illegal drugs and contraband",
-    "Weapons, ammunition and explosives", "Flammable liquids, gases and chemicals",
-    "Live animals", "Perishable food without cold packaging", "Stolen or illegal goods"],
   testimonials: []
 };
 
@@ -68,7 +66,7 @@ export const firebaseReady = !firebaseConfig.apiKey.includes("PASTE");
 export let auth = null, db = null;
 if (firebaseReady) {
   try {
-    const app = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);//
     auth = getAuth(app);
     db = getFirestore(app);
   } catch (e) { console.error("Firebase init failed:", e); }
@@ -198,8 +196,9 @@ Please confirm availability, shipping options, applicable customs requirements a
    Pages just include: <div id="siteHeader"></div> … <div id="siteFooter"></div>
 ============================================================ */
 const NAV_LINKS = [
-  ["index.html", "Home"], ["services.html", "Services"], ["pricing.html", "Pricing & Coverage"],
-  ["track.html", "Track Order"], ["about.html", "About"], ["faq.html", "FAQ"], ["contact.html", "Contact"]
+  ["index.html", "Home"], ["about.html", "About Us"], ["services.html", "Services"],
+  ["food-products.html", "Food Products"], ["index.html#food-export", "Food Export"],
+  ["track.html", "Shipping & Tracking"], ["contact.html", "Contact"]
 ];
 export function renderChrome(active = "") {
   const headerEl = $("#siteHeader");
@@ -212,8 +211,7 @@ export function renderChrome(active = "") {
     </div></div>
     <header class="site"><div class="container nav-wrap">
       <a class="logo" href="index.html" aria-label="DABOFFOODS &amp; LOGISTICS SERVICES home">
-        <span class="logo-mark" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
-        <span class="logo-copy"><span class="logo-name"><b>DABOFFOODS</b></span><small>&amp; LOGISTICS SERVICES</small></span></a>
+        <img class="brand-logo" src="daboffoods_logo_wordmark.png" alt="DABOFFOODS &amp; LOGISTICS SERVICES official logo" width="220" height="72"></a>
       <nav class="main-nav" aria-label="Main">
         ${NAV_LINKS.map(([h, t]) => `<a href="${h}" ${active === h ? 'aria-current="page" style="background:var(--blue-light);color:var(--blue)"' : ""}>${t}</a>`).join("")}
       </nav>
@@ -221,13 +219,15 @@ export function renderChrome(active = "") {
         <span id="authArea"><!-- filled by auth listener -->
           <a class="btn btn-ghost" href="login.html">Sign In</a>
           <a class="btn btn-blue" href="signup.html">Sign Up</a></span>
-        <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Book a Delivery</a>
+        <a class="btn btn-orange nav-quote" href="book.html"><i class="fa-solid fa-file-invoice"></i> Get a Quote</a>
         <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
       </div>
     </div>
     <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
+      <a class="mobile-menu-brand" href="index.html" aria-label="DABOFFOODS &amp; LOGISTICS SERVICES home"><img src="daboffoods_logo_wordmark.png" alt="DABOFFOODS &amp; LOGISTICS SERVICES official logo" width="220" height="72"></a>
       ${NAV_LINKS.map(([h, t]) => `<a href="${h}">${t}</a>`).join("")}
-      <a href="payment.html">Payment Info</a><a href="careers.html">Join as a Rider</a>
+      <a class="mobile-quote" href="book.html">Get a Quote</a>
+      <a href="pricing.html">Pricing &amp; Coverage</a><a href="faq.html">FAQ</a><a href="careers.html">Join as a Rider</a>
       <span id="authAreaMobile"><a href="login.html">Sign In</a><a href="signup.html">Sign Up</a></span>
     </nav></header>`;
     const ham = $("#hamburger"), menu = $("#mobileMenu");
@@ -243,13 +243,14 @@ export function renderChrome(active = "") {
     footerEl.innerHTML = `
     <footer class="site"><div class="container">
       <div class="grid grid-4">
-        <div><h4>${esc(CONFIG.businessName)}</h4><p style="font-size:.93rem">${esc(CONFIG.tagline)}</p>
+        <div><a class="footer-brand" href="index.html" aria-label="DABOFFOODS &amp; LOGISTICS SERVICES home"><img class="footer-brand-logo" src="daboffoods_logo_wordmark.png" alt="DABOFFOODS &amp; LOGISTICS SERVICES official logo" width="240" height="80"></a><p style="font-size:.93rem;margin-top:12px">${esc(CONFIG.tagline)}</p>
           <div class="social-row">
             <a href="${waLink(`Hello ${CONFIG.businessName}, I have a general enquiry.`)}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
           </div></div>
         <div><h4>Quick Links</h4><ul>
           <li><a href="book.html">Book a Delivery</a></li><li><a href="track.html">Track Order</a></li>
-          <li><a href="services.html">Our Services</a></li><li><a href="pricing.html">Pricing &amp; Coverage</a></li>
+          <li><a href="services.html">Our Services</a></li><li><a href="food-products.html">Food Products</a></li>
+          <li><a href="index.html#food-export">Food Export</a></li><li><a href="pricing.html">Pricing &amp; Coverage</a></li>
           <li><a href="payment.html">Payment Info</a></li><li><a href="careers.html">Join as a Rider</a></li></ul></div>
         <div><h4>Company</h4><ul>
           <li><a href="about.html">About Us</a></li><li><a href="faq.html">FAQ</a></li>
@@ -272,7 +273,7 @@ export function renderChrome(active = "") {
     <button id="backTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <div class="mobile-cta">
       <a class="btn btn-blue" href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> Call Now</a>
-      <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Request a Shipment</a>
+      <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-file-invoice"></i> Get a Quote</a>
     </div>`);
   const bt = $("#backTop");
   addEventListener("scroll", () => bt.classList.toggle("show", scrollY > 600), { passive: true });

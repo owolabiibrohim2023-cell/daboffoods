@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?q=80&w=1200&auto=format&fit=crop">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://images.unsplash.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -78,49 +78,25 @@
 <!-- ================= MARQUEE ================= -->
 <div class="lp-marquee" aria-hidden="true"><div class="lp-marquee-track" id="marqueeTrack"></div></div>
 
-<!-- ================= SERVICES (photo cards) ================= -->
-<section class="section"><div class="container">
+<!-- ================= SERVICES ================= -->
+<section class="section" id="services"><div class="container">
   <div class="section-head reveal"><span class="kicker">Our Services</span>
-    <h2>Delivery for every need</h2><p>From one urgent document to daily deliveries for your online shop — pick a service and book in minutes.</p></div>
-  <div class="grid grid-4">
-
-    <article class="lp-svc reveal">
-      <div class="lp-svc-img">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?q=80&w=800&auto=format&fit=crop" alt="International parcels prepared for shipment">
-        <span class="lp-from">Quotation on request</span></div>
-      <div class="lp-svc-body"><h3><i class="fa-solid fa-plane"></i> International Shipping</h3>
-        <ul><li><i class="fa-solid fa-check"></i>Shipping options through carrier partners</li><li><i class="fa-solid fa-check"></i>UK, USA and other destinations</li><li><i class="fa-solid fa-check"></i>Doorstep delivery options</li></ul>
-        <a class="btn btn-ghost btn-block" href="book.html?service=International%20Shipping">Request a quote</a></div>
-    </article>
-
-    <article class="lp-svc reveal">
-      <div class="lp-svc-img">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800&auto=format&fit=crop" alt="Freight forwarding cargo">
-        <span class="lp-from">Quotation on request</span></div>
-      <div class="lp-svc-body"><h3><i class="fa-solid fa-truck-ramp-box"></i> Freight Forwarding</h3>
-        <ul><li><i class="fa-solid fa-check"></i>Solutions for individuals and businesses</li><li><i class="fa-solid fa-check"></i>International carrier partners</li><li><i class="fa-solid fa-check"></i>Shipping option guidance</li></ul>
-        <a class="btn btn-ghost btn-block" href="book.html?service=Freight%20Forwarding">Request a quote</a></div>
-    </article>
-
-    <article class="lp-svc reveal">
-      <div class="lp-svc-img">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800&auto=format&fit=crop" alt="Cargo truck carrying freight">
-        <span class="lp-from">Export requirements apply</span></div>
-      <div class="lp-svc-body"><h3><i class="fa-solid fa-boxes-stacked"></i> Food Export Services</h3>
-        <ul><li><i class="fa-solid fa-check"></i>Support for food product exporters</li><li><i class="fa-solid fa-check"></i>Subject to export and customs requirements</li><li><i class="fa-solid fa-check"></i>Shipping options discussed per shipment</li></ul>
-        <a class="btn btn-ghost btn-block" href="book.html?service=Food%20Export%20Services">Enquire about exports</a></div>
-    </article>
-
-    <article class="lp-svc reveal">
-      <div class="lp-svc-img">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop" alt="Food products for sale and export">
-        <span class="lp-from">Contact us for product details</span></div>
-      <div class="lp-svc-body"><h3><i class="fa-solid fa-basket-shopping"></i> Food Sales &amp; Cargo</h3>
-        <ul><li><i class="fa-solid fa-check"></i>Food sales and export services</li><li><i class="fa-solid fa-check"></i>Cargo services to the UK and USA</li><li><i class="fa-solid fa-check"></i>Customs clearance support at destination</li></ul>
-        <a class="btn btn-ghost btn-block" href="book.html?service=Food%20Sales">Enquire now</a></div>
-    </article>
-  </div>
+    <h2>Our Services</h2>
+    <p>From authentic Nigerian food products to international shipping and export solutions, DABOFFOODS provides reliable services connecting Nigerian products and businesses to local and international markets.</p></div>
+  <div class="grid grid-4" id="homeServicesGrid" aria-live="polite"></div>
   <div class="text-center" style="margin-top:22px"><a class="btn btn-outline" href="services.html">Explore all services <i class="fa-solid fa-arrow-right"></i></a></div>
+</div></section>
+
+<!-- ================= NIGERIAN FOOD PRODUCTS ================= -->
+<section class="section alt" id="food-products"><div class="container">
+  <div class="section-head reveal"><span class="kicker">Food Products</span>
+    <h2>Authentic Nigerian Food Products</h2>
+    <p>Enjoy the taste of Nigeria wherever you are. Explore traditional Nigerian food products available for local purchases, wholesale supply and international export enquiries.</p></div>
+  <div class="food-grid" id="homeFoodGrid" aria-live="polite"></div>
+  <div class="food-actions">
+    <a class="btn btn-blue" href="food-products.html">Browse all food products <i class="fa-solid fa-arrow-right"></i></a>
+    <a class="btn btn-wa" id="bulkFoodWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Bulk order enquiry</a>
+  </div>
 </div></section>
 
 <!-- ================= INSTANT ESTIMATE WIDGET ================= -->
@@ -212,25 +188,25 @@
   </div>
 </div></section>
 
-<!-- ================= FOOD EXPORTS ================= -->
-<section class="section" style="padding-top:0"><div class="container">
-  <div class="lp-biz reveal"><div class="lp-biz-grid">
-    <img loading="lazy" src="https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1000&auto=format&fit=crop" alt="Food products prepared for export">
-    <div class="lp-biz-body">
-      <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Food Sales &amp; Exports</span>
-      <h2>Move food products beyond borders</h2>
-      <ul class="lp-check">
-        <li><span class="ci"><i class="fa-solid fa-calendar-check"></i></span>
-          <span><b>Food export services</b><span>Support for businesses looking to ship food products internationally, subject to applicable requirements.</span></span></li>
-        <li><span class="ci"><i class="fa-solid fa-route"></i></span>
-          <span><b>Customs support</b><span>Assistance with customs clearance processes at destination countries.</span></span></li>
-        <li><span class="ci"><i class="fa-solid fa-money-bill-wave"></i></span>
-          <span><b>Shipping options</b><span>Discuss destination, shipment details and available delivery options with our team.</span></span></li>
+<!-- ================= FOOD EXPORT ================= -->
+<section class="section" id="food-export"><div class="container">
+  <div class="export-panel reveal"><div class="export-panel-grid">
+    <img class="export-panel-photo" loading="lazy" src="https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1200&auto=format&fit=crop" alt="Traditional food ingredients for sourcing and export">
+    <div class="export-panel-content">
+      <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Food Export</span>
+      <h2>Bringing Authentic Nigerian Food to the World</h2>
+      <p>DABOFFOODS supports customers and businesses interested in sourcing and exporting Nigerian food products internationally. Contact us to discuss your destination, product needs and shipment requirements.</p>
+      <ul class="export-list">
+        <li><i class="fa-solid fa-check"></i> Nigerian food sourcing</li>
+        <li><i class="fa-solid fa-check"></i> Bulk food orders</li>
+        <li><i class="fa-solid fa-check"></i> International export enquiries</li>
+        <li><i class="fa-solid fa-check"></i> UK cargo services</li>
+        <li><i class="fa-solid fa-check"></i> USA cargo services</li>
+        <li><i class="fa-solid fa-check"></i> International shipping partnerships</li>
+        <li><i class="fa-solid fa-check"></i> Doorstep delivery options</li>
+        <li><i class="fa-solid fa-check"></i> Customs clearance support</li>
       </ul>
-      <div class="btn-row">
-        <a class="btn btn-orange" href="book.html?service=Food%20Export%20Services">Request an export quote</a>
-        <a class="btn btn-wa" id="bizWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask about food exports</a>
-      </div>
+      <a class="btn btn-orange" id="exportQuoteWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Request an Export Quote</a>
     </div>
   </div></div>
 </div></section>
@@ -284,12 +260,16 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, waLink, esc, $, $$, estimatePrice, fmtMoney, toast } from "./app.js";
+import { CONFIG, renderChrome, waLink, esc, $, $$, toast } from "./app.js";
+import { renderServiceCards } from "./services.js";
+import { BULK_ORDER_MESSAGE, FOOD_EXPORT_MESSAGE, FOOD_PRODUCTS, renderProductCards } from "./products.js";
 renderChrome("index.html");
+renderServiceCards($("#homeServicesGrid"));
+renderProductCards($("#homeFoodGrid"), FOOD_PRODUCTS.slice(0, 4));
 
 /* Image safety net: if any photo CDN fails, swap to the hero photo once */
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?q=80&w=1000&auto=format&fit=crop";
-$$("main img").forEach(img => img.addEventListener("error", () => {
+$$("main img").filter(img => !img.closest(".food-card-image")).forEach(img => img.addEventListener("error", () => {
   if (!img.dataset.tried) { img.dataset.tried = 1; img.src = FALLBACK_IMG; }
 }));
 
@@ -301,7 +281,8 @@ $("#quickTrack").addEventListener("submit", e => {
   location.href = "track.html?id=" + encodeURIComponent(id);
 });
 $("#ctaWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to request an international shipment quotation.");
-$("#bizWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to enquire about food export services. Please advise on destination and applicable requirements.");
+$("#bulkFoodWa").href = waLink(BULK_ORDER_MESSAGE);
+$("#exportQuoteWa").href = waLink(FOOD_EXPORT_MESSAGE);
 
 /* Scrolling marquee */
 const marqueeItems = ["International shipping","Freight forwarding","Food exports","UK cargo","USA cargo","Customs support","Doorstep delivery"];

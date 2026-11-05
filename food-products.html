@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentic Nigerian Food Products | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Explore Nigerian food products available for local purchases, wholesale supply and international export enquiries.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:48px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">DABOFFOODS food catalogue</span>
+    <h1 style="color:#fff;font-size:2.1rem">Authentic Nigerian Food Products</h1>
+    <p style="color:#d7e5ff;max-width:760px;margin:12px auto 0">Enjoy the taste of Nigeria wherever you are. Explore traditional Nigerian food products available for local purchases, wholesale supply and international export enquiries.</p>
+  </div>
+</section>
+
+<section class="section" id="food-products">
+  <div class="container">
+    <div class="section-head"><span class="kicker">Food Products</span><h2>Traditional favourites, sourced on enquiry</h2>
+      <p>Ask us about current product options, quantities, prices and delivery. Prices, stock and packaging details are confirmed directly with our team.</p></div>
+    <div class="food-grid" id="foodProductsGrid" aria-live="polite"></div>
+    <div class="food-actions">
+      <a class="btn btn-blue" id="bulkOrderLink" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Enquire about bulk orders</a>
+      <a class="btn btn-orange" id="exportEnquiryLink" target="_blank" rel="noopener"><i class="fa-solid fa-earth-africa"></i> International export enquiry</a>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="card text-center" style="max-width:780px;margin-inline:auto">
+      <div class="icon-badge orange" style="margin-inline:auto"><i class="fa-solid fa-box-open"></i></div>
+      <h2>Looking for something specific?</h2>
+      <p class="muted" style="max-width:620px;margin:0 auto 18px">Send us the product name and your destination. We can discuss sourcing, order quantities and available delivery options directly with you.</p>
+      <a class="btn btn-wa" id="catalogueHelpLink" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask DABOFFOODS</a>
+    </div>
+  </div>
+</section>
+</main>
+<div id="siteFooter"></div>
+<script type="module">
+import { renderChrome, waLink } from "./app.js";
+import { BULK_ORDER_MESSAGE, FOOD_EXPORT_MESSAGE, renderProductCards } from "./products.js";
+renderChrome("food-products.html");
+renderProductCards(document.querySelector("#foodProductsGrid"));
+document.querySelector("#bulkOrderLink").href = waLink(BULK_ORDER_MESSAGE);
+document.querySelector("#exportEnquiryLink").href = waLink(FOOD_EXPORT_MESSAGE);
+document.querySelector("#catalogueHelpLink").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to ask about your Nigerian food products. Please share current availability, prices and delivery options.");
+</script>
+</body>
+</html>

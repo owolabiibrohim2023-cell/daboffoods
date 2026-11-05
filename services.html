@@ -5,7 +5,7 @@
 <title>Our Services | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="description" content="Explore international shipping, freight forwarding, food exports, UK and USA cargo, customs clearance support, food sales and doorstep delivery.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -16,13 +16,13 @@
 <section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
   <div class="container text-center">
     <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Our Services</span>
-    <h1 style="color:#fff;font-size:2rem">International logistics for shipments and exports</h1>
-    <p style="color:#d7e5ff;max-width:620px;margin:12px auto 0">Explore our freight forwarding, food sales and export services, international cargo and customs support.</p>
+    <h1 style="color:#fff;font-size:2rem">Our Services</h1>
+    <p style="color:#d7e5ff;max-width:760px;margin:12px auto 0">From authentic Nigerian food products to international shipping and export solutions, DABOFFOODS provides reliable services connecting Nigerian products and businesses to local and international markets.</p>
   </div>
 </section>
 
-<section class="section"><div class="container">
-  <div class="grid grid-4" id="servicesGrid"></div>
+<section class="section" id="services"><div class="container">
+  <div class="grid grid-4" id="servicesGrid" aria-live="polite"></div>
 </div></section>
 
 <section class="section alt"><div class="container">
@@ -44,39 +44,10 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, $, $$, waLink, fmtMoney, esc } from "./app.js";
+import { renderChrome } from "./app.js";
+import { renderServiceCards } from "./services.js";
 renderChrome("services.html");
-$("#svcWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to enquire about your international shipping services. My destination and shipment details are: ");
-
-const U = id => `https://images.unsplash.com/${id}?q=80&w=800&auto=format&fit=crop`;
-/* Services and descriptions reflect the business information supplied. */
-const services = [
-  { icon:"fa-plane", title:"International Shipping", book:"International Shipping", img:U("photo-1566576721346-d4a3b4eaeb55"), alt:"International shipment packages", desc:"International express delivery through international carrier partners.", points:["Multiple shipping options","UK, USA and other destinations","Doorstep delivery"] },
-  { icon:"fa-truck-ramp-box", title:"Freight Forwarding", book:"Freight Forwarding", img:U("photo-1586528116311-ad8dd3c8310d"), alt:"Freight forwarding cargo", desc:"Freight forwarding and export solutions for individuals and businesses.", points:["Export solutions","International logistics support","Request a shipment quotation"] },
-  { icon:"fa-apple-whole", title:"Food Export Services", book:"Food Export Services", img:U("photo-1547592180-85f173990554"), alt:"Food products", desc:"Food export support subject to applicable shipping and export requirements.", points:["Food export enquiries","Requirements vary by destination","Customs support"] },
-  { icon:"fa-flag", title:"Cargo Services to the UK", book:"UK Cargo", img:U("photo-1601584115197-04ecc0da31d7"), alt:"Cargo prepared for shipping", desc:"International cargo and shipping solutions to the United Kingdom.", points:["Shipping options","Destination customs support","Doorstep delivery"] },
-  { icon:"fa-flag-usa", title:"Cargo Services to the USA", book:"USA Cargo", img:U("photo-1587293852726-70cdb56c2866"), alt:"Cargo shipment", desc:"International cargo and shipping solutions to the United States.", points:["Shipping options","Destination customs support","Doorstep delivery"] },
-  { icon:"fa-file-circle-check", title:"Customs Clearance Support", book:"Customs Clearance Support", img:U("photo-1450101499163-c8848c66ca85"), alt:"Shipping documentation", desc:"Support with customs clearance processes at destination countries.", points:["Destination support","Requirements depend on shipment","Ask our team"] },
-  { icon:"fa-basket-shopping", title:"Food Sales", book:"Food Sales", img:U("photo-1547592180-85f173990554"), alt:"Food products for sale", desc:"Food products for customers and businesses. Contact us for product availability.", points:["Food sales enquiries","Ask about available products","Contact our team"] },
-  { icon:"fa-house", title:"Doorstep Delivery", book:"Doorstep Delivery", img:U("photo-1566576721346-d4a3b4eaeb55"), alt:"Shipment delivery", desc:"Convenient delivery options that bring international shipments to customers’ destinations.", points:["International logistics","Home or business destination","Availability by shipment"] }
-];
-
-$("#servicesGrid").innerHTML = services.map(s => `
-  <article class="lp-svc reveal">
-    <div class="lp-svc-img"><img loading="lazy" src="${s.img}" alt="${esc(s.alt)}">
-      <span class="lp-from">Quotation on request</span></div>
-    <div class="lp-svc-body">
-      <h3><i class="fa-solid ${s.icon}"></i> ${esc(s.title)}</h3>
-      <p class="muted" style="margin-top:8px">${esc(s.desc)}</p>
-      <ul>${s.points.map(p => `<li><i class="fa-solid fa-check"></i>${esc(p)}</li>`).join("")}</ul>
-      <a class="btn btn-ghost btn-block" href="book.html?service=${encodeURIComponent(s.book)}">Book this service</a>
-    </div>
-  </article>`).join("");
-
-/* Image fallback safety net */
-$$("main img").forEach(img => img.addEventListener("error", () => {
-  if (!img.dataset.tried) { img.dataset.tried = 1; img.src = U("photo-1566576721346-d4a3b4eaeb55"); }
-}));
+renderServiceCards(document.querySelector("#servicesGrid"));
 </script>
 </body>
 </html>

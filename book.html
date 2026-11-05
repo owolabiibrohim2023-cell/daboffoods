@@ -6,7 +6,7 @@
 <title>Request a Shipment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
 <meta name="description" content="Request an international shipping, freight forwarding or food export quotation from DABOFFOODS & LOGISTICS SERVICES.">
 <meta name="theme-color" content="#0B3D91">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23102A43'/><text x='50' y='66' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>DB</text></svg>">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -23,8 +23,8 @@
 
   <!-- Guest prompt (hidden when signed in) -->
   <div class="alert alert-info show" id="guestPrompt">
-    <i class="fa-solid fa-circle-user"></i> <b>Booking as a guest is fine.</b>
-    Or <a href="signup.html"><b>create a free account</b></a> to track all your orders in one place and book faster next time.
+    <i class="fa-solid fa-circle-user"></i> <b>You can submit a request as a guest.</b>
+    Or <a href="signup.html"><b>create an account</b></a> to manage shipment requests in one place.
   </div>
   <div class="alert alert-success" id="signedInNote"></div>
 
@@ -66,11 +66,7 @@
       </div>
 
       <!-- Bulk / multi-drop -->
-      <div id="extraStops"></div>
-      <button type="button" class="btn btn-ghost btn-sm" id="addStopBtn">
-        <i class="fa-solid fa-plus"></i> Add another drop-off (bulk / multi-drop)
-      </button>
-      <p class="small muted" style="margin-top:8px">Businesses: add extra drop-offs and they will all travel under this one Order ID.</p>
+      <div id="extraStops" class="hidden"></div><button type="button" class="btn btn-ghost btn-sm hidden" id="addStopBtn" aria-hidden="true"><i class="fa-solid fa-plus"></i> Add another drop-off</button>
     </fieldset>
 
     <fieldset>
@@ -80,6 +76,8 @@
           <select id="packageType"></select><p class="field-error"></p></div>
         <div class="field"><label for="weightKg">Approximate weight (kg)</label>
           <input id="weightKg" type="number" min="0.1" step="0.1" value="1" inputmode="decimal"><p class="field-error"></p></div>
+        <div class="field"><label for="packageCount">Number of packages <span class="req">*</span></label>
+          <input id="packageCount" type="number" min="1" step="1" value="1" inputmode="numeric"><p class="field-error"></p></div>
         <div class="field"><label for="serviceType">Service type <span class="req">*</span></label>
           <select id="serviceType"></select><p class="field-error"></p></div>
         <div class="field"><label for="zone">Destination</label>
@@ -93,7 +91,10 @@
       </div>
 
       <div class="field"><label>Payment option</label>
-        <div class="radio-row" id="paymentOptions"><label class="radio-pill"><input type="radio" name="payOpt" value="Quotation required" checked><span><i class="fa-solid fa-file-invoice-dollar"></i> Quotation required</span></label></div>
+        <div class="radio-row" id="paymentOptions">
+          <label class="radio-pill"><input type="radio" name="payOpt" value="Quotation required" checked><span><i class="fa-solid fa-file-invoice-dollar"></i> Quotation required</span></label>
+          <label class="radio-pill"><input type="radio" name="payOpt" value="Cash on delivery"><span><i class="fa-solid fa-money-bill-wave"></i> Cash on delivery</span></label>
+        </div>
       </div>
 
       <div class="check-row">
@@ -137,7 +138,7 @@
       <button class="btn btn-outline" id="bookAnotherBtn" style="flex:1">Book another</button>
     </div>
     <p class="small muted text-center" style="margin-top:16px">
-      <i class="fa-solid fa-bell"></i> You'll get automatic SMS/email updates as your delivery moves. Share the tracking link with your receiver too.
+      <i class="fa-solid fa-bell"></i> Keep your shipment reference to check status updates. You may share the tracking link with your receiver.
     </p>
   </div>
 
@@ -150,7 +151,7 @@ import { CONFIG, renderChrome, $, $$, esc, toast, db, firebaseReady, onAuthReady
   genOrderId, isValidNgPhone, normalizeNgPhone, isValidEmail,
   setFieldError, bookingWhatsAppMessage, waLink, copyText, rememberOrderId }
   from "./app.js";
-import { doc, getDoc, setDoc, collection, getDocs, serverTimestamp }
+import { doc, setDoc, collection, getDocs, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 renderChrome("book.html");
@@ -206,7 +207,7 @@ function applyReorder() {
     set("senderName", o.senderName); set("senderPhone", o.senderPhone); set("senderEmail", o.senderEmail);
     set("pickupAddress", o.pickupAddress); set("receiverName", o.receiverName); set("receiverPhone", o.receiverPhone);
     set("receiverEmail", o.receiverEmail); set("dropoffAddress", o.dropoffAddress);
-    set("packageType", o.packageType); set("packageDescription", o.packageDescription);
+    set("packageType", o.packageType); set("packageDescription", o.packageDescription); set("packageCount", o.packageCount);
     set("serviceType", o.serviceType); set("zone", o.zone); set("instructions", o.instructions);
     if (o.weightKg) $("#weightKg").value = o.weightKg;
     toast("Previous delivery details filled in — just check and submit.", "success");
@@ -245,7 +246,7 @@ function collectExtraStops(validate = false) {
     const s = { receiverName: g("receiverName").value.trim(), receiverPhone: g("receiverPhone").value.trim(), dropoffAddress: g("dropoffAddress").value.trim() };
     if (validate) {
       if (!s.receiverName) { setFieldError(g("receiverName"), "Receiver name is required."); ok = false; } else setFieldError(g("receiverName"), "");
-      if (!isValidNgPhone(s.receiverPhone)) { setFieldError(g("receiverPhone"), "Enter a valid Nigerian phone number."); ok = false; } else setFieldError(g("receiverPhone"), "");
+      if (!isValidInternationalPhone(s.receiverPhone)) { setFieldError(g("receiverPhone"), "Enter a valid phone number with country code."); ok = false; } else setFieldError(g("receiverPhone"), "");
       if (!s.dropoffAddress) { setFieldError(g("dropoffAddress"), "Drop-off address is required."); ok = false; } else setFieldError(g("dropoffAddress"), "");
     }
     stops.push(s);
@@ -275,6 +276,7 @@ function validate() {
   req("receiverPhone", isValidInternationalPhone, "Enter a valid receiver phone number with country code.");
   req("dropoffAddress", v => v.length >= 8, "Please enter a full destination address.");
   req("packageDescription", v => v.length >= 3, "Please describe the goods in the shipment.");
+  req("packageCount", v => Number.isInteger(Number(v)) && Number(v) >= 1 && Number(v) <= 10000, "Enter a package count from 1 to 10,000.");
   const re = $("#receiverEmail");
   if (re.value.trim() && !isValidEmail(re.value.trim())) { setFieldError(re, "This email doesn't look right (optional field — you can clear it)."); ok = false; firstBad = firstBad || re; }
   else setFieldError(re, "");
@@ -322,7 +324,7 @@ $("#bookingForm").addEventListener("submit", async e => {
     senderCountry: $("#senderCountry").value,
     receiverName: $("#receiverName").value.trim(),
     receiverPhone: $("#receiverPhone").value.trim(),
-    receiverPhoneIntl: normalizeNgPhone($("#receiverPhone").value),
+    receiverPhoneIntl: $("#receiverPhone").value.trim(),
     receiverEmail: $("#receiverEmail").value.trim().toLowerCase(),
     dropoffAddress: $("#dropoffAddress").value.trim(),
     destinationCountry: $("#destinationCountry").value,
@@ -332,14 +334,15 @@ $("#bookingForm").addEventListener("submit", async e => {
     ],
     packageType: $("#packageType").value,
     packageDescription: $("#packageDescription").value.trim(),
+    packageCount: Number($("#packageCount").value) || 1,
     weightKg: Number($("#weightKg").value) || 1,
     serviceType: $("#serviceType").value,
     shippingMethod: $("#pickupTime").value,
     zone: $("#zone").value,
     pickupDate: $("#pickupDate").value,
     pickupTime: $("#pickupTime").value,
-    paymentOption: "Quotation required",
-    paymentStatus: "Pending",
+    paymentOption: document.querySelector('input[name="payOpt"]:checked')?.value || "Quotation required",
+    paymentStatus: document.querySelector('input[name="payOpt"]:checked')?.value === "Cash on delivery" ? "COD" : "Pending",
     insurance: $("#insurance").checked,
     instructions: $("#instructions").value.trim(),
     estimatedPrice: null,
@@ -356,14 +359,17 @@ $("#bookingForm").addEventListener("submit", async e => {
   let savedOnline = false, saveError = "";
   if (firebaseReady && db) {
     try {
-      for (let tries = 0; tries < 5; tries++) {           // avoid rare ID collisions
-        const exists = (await getDoc(doc(db, "orders", order.orderId))).exists();
-        if (!exists) break;
-        order.orderId = genOrderId();
+      for (let tries = 0; tries < 5; tries++) { // create-only write; do not expose order existence through anonymous reads
+        try {
+          await setDoc(doc(db, "orders", order.orderId),
+            { ...order, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+          savedOnline = true;
+          break;
+        } catch (err) {
+          if (err.code !== "permission-denied" || tries === 4) throw err;
+          order.orderId = genOrderId();
+        }
       }
-      await setDoc(doc(db, "orders", order.orderId),
-        { ...order, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
-      savedOnline = true;
     } catch (err) {
       console.error(err);
       saveError = "We couldn't save this shipment request online right now. Please send it on WhatsApp so our team can assist.";
@@ -383,8 +389,9 @@ $("#bookingForm").addEventListener("submit", async e => {
     ["Pickup", order.pickupAddress],
     ["Receiver", `${order.receiverName} · ${order.receiverPhone}`],
     ["Drop-off", order.dropoffAddress + (extraStops.length ? ` (+${extraStops.length} extra drop-off${extraStops.length > 1 ? "s" : ""})` : "")],
-    ["Goods", `${order.packageType}${order.packageDescription ? " — " + order.packageDescription : ""} (${order.weightKg}kg)`],
+    ["Goods", `${order.packageType}${order.packageDescription ? " — " + order.packageDescription : ""} · ${order.packageCount} package(s) · ${order.weightKg}kg`],
     ["Service", order.serviceType],
+    ["Origin country", order.senderCountry],
     ["Destination", order.destinationCountry],
     ["Preferred shipping", order.shippingMethod || "To be discussed"],
     ["Quotation", "To be provided by our team"]
