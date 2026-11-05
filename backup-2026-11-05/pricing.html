@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shipping Quotations &amp; Destinations | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Request an international shipping quotation for freight forwarding, food exports and cargo services to the UK and USA.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Shipping Quotations &amp; Destinations</span>
+    <h1 style="color:#fff;font-size:2rem">Request a shipping quotation</h1>
+    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">International shipping prices depend on the shipment, destination and available carrier options. Contact us for a quotation; no rates are invented or published here.</p>
+  </div>
+</section>
+
+<section class="section"><div class="container">
+  <div class="grid grid-3"><div class="card"><h3>United Kingdom</h3><p class="muted">Cargo services and international shipping options.</p></div><div class="card"><h3>United States</h3><p class="muted">Cargo services and international shipping options.</p></div><div class="card"><h3>Other destinations</h3><p class="muted">Contact us to confirm destination availability.</p></div></div>
+  <div class="cta-banner" style="margin-top:24px"><h2>Get a tailored quote</h2><p style="margin:8px auto 18px;max-width:540px">Share the goods description, package weight, origin and destination so our team can review shipping options.</p><a class="btn btn-blue" href="book.html">Request a Shipment</a></div>
+</div></section>
+
+<section class="section alt"><div class="container">
+  <div class="section-head reveal"><span class="kicker">International services</span><h2>Shipping and export support</h2><p>Food exports are subject to applicable shipping and customs requirements. Customs clearance support is available at destination countries.</p></div>
+  <div class="card reveal"><b style="color:var(--blue-dark)">Destinations</b>
+    <div class="chips" id="coverageChips" style="margin-top:12px"></div>
+    <p class="small muted" style="margin-top:14px">Need to confirm a destination? <a id="covWa" target="_blank" rel="noopener">Ask us on WhatsApp</a>.</p></div>
+</div></section>
+
+<section class="section"><div class="container" style="max-width:860px">
+  <div class="card reveal" style="border-color:#f0b7ae"><h2 style="color:var(--red);font-size:1.3rem"><i class="fa-solid fa-circle-info"></i> Restricted goods &amp; requirements</h2><p class="muted" style="margin:8px 0 12px">Acceptance depends on carrier policies and destination-country regulations. Food exports and restricted goods are subject to applicable shipping and customs requirements. Contact us before booking to confirm your shipment can be accepted.</p><p class="small muted">See <a href="legal.html#shipping">Shipping &amp; Prohibited Items Policy</a>.</p></div>
+  <div class="cta-banner reveal" style="margin-top:24px">
+    <h2>Ready to ship beyond borders?</h2>
+    <p style="margin:8px auto 18px;max-width:480px">Request a shipment quotation from our team.</p>
+    <a class="btn btn-blue" href="book.html"><i class="fa-solid fa-box"></i> Request a Shipment</a>
+  </div>
+</div></section>
+</main>
+<div id="siteFooter"></div>
+
+<script type="module">
+import { CONFIG, renderChrome, $, esc, waLink } from "./app.js";
+
+renderChrome("pricing.html");
+$("#covWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to confirm whether you can ship to this destination: ");
+
+$("#coverageChips").innerHTML = CONFIG.coverage.map(c =>
+  `<span class="chip" style="cursor:default"><i class="fa-solid fa-location-dot"></i> ${esc(c)}</span>`).join("");
+</script>
+</body>
+</html>

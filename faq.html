@@ -17,7 +17,7 @@
   <div class="container text-center">
     <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">FAQ</span>
     <h1 style="color:#fff;font-size:2rem">Frequently asked questions</h1>
-    <p style="color:#d7e5ff;margin-top:10px">Everything you need to know before you send. Still unsure? We reply fast on WhatsApp.</p>
+    <p style="color:#d7e5ff;margin-top:10px">Everything you need to know before you send. Still unsure? Send us a message on the Contact page.</p>
   </div>
 </section>
 
@@ -26,14 +26,14 @@
     <input id="faqSearch" placeholder="🔍 Search questions… e.g. payment, track, interstate" aria-label="Search frequently asked questions">
   </div>
   <div id="faqList"></div>
-  <p class="text-center muted hidden" id="faqNone">No question matches your search. <a id="faqWa1" target="_blank" rel="noopener">Ask us on WhatsApp →</a></p>
+  <p class="text-center muted hidden" id="faqNone">No question matches your search. <a href="contact.html">Ask us on the Contact page →</a></p>
 
   <div class="cta-banner" style="margin-top:30px">
     <h2>Still have a question?</h2>
-    <p style="margin:8px auto 18px;max-width:460px">Chat with a real person — open daily until 6:00 PM.</p>
+    <p style="margin:8px auto 18px;max-width:460px">Send us a message — we reply during working hours.</p>
     <div class="btn-row" style="justify-content:center">
-      <a class="btn btn-wa" id="faqWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
-      <a class="btn btn-blue" href="tel:+2348024311091"><i class="fa-solid fa-phone"></i> 0802 431 1091</a>
+      <a class="btn btn-blue" href="contact.html"><i class="fa-solid fa-paper-plane"></i> Contact Us</a>
+      <a class="btn btn-outline-white" href="tel:+2348024311091"><i class="fa-solid fa-phone"></i> 0802 431 1091</a>
     </div>
   </div>
 </div></section>
@@ -41,22 +41,20 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { renderChrome, $, $$, waLink, esc } from "./app.js";
+import { renderChrome, $, $$, esc } from "./app.js";
 renderChrome("faq.html");
-const wa = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I have a question.");
-$("#faqWa").href = wa; $("#faqWa1").href = wa;
 
 const FAQS = [
   ["What services do you offer?", `We offer international shipping, freight forwarding, food sales and export services, cargo services to the UK and USA, customs clearance support at destination countries, and doorstep delivery.`],
-  ["How can I get a shipping price?", `Shipping costs depend on the details of your shipment and destination. Submit a <a href="book.html">shipment request</a> or contact our team for a quotation. No price estimate is published on this website.`],
-  ["Do you ship to the UK and USA?", `Yes. We offer cargo services to the United Kingdom and United States. Contact us to confirm available options for your shipment.`],
-  ["Do you ship to other countries?", `Other international destinations may be available. Please contact us with your destination and shipment details so we can confirm.`],
-  ["Can you export food products?", `We offer food export services. Food shipments are subject to applicable shipping, export and customs requirements. Contact us before booking to discuss your goods.`],
+  ["How can I get a shipping price?", `Shipping costs depend on the details of your shipment and destination. Submit a <a href="book.html">shipment request</a> and our team will confirm your final price in your dashboard. No price estimate is published on this website.`],
+  ["Do you ship to the UK and USA?", `Yes. We offer cargo services to the United Kingdom and United States. Book online and we'll confirm available options for your shipment.`],
+  ["Do you ship to other countries?", `Other international destinations may be available. Submit a booking with your destination and we'll confirm.`],
+  ["Can you export food products?", `We offer food export services. Food shipments are subject to applicable shipping, export and customs requirements. Book online and we'll confirm what's allowed before you pay.`],
   ["Do you provide customs clearance?", `We offer customs clearance support at destination countries. Requirements depend on the shipment and destination.`],
-  ["How do I track a shipment?", `Use the tracking number provided for your booking on our <a href="track.html">Track Shipment</a> page. The page shows status information that has been recorded.`],
+  ["How do I track a shipment?", `Use the tracking number from your booking on our <a href="track.html">Track Shipment</a> page — no account needed. The page shows carrier, status, location, estimated delivery and a full timeline.`],
   ["Where are you located?", `Our address is <b>24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria</b>. See our <a href="contact.html">Contact page</a> for directions.`],
   ["What are your business hours?", `The business listing indicates that the location closes at 5:00 PM. Please call <a href="tel:+2348024311091">0802 431 1091</a> to confirm current opening hours.`],
-  ["How can I pay?", `Request a quotation first, then confirm payment options and verified payment instructions directly with DABOFFOODS &amp; LOGISTICS SERVICES. No bank account details are published on this website.`]
+  ["How can I pay?", `Book your shipment, wait for our team to confirm your final price, then pay online with Paystack (card or bank transfer) from your dashboard. Every payment is verified automatically — you only see "Paid" after verification. Cash on delivery is available where offered. No bank account details are published on this website.`]
 ];
 
 function renderFaqs(filter = "") {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quotations &amp; Payment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Request an international shipping quotation from DABOFFOODS & LOGISTICS SERVICES. Confirm payment instructions directly with the business.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Quotations &amp; Payment</span>
+    <h1 style="color:#fff;font-size:2rem">Confirm your shipment quotation and payment safely</h1>
+    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">Get a confirmed shipment quotation, then pay securely online through Paystack from your customer dashboard, or choose cash on delivery where offered.</p>
+  </div>
+</section>
+
+<section class="section"><div class="container" style="max-width:920px">
+  <div class="section-head reveal"><span class="kicker">How It Works</span><h2>Confirm your quote before payment</h2></div>
+  <div class="lp-steps" style="grid-template-columns:1fr" >
+    <div style="display:grid;gap:16px" class="grid grid-4">
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-pen-to-square"></i></div><h3>1. Send your details</h3><p class="muted">Tell us the origin, destination, goods and shipment weight.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-file-invoice"></i></div><h3>2. Receive a quotation</h3><p class="muted">Our team reviews your request and confirms available shipping options and quotation.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-brands fa-whatsapp"></i></div><h3>3. Confirm directly</h3><p class="muted">Confirm applicable shipping and customs requirements with the business.</p></div>
+      <div class="card lp-step reveal"><div class="ic"><i class="fa-solid fa-shield-halved"></i></div><h3>4. Pay securely</h3><p class="muted">After your final amount is confirmed, sign in and pay through Paystack. The website updates payment status only after backend verification.</p></div>
+    </div>
+  </div>
+
+  <div class="card reveal" style="margin-top:30px;border:2px solid var(--blue);padding:28px"><h2 style="font-size:1.35rem"><i class="fa-solid fa-shield-halved" style="color:var(--blue)"></i> Payment safety</h2><p class="muted">Card details are handled by Paystack and are not stored by this website. Never share your card PIN or one-time password with anyone. Cash-on-delivery orders remain unpaid until collection is recorded.</p><a class="btn btn-blue" href="login.html?next=account.html"><i class="fa-solid fa-lock"></i> Sign in to pay for a confirmed order</a></div>
+
+  <div class="grid grid-2" style="margin-top:24px"><div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-file-invoice-dollar"></i></div><h3>Shipping quotations</h3><p class="muted">Prices are not estimated by the website. Ask our team for a quotation based on your shipment and destination.</p></div><div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-globe"></i></div><h3>Customs requirements</h3><p class="muted">Food exports and restricted goods are subject to applicable shipping and customs requirements.</p></div></div>
+
+  <div class="cta-banner reveal" style="margin-top:30px">
+    <h2>Questions about payment?</h2>
+    <p style="margin:8px auto 18px;max-width:480px">Call us to confirm current opening hours and discuss your shipment.</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn btn-blue" href="book.html">Request a Shipment</a>
+      <a class="btn btn-wa" id="payQWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp</a>
+    </div>
+  </div>
+</div></section>
+</main>
+<div id="siteFooter"></div>
+
+<script type="module">
+import { renderChrome, $, waLink } from "./app.js";
+renderChrome("payment.html");
+$("#payQWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I have a question about a shipment quotation or payment.");
+</script>
+</body>
+</html>

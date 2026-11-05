@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Frequently asked questions about international shipping, freight forwarding, food exports, cargo and customs support.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">FAQ</span>
+    <h1 style="color:#fff;font-size:2rem">Frequently asked questions</h1>
+    <p style="color:#d7e5ff;margin-top:10px">Everything you need to know before you send. Still unsure? We reply fast on WhatsApp.</p>
+  </div>
+</section>
+
+<section class="section"><div class="container" style="max-width:820px">
+  <div class="field" style="margin-bottom:20px">
+    <input id="faqSearch" placeholder="🔍 Search questions… e.g. payment, track, interstate" aria-label="Search frequently asked questions">
+  </div>
+  <div id="faqList"></div>
+  <p class="text-center muted hidden" id="faqNone">No question matches your search. <a id="faqWa1" target="_blank" rel="noopener">Ask us on WhatsApp →</a></p>
+
+  <div class="cta-banner" style="margin-top:30px">
+    <h2>Still have a question?</h2>
+    <p style="margin:8px auto 18px;max-width:460px">Chat with a real person — open daily until 6:00 PM.</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn btn-wa" id="faqWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
+      <a class="btn btn-blue" href="tel:+2348024311091"><i class="fa-solid fa-phone"></i> 0802 431 1091</a>
+    </div>
+  </div>
+</div></section>
+</main>
+<div id="siteFooter"></div>
+
+<script type="module">
+import { renderChrome, $, $$, waLink, esc } from "./app.js";
+renderChrome("faq.html");
+const wa = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I have a question.");
+$("#faqWa").href = wa; $("#faqWa1").href = wa;
+
+const FAQS = [
+  ["What services do you offer?", `We offer international shipping, freight forwarding, food sales and export services, cargo services to the UK and USA, customs clearance support at destination countries, and doorstep delivery.`],
+  ["How can I get a shipping price?", `Shipping costs depend on the details of your shipment and destination. Submit a <a href="book.html">shipment request</a> or contact our team for a quotation. No price estimate is published on this website.`],
+  ["Do you ship to the UK and USA?", `Yes. We offer cargo services to the United Kingdom and United States. Contact us to confirm available options for your shipment.`],
+  ["Do you ship to other countries?", `Other international destinations may be available. Please contact us with your destination and shipment details so we can confirm.`],
+  ["Can you export food products?", `We offer food export services. Food shipments are subject to applicable shipping, export and customs requirements. Contact us before booking to discuss your goods.`],
+  ["Do you provide customs clearance?", `We offer customs clearance support at destination countries. Requirements depend on the shipment and destination.`],
+  ["How do I track a shipment?", `Use the tracking number provided for your booking on our <a href="track.html">Track Shipment</a> page. The page shows status information that has been recorded.`],
+  ["Where are you located?", `Our address is <b>24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria</b>. See our <a href="contact.html">Contact page</a> for directions.`],
+  ["What are your business hours?", `The business listing indicates that the location closes at 5:00 PM. Please call <a href="tel:+2348024311091">0802 431 1091</a> to confirm current opening hours.`],
+  ["How can I pay?", `Request a quotation first, then confirm payment options and verified payment instructions directly with DABOFFOODS &amp; LOGISTICS SERVICES. No bank account details are published on this website.`]
+];
+
+function renderFaqs(filter = "") {
+  const q = filter.toLowerCase();
+  const hits = FAQS.filter(([t, b]) => (t + " " + b).toLowerCase().includes(q));
+  $("#faqNone").classList.toggle("hidden", hits.length > 0);
+  $("#faqList").innerHTML = hits.map(([t, b]) => `
+    <div class="faq-item"><button class="faq-q" type="button">${esc(t)}<i class="fa-solid fa-plus"></i></button>
+    <div class="faq-a">${b}</div></div>`).join("");
+  $$("#faqList .faq-q").forEach(btn => btn.addEventListener("click", () => {
+    const item = btn.closest(".faq-item"), wasOpen = item.classList.contains("open");
+    $$("#faqList .faq-item").forEach(i => i.classList.remove("open"));
+    if (!wasOpen) item.classList.add("open");
+  }));
+}
+renderFaqs();
+$("#faqSearch").addEventListener("input", e => renderFaqs(e.target.value));
+</script>
+</body>
+</html>

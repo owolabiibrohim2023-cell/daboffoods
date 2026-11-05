@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create Account | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Create an account to save your profile and manage shipment requests.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+
+<main>
+<section class="section" style="background:var(--bg)"><div class="container">
+  <div class="auth-wrap wide">
+    <div class="section-head" style="margin-bottom:22px">
+      <span class="kicker">Join DABOFFOODS &amp; LOGISTICS SERVICES</span>
+      <h1 style="font-size:1.85rem">Create your free account</h1>
+      <p>Book faster, save your addresses, track all your deliveries and repeat previous orders in one click.</p>
+    </div>
+
+    <form class="form-card" id="signupForm" novalidate>
+      <div class="alert alert-error" id="formError"></div>
+      <div class="alert alert-success" id="formSuccess"></div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="fullName">Full name <span class="req">*</span></label>
+          <input id="fullName" autocomplete="name" placeholder="e.g. Adaeze Okafor">
+          <p class="field-error"></p>
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone number <span class="req">*</span></label>
+          <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0802 431 1091 or +234…">
+          <p class="field-error"></p>
+        </div>
+
+        <div class="field span-2">
+          <label for="email">Email address <span class="req">*</span></label>
+          <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+          <p class="field-error"></p>
+        </div>
+
+        <div class="field">
+          <label for="password">Password <span class="req">*</span></label>
+          <div class="pw-wrap">
+            <input id="password" type="password" autocomplete="new-password" placeholder="Minimum 8 characters">
+            <button type="button" class="pw-toggle" data-target="password">Show</button>
+          </div>
+          <div class="pw-strength" aria-hidden="true"><i id="pwBar"></i></div>
+          <p class="small muted" id="pwLabel" style="margin-top:6px"></p>
+          <p class="field-error"></p>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm password <span class="req">*</span></label>
+          <div class="pw-wrap">
+            <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Type your password again">
+            <button type="button" class="pw-toggle" data-target="confirmPassword">Show</button>
+          </div>
+          <p class="field-error"></p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Account type <span class="req">*</span></label>
+        <div class="radio-row">
+          <label class="radio-pill">
+            <input type="radio" name="accountType" value="Individual" checked>
+            <span><i class="fa-solid fa-user"></i> Individual</span>
+          </label>
+          <label class="radio-pill">
+            <input type="radio" name="accountType" value="Business">
+            <span><i class="fa-solid fa-store"></i> Business</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field hidden" id="businessWrap">
+        <label for="businessName">Business name <span class="req">*</span></label>
+        <input id="businessName" autocomplete="organization" placeholder="e.g. Ada Fashion Store">
+        <p class="field-error"></p>
+      </div>
+
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="defaultAddress">Default pickup address <span class="muted">(optional)</span></label>
+          <textarea id="defaultAddress" autocomplete="street-address" placeholder="Where should we normally pick up from? Include street, area and nearest bus stop."></textarea>
+          <p class="field-error"></p>
+        </div>
+
+        <div class="field">
+          <label for="area">City / area <span class="muted">(optional)</span></label>
+          <input id="area" placeholder="e.g. Ijebu Ode">
+          <p class="field-error"></p>
+        </div>
+
+        <div class="field">
+          <label for="source">How did you hear about us? <span class="muted">(optional)</span></label>
+          <select id="source">
+            <option value="">Select one</option>
+            <option>Instagram</option>
+            <option>WhatsApp</option>
+            <option>Friend</option>
+            <option>Google</option>
+            <option>Other</option>
+          </select>
+          <p class="field-error"></p>
+        </div>
+      </div>
+
+      <fieldset style="margin-top:6px">
+        <legend><i class="fa-solid fa-bell"></i> Notification preferences</legend>
+
+        <div class="check-row">
+          <input type="checkbox" id="prefEmail" checked>
+          <label for="prefEmail">Email alerts — order confirmations and delivery updates</label>
+        </div>
+
+        <div class="check-row">
+          <input type="checkbox" id="prefSms" checked>
+          <label for="prefSms">SMS alerts — short delivery updates by text message</label>
+        </div>
+
+        <div class="check-row">
+          <input type="checkbox" id="prefWhatsapp" checked>
+          <label for="prefWhatsapp">WhatsApp updates — communication about my orders on WhatsApp</label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <div class="check-row">
+          <input type="checkbox" id="terms">
+          <label for="terms">
+            I agree to the <a href="legal.html#terms" target="_blank" rel="noopener">Terms</a>
+            and <a href="legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a> <span class="req">*</span>
+          </label>
+        </div>
+        <p class="field-error" id="termsError"></p>
+      </div>
+
+      <button class="btn btn-orange btn-block" id="createBtn" type="submit">
+        <i class="fa-solid fa-user-plus"></i> Create account
+      </button>
+
+      <div class="divider">or</div>
+
+      <button class="btn btn-google btn-block" id="googleBtn" type="button">
+        <i class="fa-brands fa-google" style="color:#ea4335"></i> Continue with Google
+      </button>
+
+      <p class="text-center" style="margin-top:20px">
+        Already have an account? <a href="login.html"><b>Sign in</b></a>
+      </p>
+
+      <p class="text-center small muted">
+        Just sending one parcel? <a href="book.html">Continue as guest</a>
+      </p>
+    </form>
+  </div>
+</div></section>
+</main>
+
+<div id="siteFooter"></div>
+
+<script type="module">
+import {
+  renderChrome, $, $$, toast, setFieldError,
+  isValidNgPhone, isValidEmail
+} from "./app.js";
+import {
+  createAccountWithEmail,
+  signInWithGoogle,
+  friendlyAuthError,
+  getPasswordStrength,
+  setupPasswordToggles,
+  redirectAfterLogin
+} from "./auth.js";
+
+renderChrome("signup.html");
+setupPasswordToggles();
+
+function accountType() {
+  return document.querySelector('input[name="accountType"]:checked')?.value || "Individual";
+}
+
+function syncBusinessField() {
+  $("#businessWrap").classList.toggle("hidden", accountType() !== "Business");
+}
+$$('input[name="accountType"]').forEach(r => r.addEventListener("change", syncBusinessField));
+syncBusinessField();
+
+/* Password strength meter */
+$("#password").addEventListener("input", e => {
+  const result = getPasswordStrength(e.target.value);
+  const bar = $("#pwBar");
+  bar.style.width = result.width;
+  bar.style.background = result.color;
+  $("#pwLabel").textContent = result.label;
+});
+
+function showFormError(message) {
+  const el = $("#formError");
+  el.textContent = message;
+  el.classList.add("show");
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function collectForm({ validate = true } = {}) {
+  const data = {
+    fullName: $("#fullName").value.trim(),
+    email: $("#email").value.trim().toLowerCase(),
+    phone: $("#phone").value.trim(),
+    password: $("#password").value,
+    confirmPassword: $("#confirmPassword").value,
+    accountType: accountType(),
+    businessName: $("#businessName").value.trim(),
+    defaultAddress: $("#defaultAddress").value.trim(),
+    area: $("#area").value.trim(),
+    source: $("#source").value,
+    notificationPrefs: {
+      email: $("#prefEmail").checked,
+      sms: $("#prefSms").checked,
+      whatsapp: $("#prefWhatsapp").checked
+    }
+  };
+
+  if (!validate) return { ok: true, data };
+
+  let ok = true;
+  let firstBad = null;
+
+  const check = (id, passes, message) => {
+    const el = $("#" + id);
+    setFieldError(el, passes ? "" : message);
+    if (!passes) {
+      ok = false;
+      firstBad = firstBad || el;
+    }
+  };
+
+  check("fullName", data.fullName.length >= 3, "Please enter your full name.");
+  check("email", isValidEmail(data.email), "Please enter a valid email address.");
+  check("phone", isValidNgPhone(data.phone), "Enter a valid Nigerian phone number, e.g. 0813 740 7197 or +234 813 740 7197.");
+  check("password", data.password.length >= 8, "Password must be at least 8 characters.");
+  check("confirmPassword", data.confirmPassword === data.password && data.confirmPassword.length >= 8, "Passwords do not match.");
+
+  if (data.accountType === "Business") {
+    check("businessName", data.businessName.length >= 2, "Please enter your business name.");
+  } else {
+    setFieldError($("#businessName"), "");
+  }
+
+  const termsOk = $("#terms").checked;
+  const termsError = $("#termsError");
+  termsError.textContent = termsOk ? "" : "Please agree to the Terms and Privacy Policy to continue.";
+  termsError.classList.toggle("show", !termsOk);
+  if (!termsOk) {
+    ok = false;
+    firstBad = firstBad || $("#terms");
+  }
+
+  if (firstBad) firstBad.scrollIntoView({ behavior: "smooth", block: "center" });
+  return { ok, data };
+}
+
+function setBusy(button, busy, busyText) {
+  if (!button.dataset.original) button.dataset.original = button.innerHTML;
+  button.disabled = busy;
+  button.innerHTML = busy
+    ? `<span class="spinner"></span> ${busyText}`
+    : button.dataset.original;
+}
+
+$("#signupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#formError").classList.remove("show");
+  $("#formSuccess").classList.remove("show");
+
+  const { ok, data } = collectForm();
+  if (!ok) {
+    showFormError("Please check the highlighted fields and try again.");
+    return;
+  }
+
+  const btn = $("#createBtn");
+  setBusy(btn, true, "Creating your account…");
+
+  try {
+    const { verificationSent } = await createAccountWithEmail(data);
+
+    const success = $("#formSuccess");
+    success.innerHTML = `
+      <b>Welcome to DABOFFOODS &amp; LOGISTICS SERVICES, ${data.fullName.split(" ")[0]}!</b><br>
+      Your account has been created.
+      ${verificationSent
+        ? "We've sent a verification link to your email. Please verify when you can."
+        : "You can verify your email later from your dashboard."}
+      Taking you to your dashboard…`;
+    success.classList.add("show");
+
+    toast("Account created successfully. Welcome!", "success");
+
+    setTimeout(() => {
+      location.href = "account.html?welcome=1";
+    }, 1200);
+  } catch (err) {
+    console.error(err);
+    showFormError(friendlyAuthError(err));
+    setBusy(btn, false);
+  }
+});
+
+/*
+  Google sign-up:
+  - Uses any details already typed in this form as profile hints.
+  - If the Google profile is new and has no phone, the customer is sent
+    to Profile Settings in the dashboard to complete it.
+*/
+$("#googleBtn").addEventListener("click", async () => {
+  $("#formError").classList.remove("show");
+
+  const phoneValue = $("#phone").value.trim();
+  if (phoneValue && !isValidNgPhone(phoneValue)) {
+    setFieldError($("#phone"), "This phone number is not a valid Nigerian number. Correct it, or clear it and add it later in your dashboard.");
+    $("#phone").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  if (!$("#terms").checked) {
+    $("#termsError").textContent = "Please agree to the Terms and Privacy Policy to continue.";
+    $("#termsError").classList.add("show");
+    $("#terms").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const btn = $("#googleBtn");
+  setBusy(btn, true, "Connecting to Google…");
+
+  try {
+    const { data } = collectForm({ validate: false });
+    const extra = {
+      fullName: data.fullName,
+      phone: data.phone,
+      accountType: data.accountType,
+      businessName: data.businessName,
+      defaultAddress: data.defaultAddress,
+      area: data.area,
+      source: data.source,
+      notificationPrefs: data.notificationPrefs
+    };
+
+    const { profile, isNew } = await signInWithGoogle(extra);
+
+    toast(isNew ? "Account created. Welcome to DABOFFOODS & LOGISTICS SERVICES!" : "Welcome back!", "success");
+
+    if (profile?.role === "admin" || profile?.role === "rider") {
+      redirectAfterLogin(profile);
+    } else if (isNew && !profile?.phone) {
+      location.href = "account.html?welcome=1#profile";
+    } else {
+      location.href = "account.html?welcome=1";
+    }
+  } catch (err) {
+    console.error(err);
+    showFormError(friendlyAuthError(err));
+    setBusy(btn, false);
+  }
+});
+</script>
+</body>
+</html>

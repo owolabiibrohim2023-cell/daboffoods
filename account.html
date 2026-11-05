@@ -195,10 +195,6 @@
             <input type="checkbox" id="profilePrefSms">
             <label for="profilePrefSms">SMS alerts</label>
           </div>
-          <div class="check-row">
-            <input type="checkbox" id="profilePrefWhatsapp">
-            <label for="profilePrefWhatsapp">WhatsApp updates</label>
-          </div>
         </fieldset>
 
         <button type="submit" class="btn btn-blue" id="profileSaveBtn">
@@ -236,7 +232,7 @@
 <script type="module">
 import {
   CONFIG, renderChrome, $, $$, esc, toast, confirmDialog,
-  db, fmtMoney, fmtDateTime, waLink, setFieldError,
+  db, fmtMoney, fmtDateTime, setFieldError,
   isValidNgPhone, normalizeNgPhone
 } from "./app.js";
 import {
@@ -254,7 +250,9 @@ import {
   doc, updateDoc, collection, query, where, onSnapshot,
   addDoc, deleteDoc, writeBatch, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+// Backend is now Vercel Serverless Functions (no Cloud Functions).
+import { apiCall } from "./api/_lib/client.js";
+import { auth as firebaseAuth } from "./app.js";
 
 renderChrome("account.html");
 setupPasswordToggles();
@@ -265,7 +263,7 @@ let listenersStarted = false;
 let profileFilled = false;
 let ordersById = {};
 let addressesById = {};
-const functions = getFunctions();
+/* Payment/shipping backend lives on Vercel (see apiCall helper). */
 
 /* ---------------- Tabs ---------------- */
 function activateTab(name, updateHash = true) {
@@ -428,9 +426,8 @@ function bindOrderButtons() {
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner"></span> Connecting to Paystack…`;
     try {
-      const initializePayment = httpsCallable(functions, "initializePaystackPayment");
-      const result = await initializePayment({ orderId: btn.dataset.pay });
-      const checkoutUrl = result.data?.authorizationUrl;
+      const result = await apiCall("/api/payments/initialize", { orderId: btn.dataset.pay }, firebaseAuth);
+      const checkoutUrl = result.authorizationUrl;
       if (!checkoutUrl || !checkoutUrl.startsWith("https://checkout.paystack.com/")) throw new Error("Paystack did not return a valid checkout URL.");
       location.assign(checkoutUrl);
     } catch (error) {
@@ -517,9 +514,8 @@ function orderCardHtml(o) {
       <button type="button" class="btn btn-ghost btn-sm" data-reorder="${esc(o.orderId)}">
         <i class="fa-solid fa-rotate-right"></i> Repeat this shipment request
       </button>
-      <a class="btn btn-wa btn-sm" target="_blank" rel="noopener"
-         href="${waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help with my shipment ${o.orderId}.`)}">
-        <i class="fa-brands fa-whatsapp"></i> Help
+      <a class="btn btn-ghost btn-sm" href="contact.html">
+        <i class="fa-solid fa-paper-plane"></i> Support
       </a>
     </div>
   </article>`;
@@ -549,9 +545,8 @@ function listenToPayments(uid) {
 
 async function listenToShipments() {
   try {
-    const listShipments = httpsCallable(functions, "listMyShipments");
-    const result = await listShipments({});
-    const shipments = result.data?.shipments || [];
+    const result = await apiCall("/api/shipment/mine", {}, firebaseAuth);
+    const shipments = result.shipments || [];
     $("#shipmentHistory").innerHTML = shipments.length ? shipments.map(shipment => `
       <article class="order-row" style="margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
@@ -576,12 +571,11 @@ async function verifyPaymentReturn() {
   notice.textContent = "Verifying your Paystack payment securely…";
   $("#panel-orders").prepend(notice);
   try {
-    const verifyPayment = httpsCallable(functions, "verifyPaystackPayment");
-    const result = await verifyPayment({ reference });
-    notice.className = `alert ${result.data?.verified ? "alert-success" : "alert-info"} show`;
-    notice.textContent = result.data?.verified
+    const result = await apiCall("/api/payments/verify", { reference }, firebaseAuth);
+    notice.className = `alert ${result.verified ? "alert-success" : "alert-info"} show`;
+    notice.textContent = result.verified
       ? "Payment verified successfully. Your order payment status is updated."
-      : `Payment status: ${result.data?.status || "pending"}. If you completed checkout, refresh shortly or contact support.`;
+      : `Payment status: ${result.status || "pending"}. If you completed checkout, refresh shortly or contact support.`;
   } catch (error) {
     console.error(error);
     notice.className = "alert alert-error show";
@@ -848,7 +842,6 @@ function fillProfileForm(user, profile) {
   const prefs = profile.notificationPrefs || {};
   $("#profilePrefEmail").checked = prefs.email !== false;
   $("#profilePrefSms").checked = prefs.sms !== false;
-  $("#profilePrefWhatsapp").checked = prefs.whatsapp !== false;
 
   syncProfileBusinessField();
 }
@@ -906,8 +899,7 @@ $("#profileForm").addEventListener("submit", async e => {
       phoneIntl: normalizeNgPhone(data.phone),
       notificationPrefs: {
         email: $("#profilePrefEmail").checked,
-        sms: $("#profilePrefSms").checked,
-        whatsapp: $("#profilePrefWhatsapp").checked
+        sms: $("#profilePrefSms").checked
       },
       updatedAt: serverTimestamp()
     };

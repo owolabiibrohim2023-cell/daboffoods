@@ -30,7 +30,7 @@
   <div class="section-head reveal"><span class="kicker">International services</span><h2>Shipping and export support</h2><p>Food exports are subject to applicable shipping and customs requirements. Customs clearance support is available at destination countries.</p></div>
   <div class="card reveal"><b style="color:var(--blue-dark)">Destinations</b>
     <div class="chips" id="coverageChips" style="margin-top:12px"></div>
-    <p class="small muted" style="margin-top:14px">Need to confirm a destination? <a id="covWa" target="_blank" rel="noopener">Ask us on WhatsApp</a>.</p></div>
+    <p class="small muted" style="margin-top:14px">Need to confirm a destination? <a href="book.html">Book online</a> — we'll confirm availability before you pay.</p></div>
 </div></section>
 
 <section class="section"><div class="container" style="max-width:860px">
@@ -45,10 +45,9 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, $, esc, waLink } from "./app.js";
+import { CONFIG, renderChrome, $, esc } from "./app.js";
 
 renderChrome("pricing.html");
-$("#covWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to confirm whether you can ship to this destination: ");
 
 $("#coverageChips").innerHTML = CONFIG.coverage.map(c =>
   `<span class="chip" style="cursor:default"><i class="fa-solid fa-location-dot"></i> ${esc(c)}</span>`).join("");

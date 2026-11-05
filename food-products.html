@@ -28,8 +28,8 @@
       <p>Ask us about current product options, quantities, prices and delivery. Prices, stock and packaging details are confirmed directly with our team.</p></div>
     <div class="food-grid" id="foodProductsGrid" aria-live="polite"></div>
     <div class="food-actions">
-      <a class="btn btn-blue" id="bulkOrderLink" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Enquire about bulk orders</a>
-      <a class="btn btn-orange" id="exportEnquiryLink" target="_blank" rel="noopener"><i class="fa-solid fa-earth-africa"></i> International export enquiry</a>
+      <a class="btn btn-blue" href="book.html?service=Food%20Export%20Services"><i class="fa-solid fa-box"></i> Start a bulk order</a>
+      <a class="btn btn-orange" href="book.html?service=Food%20Export%20Services"><i class="fa-solid fa-earth-africa"></i> International export enquiry</a>
     </div>
   </div>
 </section>
@@ -40,20 +40,17 @@
       <div class="icon-badge orange" style="margin-inline:auto"><i class="fa-solid fa-box-open"></i></div>
       <h2>Looking for something specific?</h2>
       <p class="muted" style="max-width:620px;margin:0 auto 18px">Send us the product name and your destination. We can discuss sourcing, order quantities and available delivery options directly with you.</p>
-      <a class="btn btn-wa" id="catalogueHelpLink" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask DABOFFOODS</a>
+      <a class="btn btn-blue" href="contact.html"><i class="fa-solid fa-paper-plane"></i> Ask DABOFFOODS</a>
     </div>
   </div>
 </section>
 </main>
 <div id="siteFooter"></div>
 <script type="module">
-import { renderChrome, waLink } from "./app.js";
-import { BULK_ORDER_MESSAGE, FOOD_EXPORT_MESSAGE, renderProductCards } from "./products.js";
+import { renderChrome } from "./app.js";
+import { renderProductCards } from "./products.js";
 renderChrome("food-products.html");
 renderProductCards(document.querySelector("#foodProductsGrid"));
-document.querySelector("#bulkOrderLink").href = waLink(BULK_ORDER_MESSAGE);
-document.querySelector("#exportEnquiryLink").href = waLink(FOOD_EXPORT_MESSAGE);
-document.querySelector("#catalogueHelpLink").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to ask about your Nigerian food products. Please share current availability, prices and delivery options.");
 </script>
 </body>
 </html>

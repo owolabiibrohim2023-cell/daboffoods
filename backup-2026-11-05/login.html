@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign In | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Sign in to your account to view shipment requests and manage your profile.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+
+<main>
+<section class="section" style="background:var(--bg)"><div class="container">
+  <div class="auth-wrap">
+    <div class="section-head" style="margin-bottom:22px">
+      <span class="kicker">Welcome Back</span>
+      <h1 style="font-size:1.85rem">Sign in to DABOFFOODS &amp; LOGISTICS SERVICES</h1>
+      <p>Access your orders, saved addresses and faster repeat bookings.</p>
+    </div>
+
+    <form class="form-card" id="loginForm" novalidate>
+      <div class="alert alert-error" id="formError"></div>
+      <div class="alert alert-success" id="formSuccess"></div>
+
+      <!-- Unverified email notice: shown after successful password login if needed -->
+      <div class="alert alert-info hidden" id="verifyNotice" style="display:none">
+        <b>Please verify your email.</b><br>
+        Your account works, but verifying your email helps keep it secure and ensures delivery alerts reach you.
+        <div class="btn-row" style="margin-top:12px">
+          <button type="button" class="btn btn-blue btn-sm" id="resendVerifyBtn">
+            <i class="fa-solid fa-envelope"></i> Resend verification email
+          </button>
+          <button type="button" class="btn btn-orange btn-sm" id="continueBtn">
+            Continue to dashboard
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email address <span class="req">*</span></label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+        <p class="field-error"></p>
+      </div>
+
+      <div class="field">
+        <label for="password">Password <span class="req">*</span></label>
+        <div class="pw-wrap">
+          <input id="password" type="password" autocomplete="current-password" placeholder="Your password">
+          <button type="button" class="pw-toggle" data-target="password">Show</button>
+        </div>
+        <p class="field-error"></p>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+        <div class="check-row" style="padding:0">
+          <input type="checkbox" id="rememberMe" checked>
+          <label for="rememberMe">Remember me</label>
+        </div>
+        <button type="button" id="forgotBtn" style="background:none;border:0;color:var(--blue);font:600 .93rem var(--font);cursor:pointer;padding:8px">
+          Forgot password?
+        </button>
+      </div>
+
+      <button class="btn btn-orange btn-block" id="loginBtn" type="submit">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </button>
+
+      <div class="divider">or</div>
+
+      <button class="btn btn-google btn-block" id="googleBtn" type="button">
+        <i class="fa-brands fa-google" style="color:#ea4335"></i> Continue with Google
+      </button>
+
+      <p class="text-center" style="margin-top:20px">
+        New here? <a href="signup.html"><b>Create an account</b></a>
+      </p>
+
+      <p class="text-center small muted">
+        No account needed for a one-off delivery —
+        <a href="book.html"><b>continue as guest</b></a>
+      </p>
+    </form>
+  </div>
+</div></section>
+</main>
+
+<div id="siteFooter"></div>
+
+<script type="module">
+import {
+  renderChrome, $, toast, setFieldError, isValidEmail
+} from "./app.js";
+import {
+  signInWithEmail,
+  signInWithGoogle,
+  sendResetPassword,
+  resendVerification,
+  friendlyAuthError,
+  setupPasswordToggles,
+  redirectAfterLogin,
+  hasPasswordProvider
+} from "./auth.js";
+
+renderChrome("login.html");
+setupPasswordToggles();
+
+let pendingProfile = null;
+
+function setBusy(button, busy, busyText) {
+  if (!button.dataset.original) button.dataset.original = button.innerHTML;
+  button.disabled = busy;
+  button.innerHTML = busy
+    ? `<span class="spinner"></span> ${busyText}`
+    : button.dataset.original;
+}
+
+function showAlert(type, message) {
+  const id = type === "success" ? "#formSuccess" : "#formError";
+  const el = $(id);
+  el.innerHTML = message;
+  el.classList.add("show");
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function clearAlerts() {
+  $("#formError").classList.remove("show");
+  $("#formSuccess").classList.remove("show");
+}
+
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  clearAlerts();
+  $("#verifyNotice").style.display = "none";
+
+  const email = $("#email").value.trim().toLowerCase();
+  const password = $("#password").value;
+  let ok = true;
+
+  if (!isValidEmail(email)) {
+    setFieldError($("#email"), "Please enter a valid email address.");
+    ok = false;
+  } else {
+    setFieldError($("#email"), "");
+  }
+
+  if (!password) {
+    setFieldError($("#password"), "Please enter your password.");
+    ok = false;
+  } else {
+    setFieldError($("#password"), "");
+  }
+
+  if (!ok) return;
+
+  const btn = $("#loginBtn");
+  setBusy(btn, true, "Signing you in…");
+
+  try {
+    const { user, profile } = await signInWithEmail(
+      email,
+      password,
+      $("#rememberMe").checked
+    );
+
+    pendingProfile = profile;
+
+    if (hasPasswordProvider(user) && !user.emailVerified) {
+      $("#verifyNotice").style.display = "block";
+      $("#verifyNotice").classList.add("show");
+      toast("Signed in. Please verify your email when you can.", "success");
+      setBusy(btn, false);
+      return;
+    }
+
+    toast("Welcome back!", "success");
+    redirectAfterLogin(profile);
+  } catch (err) {
+    console.error(err);
+    showAlert("error", friendlyAuthError(err));
+    setBusy(btn, false);
+  }
+});
+
+$("#resendVerifyBtn").addEventListener("click", async () => {
+  const btn = $("#resendVerifyBtn");
+  setBusy(btn, true, "Sending…");
+  try {
+    await resendVerification();
+    toast("Verification email sent. Please check your inbox and spam folder.", "success");
+  } catch (err) {
+    toast(friendlyAuthError(err), "error");
+  } finally {
+    setBusy(btn, false);
+  }
+});
+
+$("#continueBtn").addEventListener("click", () => {
+  redirectAfterLogin(pendingProfile);
+});
+
+$("#googleBtn").addEventListener("click", async () => {
+  clearAlerts();
+  const btn = $("#googleBtn");
+  setBusy(btn, true, "Connecting to Google…");
+
+  try {
+    const { profile, isNew } = await signInWithGoogle();
+    toast(isNew ? "Account created. Welcome!" : "Welcome back!", "success");
+
+    if (isNew && !profile?.phone && profile?.role === "customer") {
+      location.href = "account.html?welcome=1#profile";
+    } else {
+      redirectAfterLogin(profile);
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert("error", friendlyAuthError(err));
+    setBusy(btn, false);
+  }
+});
+
+/* Forgot password uses the email already typed above */
+$("#forgotBtn").addEventListener("click", async () => {
+  clearAlerts();
+
+  const email = $("#email").value.trim().toLowerCase();
+  if (!isValidEmail(email)) {
+    setFieldError($("#email"), "Enter your account email first, then tap “Forgot password?” again.");
+    $("#email").focus();
+    $("#email").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const btn = $("#forgotBtn");
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Sending reset email…";
+
+  try {
+    await sendResetPassword(email);
+    showAlert(
+      "success",
+      `<b>Password reset email sent.</b><br>
+       If an account exists for <b>${email}</b>, you'll receive a link to create a new password.
+       Please also check your spam/junk folder.`
+    );
+  } catch (err) {
+    console.error(err);
+    showAlert("error", friendlyAuthError(err));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+</script>
+</body>
+</html>

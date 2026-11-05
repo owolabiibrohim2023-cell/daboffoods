@@ -95,7 +95,7 @@
   <div class="food-grid" id="homeFoodGrid" aria-live="polite"></div>
   <div class="food-actions">
     <a class="btn btn-blue" href="food-products.html">Browse all food products <i class="fa-solid fa-arrow-right"></i></a>
-    <a class="btn btn-wa" id="bulkFoodWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Bulk order enquiry</a>
+    <a class="btn btn-orange" href="book.html?service=Food%20Export%20Services"><i class="fa-solid fa-box"></i> Start a bulk order</a>
   </div>
 </div></section>
 
@@ -108,16 +108,16 @@
 <!-- ================= HOW IT WORKS v2 ================= -->
 <section class="section alt"><div class="container">
   <div class="section-head reveal"><span class="kicker">How It Works</span>
-    <h2>Simple from start to finish</h2><p>No payment gateway, no wahala — you confirm everything with a real person on WhatsApp.</p></div>
+    <h2>Order, pay and track — all on this website</h2><p>No apps, no phone tag. Everything happens in your browser, and your payment is verified securely before it counts.</p></div>
   <div class="lp-steps">
     <div class="card lp-step reveal"><span class="num">01</span><div class="ic"><i class="fa-solid fa-pen-to-square"></i></div>
-      <h3>Request a shipment</h3><p class="muted">Send your shipment details and receive a unique reference. No account needed.</p></div>
-    <div class="card lp-step reveal"><span class="num">02</span><div class="ic"><i class="fa-brands fa-whatsapp"></i></div>
-      <h3>Confirm on WhatsApp</h3><p class="muted">Your order opens in WhatsApp. We confirm final price, pickup time and payment details with you.</p></div>
+      <h3>Request a shipment</h3><p class="muted">Send your shipment details and receive a tracking number. No account needed.</p></div>
+    <div class="card lp-step reveal"><span class="num">02</span><div class="ic"><i class="fa-solid fa-credit-card"></i></div>
+      <h3>Pay online with Paystack</h3><p class="muted">We confirm your final price, then you pay by card or bank transfer. Your payment is verified automatically — success, failure and pending states are shown clearly.</p></div>
     <div class="card lp-step reveal"><span class="num">03</span><div class="ic"><i class="fa-solid fa-motorcycle"></i></div>
-      <h3>We pickup &amp; ride</h3><p class="muted">Our rider collects your parcel. Follow them live on the map and reach them by call or WhatsApp.</p></div>
+      <h3>We pickup &amp; ride</h3><p class="muted">Our rider collects your parcel. Follow them live on the map and call them from the tracking page.</p></div>
     <div class="card lp-step reveal"><span class="num">04</span><div class="ic"><i class="fa-solid fa-house-circle-check"></i></div>
-      <h3>Delivered safely</h3><p class="muted">Your goods reach their final destination. You and your receiver get instant confirmation.</p></div>
+      <h3>Delivered safely</h3><p class="muted">Your goods reach their final destination. Track every step on the tracking page — no need to message us.</p></div>
   </div>
 </div></section>
 
@@ -206,7 +206,7 @@
         <li><i class="fa-solid fa-check"></i> Doorstep delivery options</li>
         <li><i class="fa-solid fa-check"></i> Customs clearance support</li>
       </ul>
-      <a class="btn btn-orange" id="exportQuoteWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Request an Export Quote</a>
+      <a class="btn btn-orange" href="book.html?service=Food%20Export%20Services"><i class="fa-solid fa-box"></i> Request an Export Quote</a>
     </div>
   </div></div>
 </div></section>
@@ -251,7 +251,7 @@
     <p style="margin:10px auto 22px;max-width:540px;color:#d7e5ff">Let us handle your shipping and export needs with convenient international logistics solutions.</p>
     <div class="btn-row" style="justify-content:center">
       <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Request a Shipment</a>
-      <a class="btn btn-wa" id="ctaWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a>
+      <a class="btn btn-outline-white" href="track.html"><i class="fa-solid fa-location-crosshairs"></i> Track a Shipment</a>
       <a class="btn btn-outline-white" href="contact.html"><i class="fa-solid fa-phone"></i> Contact Our Team</a>
     </div>
   </div>
@@ -260,9 +260,9 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, waLink, esc, $, $$, toast } from "./app.js";
+import { CONFIG, renderChrome, esc, $, $$, toast } from "./app.js";
 import { renderServiceCards } from "./services.js";
-import { BULK_ORDER_MESSAGE, FOOD_EXPORT_MESSAGE, FOOD_PRODUCTS, renderProductCards } from "./products.js";
+import { FOOD_PRODUCTS, renderProductCards } from "./products.js";
 renderChrome("index.html");
 renderServiceCards($("#homeServicesGrid"));
 renderProductCards($("#homeFoodGrid"), FOOD_PRODUCTS.slice(0, 4));
@@ -280,9 +280,7 @@ $("#quickTrack").addEventListener("submit", e => {
   if (!id) return toast("Please enter your tracking number.", "error");
   location.href = "track.html?id=" + encodeURIComponent(id);
 });
-$("#ctaWa").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I would like to request an international shipment quotation.");
-$("#bulkFoodWa").href = waLink(BULK_ORDER_MESSAGE);
-$("#exportQuoteWa").href = waLink(FOOD_EXPORT_MESSAGE);
+/* CTAs now route to the booking form (order + pay online) instead of WhatsApp. */
 
 /* Scrolling marquee */
 const marqueeItems = ["International shipping","Freight forwarding","Food exports","UK cargo","USA cargo","Customs support","Doorstep delivery"];

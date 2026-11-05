@@ -134,6 +134,7 @@ function publicShipment(shipment, events) {
     shipmentId: shipment.shipmentId, orderId: shipment.orderId, carrier: shipment.carrier,
     trackingNumber: shipment.trackingNumber, origin: shipment.origin || "", destination: shipment.destination || "",
     shipmentStatus: shipment.shipmentStatus, estimatedDelivery: shipment.estimatedDelivery || null,
+    latestUpdate: shipment.latestUpdate || "",
     createdAt: shipment.createdAt?.toDate ? shipment.createdAt.toDate().toISOString() : shipment.createdAt || null,
     updatedAt: shipment.updatedAt?.toDate ? shipment.updatedAt.toDate().toISOString() : shipment.updatedAt || null,
     events: events.map(event => ({ status: event.status, description: event.description,

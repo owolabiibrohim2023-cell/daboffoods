@@ -44,7 +44,7 @@
 
     <form class="form-card reveal" id="applyForm" novalidate>
       <h2 style="font-size:1.3rem">Apply in 1 minute</h2>
-      <p class="small muted" style="margin-bottom:16px">Your application goes straight to our admin inbox, and you can also send it on WhatsApp.</p>
+      <p class="small muted" style="margin-bottom:16px">Your application goes straight to our admin inbox.</p>
       <div class="alert alert-success" id="aSuccess"></div>
       <div class="field"><label for="aName">Full name <span class="req">*</span></label><input id="aName" autocomplete="name"><p class="field-error"></p></div>
       <div class="field"><label for="aPhone">Phone / WhatsApp number <span class="req">*</span></label><input id="aPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0802 431 1091"><p class="field-error"></p></div>
@@ -63,7 +63,6 @@
       <div class="field"><label for="aExperience">Delivery experience</label>
         <textarea id="aExperience" placeholder="e.g. 2 years dispatch riding around Ikeja & Island; worked with online vendors…"></textarea><p class="field-error"></p></div>
       <button class="btn btn-orange btn-block" id="aSubmit" type="submit"><i class="fa-solid fa-paper-plane"></i> Submit application</button>
-      <a class="btn btn-wa btn-block hidden" id="aSendWa" target="_blank" rel="noopener" style="margin-top:10px"><i class="fa-brands fa-whatsapp"></i> Also send on WhatsApp</a>
       <p class="small muted text-center" style="margin-top:12px">By applying you agree we may contact you about this application. See our <a href="legal.html#privacy">Privacy Policy</a>.</p>
     </form>
   </div>
@@ -72,7 +71,7 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { renderChrome, $, toast, db, firebaseReady, waLink, isValidNgPhone, isValidEmail, setFieldError, esc } from "./app.js";
+import { renderChrome, $, toast, db, firebaseReady, isValidNgPhone, isValidEmail, setFieldError, esc } from "./app.js";
 import { collection, addDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -104,9 +103,6 @@ $("#applyForm").addEventListener("submit", async e => {
   const btn = $("#aSubmit"), original = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = `<span class="spinner"></span> Submitting…`;
 
-  $("#aSendWa").href = waLink(
-    `Hello DABOFFOODS & LOGISTICS SERVICES, I'd like to apply for a logistics role.\n\nName: ${data.name}\nPhone: ${data.phone}\nLocation: ${data.location}\nVehicle: ${data.vehicleType}\n${data.experience}`);
-
   let saved = false;
   if (firebaseReady && db) {
     try {
@@ -119,11 +115,10 @@ $("#applyForm").addEventListener("submit", async e => {
 
   const box = $("#aSuccess");
   box.innerHTML = saved
-    ? `<b>Application received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>Our team will contact you about any next steps. You can also follow up on WhatsApp below.`
-    : `<b>Almost done!</b><br>Our online inbox is unreachable right now — tap the WhatsApp button below and your application will open ready to send.`;
+    ? `<b>Application received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>Our team will contact you about any next steps.`
+    : `<b>We couldn't save your application right now.</b><br>Please try again in a moment, or call us at <a href="tel:+2348024311091"><b>0802 431 1091</b></a>.`;
   box.classList.add("show");
-  $("#aSendWa").classList.remove("hidden");
-  toast(saved ? "Application submitted!" : "Please send via WhatsApp to complete your application.", saved ? "success" : "info");
+  toast(saved ? "Application submitted!" : "Application not saved — please try again.", saved ? "success" : "error");
 
   e.target.reset();
   btn.disabled = false; btn.innerHTML = original; sending = false;

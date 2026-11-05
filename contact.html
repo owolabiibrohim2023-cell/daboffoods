@@ -24,7 +24,7 @@
 <section class="section"><div class="container">
   <div class="grid grid-4" style="margin-bottom:26px">
     <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-phone"></i></div><h3>Call us</h3><p class="muted"><a href="tel:+2348024311091"><b>0802 431 1091</b></a></p></div>
-    <div class="card reveal"><div class="icon-badge orange"><i class="fa-brands fa-whatsapp"></i></div><h3>WhatsApp</h3><p class="muted"><a id="cWaCard" target="_blank" rel="noopener"><b>Chat now →</b></a><br>Fastest response</p></div>
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-brands fa-whatsapp"></i></div><h3>WhatsApp (support)</h3><p class="muted"><a id="cWaCard" target="_blank" rel="noopener"><b>Chat now →</b></a><br>Optional — ordering &amp; payment happen on this website</p></div>
     <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-location-dot"></i></div><h3>Visit us</h3><p class="muted" id="cAddress">—</p></div>
     <div class="card reveal"><div class="icon-badge orange"><i class="fa-regular fa-clock"></i></div><h3>Working hours</h3><p class="muted" id="cHours">—</p><p id="cOpenBadge" style="margin-top:6px"></p></div>
   </div>
@@ -33,7 +33,7 @@
     <!-- Contact form: saves to Firestore messages + offers WhatsApp send -->
     <form class="form-card reveal" id="contactForm" novalidate>
       <h2 style="font-size:1.3rem">Send us a message</h2>
-      <p class="small muted" style="margin-bottom:16px">Submit your enquiry and, if preferred, open the same message in WhatsApp.</p>
+      <p class="small muted" style="margin-bottom:16px">Submit your enquiry below — our team replies during working hours.</p>
       <div class="alert alert-error" id="cError"></div>
       <div class="alert alert-success" id="cSuccess"></div>
       <div class="form-grid">
@@ -46,7 +46,6 @@
         <div class="field span-2"><label for="cMessage">Message <span class="req">*</span></label><textarea id="cMessage" placeholder="How can we help?"></textarea><p class="field-error"></p></div>
       </div>
       <button class="btn btn-orange btn-block" id="cSubmit" type="submit"><i class="fa-solid fa-paper-plane"></i> Send message</button>
-      <a class="btn btn-wa btn-block hidden" id="cSendWa" target="_blank" rel="noopener" style="margin-top:10px"><i class="fa-brands fa-whatsapp"></i> Also send it on WhatsApp now</a>
     </form>
 
     <div class="reveal">
@@ -61,7 +60,7 @@
       </div>
       <div class="card" style="margin-top:16px">
         <h3><i class="fa-solid fa-circle-info" style="color:var(--blue)"></i> Faster help for live orders</h3>
-        <p class="muted" style="margin-top:8px">Already have an Order ID? <a href="track.html"><b>Track it here</b></a> — you can also call or WhatsApp your rider directly from the tracking page while delivery is in progress.</p>
+        <p class="muted" style="margin-top:8px">Already have a tracking number? <a href="track.html"><b>Track it here</b></a> — you can also call your rider directly from the tracking page while delivery is in progress.</p>
       </div>
     </div>
   </div>
@@ -70,7 +69,7 @@
 <div id="siteFooter"></div>
 
 <script type="module">
-import { CONFIG, renderChrome, $, toast, db, firebaseReady, waLink, businessOpen,
+import { CONFIG, renderChrome, $, toast, db, firebaseReady,
   hoursText, isValidNgPhone, isValidEmail, setFieldError, esc } from "./app.js";
 import { collection, addDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -108,10 +107,7 @@ $("#contactForm").addEventListener("submit", async e => {
   const btn = $("#cSubmit"), original = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = `<span class="spinner"></span> Sending…`;
 
-  const waText = `Hello DABOFFOODS & LOGISTICS SERVICES, my name is ${data.name}.\nEnquiry: ${data.subject}${data.orderId ? `\nShipment reference: ${data.orderId}` : ""}\n\n${data.message}\n\nMy phone: ${data.phone}`;
-  const sendWaBtn = $("#cSendWa");
-  sendWaBtn.href = waLink(waText);
-
+  // WhatsApp is optional support only — the form itself is the primary channel.
   let saved = false;
   if (firebaseReady && db) {
     try {
@@ -127,11 +123,10 @@ $("#contactForm").addEventListener("submit", async e => {
 
   const success = $("#cSuccess");
   success.innerHTML = saved
-    ? `<b>Message received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>We'll reply soon during working hours. For an instant response, also send it on WhatsApp below.`
-    : `<b>Almost there!</b><br>Our message inbox is unreachable right now, but no wahala — tap the WhatsApp button below and your exact message will open ready to send.`;
+    ? `<b>Message received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>We'll reply soon during working hours.`
+    : `<b>We couldn't save your message right now.</b><br>Please try again in a moment, or call us at <a href="tel:+2348024311091"><b>0802 431 1091</b></a>.`;
   success.classList.add("show");
-  sendWaBtn.classList.remove("hidden");
-  toast(saved ? "Message sent successfully." : "Please send via WhatsApp to reach us instantly.", saved ? "success" : "info");
+  toast(saved ? "Message sent successfully." : "Message not saved — please try again.", saved ? "success" : "error");
 
   e.target.reset();
   btn.disabled = false; btn.innerHTML = original; sending = false;

@@ -10,7 +10,8 @@ import { watchAuth, signInWithEmail, signOutUser, friendlyAuthError, setupPasswo
 import { getApp, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth as getAuthFor, createUserWithEmailAndPassword, signOut as signOutAuth }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+// Backend is now Vercel Serverless Functions (no Cloud Functions).
+import { apiCall } from "./api/_lib/client.js";
 import { auth as firebaseAuth } from "./app.js";
 import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot,
   arrayUnion, serverTimestamp }
@@ -206,8 +207,7 @@ function renderShipments() {
     button.disabled = true;
     const old = button.innerHTML; button.innerHTML = `<span class="spinner"></span>`;
     try {
-      const refresh = httpsCallable(getFunctions(), "trackUpsShipment");
-      await refresh({ shipmentId: button.dataset.upsRefresh });
+      await apiCall("/api/shipment/ups-refresh", { shipmentId: button.dataset.upsRefresh }, firebaseAuth);
       toast("UPS tracking information refreshed.", "success");
     } catch (error) { toast(error.message || "UPS tracking refresh failed.", "error"); }
     finally { button.disabled = false; button.innerHTML = old; }
@@ -228,14 +228,12 @@ $("#shipmentForm").addEventListener("submit", async event => {
   button.disabled = true; button.innerHTML = `<span class="spinner"></span> Saving…`;
   try {
     if (shipmentId) {
-      const update = httpsCallable(getFunctions(), "updateShipment");
-      await update({ shipmentId, carrier: data.carrier, trackingNumber: data.trackingNumber, origin: data.origin,
-        destination: data.destination, shipmentStatus: data.shipmentStatus, estimatedDelivery: data.estimatedDelivery });
+      await apiCall("/api/admin/shipments", { action: "update", shipmentId, carrier: data.carrier, trackingNumber: data.trackingNumber, origin: data.origin,
+        destination: data.destination, shipmentStatus: data.shipmentStatus, estimatedDelivery: data.estimatedDelivery }, firebaseAuth);
       toast("Shipment updated.", "success");
     } else {
-      const create = httpsCallable(getFunctions(), "createShipment");
-      const result = await create(data);
-      toast(`Shipment ${result.data.shipmentId} registered.`, "success");
+      const result = await apiCall("/api/admin/shipments", { action: "create", ...data }, firebaseAuth);
+      toast(`Shipment ${result.shipmentId} registered.`, "success");
     }
     event.target.reset(); $("#shipmentEditId").value = "";
     button.innerHTML = `<i class="fa-solid fa-plus"></i> Create shipment`;
@@ -246,11 +244,10 @@ $("#shipmentForm").addEventListener("submit", async event => {
 $("#trackingEventForm").addEventListener("submit", async event => {
   event.preventDefault();
   try {
-    const addEvent = httpsCallable(getFunctions(), "addTrackingEvent");
     const occurredAt = $("#eventTime").value ? new Date($("#eventTime").value).toISOString() : null;
-    const result = await addEvent({ shipmentId: $("#eventShipment").value, status: $("#eventStatus").value,
-      description: $("#eventDescription").value.trim(), location: $("#eventLocation").value.trim(), occurredAt });
-    toast(result.data.duplicate ? "This tracking event already exists." : "Tracking event added.", result.data.duplicate ? "info" : "success");
+    const result = await apiCall("/api/admin/shipments", { action: "add-event", shipmentId: $("#eventShipment").value, status: $("#eventStatus").value,
+      description: $("#eventDescription").value.trim(), location: $("#eventLocation").value.trim(), occurredAt }, firebaseAuth);
+    toast(result.duplicate ? "This tracking event already exists." : "Tracking event added.", result.duplicate ? "info" : "success");
     event.target.reset();
   } catch (error) { toast(error.message || "Tracking event could not be added.", "error"); }
 });
@@ -259,8 +256,7 @@ $("#refreshUpsBtn").addEventListener("click", async () => {
   const shipmentId = $("#eventShipment").value;
   if (!shipmentId) return toast("Select an existing shipment first.", "error");
   try {
-    const refresh = httpsCallable(getFunctions(), "trackUpsShipment");
-    await refresh({ shipmentId });
+    await apiCall("/api/shipment/ups-refresh", { shipmentId }, firebaseAuth);
     toast("UPS tracking information refreshed.", "success");
   } catch (error) { toast(error.message || "UPS tracking refresh failed.", "error"); }
 });
@@ -399,8 +395,7 @@ $("#detailForm").addEventListener("submit", async e => {
     await updateDoc(doc(db, "orders", before.orderId), updates);
     const newCustomerId = $("#dCustomer").value;
     if (newCustomerId && newCustomerId !== before.customerUid) {
-      const linkOrder = httpsCallable(getFunctions(), "linkOrderToCustomer");
-      await linkOrder({ orderId: before.orderId, customerId: newCustomerId });
+      await apiCall("/api/admin/link-order", { orderId: before.orderId, customerId: newCustomerId }, firebaseAuth);
     }
     if (["Delivered", "Cancelled"].includes(after.status)) { try { await deleteDoc(doc(db, "riderLocations", before.orderId)); } catch {} }
     await emailFallback(before, after);
@@ -698,11 +693,11 @@ function renderAlerts() {
   $$("[data-resend]").forEach(b => b.onclick = async () => {
     b.disabled = true; const original = b.innerHTML; b.innerHTML = `<span class="spinner"></span>`;
     try {
-      const fn = httpsCallable(getFunctions(), "resendAlert");
-      await fn({ alertId: b.dataset.resend });
-      toast("Alert resent.", "success");
+      // Alert resend was a Cloud Functions callable; the Vercel backend does
+      // not include email/SMS sending. Alert history itself remains visible.
+      toast("Alert resend is unavailable on the Vercel backend. Status changes still update the dashboard.", "info");
     } catch (e) {
-      toast("Resend needs Cloud Functions deployed (Part 6). " + (e.message || ""), "error");
+      toast(e.message || "Resend unavailable.", "error");
     } finally { b.disabled = false; b.innerHTML = original; }
   });
 }
@@ -806,8 +801,7 @@ $("#dCollectCod").addEventListener("click", async () => {
   const button = $("#dCollectCod"), original = button.innerHTML;
   button.disabled = true; button.innerHTML = `<span class="spinner"></span> Recording…`;
   try {
-    const record = httpsCallable(getFunctions(), "recordCodCollection");
-    await record({ orderId: S.current.orderId });
+    await apiCall("/api/payments/cod-collect", { orderId: S.current.orderId }, firebaseAuth);
     toast("COD collection recorded by the backend.", "success");
   } catch (error) {
     toast(error.message || "Could not record COD collection.", "error");

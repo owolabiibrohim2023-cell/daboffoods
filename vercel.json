@@ -1,5 +1,6 @@
 {
   "functions": {
-    "api/promote-admin.js": { "maxDuration": 15 }
+    "api/**/*.js": { "maxDuration": 30 },
+    "api/webhooks/paystack.js": { "maxDuration": 60 }
   }
 }

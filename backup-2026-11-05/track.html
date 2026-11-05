@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Track Your Shipment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Look up recorded status updates for your DABOFFOODS & LOGISTICS SERVICES shipment using its tracking number.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* LEAFLET custom pins (avoids default marker-image issues) */
+  .fl-pin{width:38px;height:38px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);
+    display:grid;place-items:center;border:2.5px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+  .fl-pin i{transform:rotate(45deg);color:#fff;font-size:16px}
+  .fl-pin.rider{background:#FF7A00}.fl-pin.pickup{background:#0B3D91}.fl-pin.drop{background:#12805c}
+</style>
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:var(--bg)"><div class="container" style="max-width:820px">
+  <div class="section-head">
+    <span class="kicker">Track Shipment</span>
+    <h1 style="font-size:1.8rem">Check your shipment status</h1>
+    <p>Enter the tracking number provided for your shipment. Only recorded status updates will be shown.</p>
+  </div>
+
+  <form class="form-card" id="trackForm" style="padding:20px">
+    <div style="display:flex;gap:8px">
+      <input id="orderIdInput" placeholder="Enter your tracking number" autocomplete="off"
+             aria-label="Order ID" style="flex:1;min-width:0;text-transform:uppercase;font-weight:600">
+      <button class="btn btn-orange" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Track</button>
+    </div>
+    <div id="recentWrap" class="hidden">
+      <p class="small muted" style="margin-top:14px;font-weight:600">My recent orders on this device:</p>
+      <div class="chips" id="recentChips"></div>
+    </div>
+  </form>
+
+  <!-- Loading -->
+  <div id="loading" class="hidden" style="margin-top:18px">
+    <div class="card"><div class="skeleton" style="width:45%"></div>
+      <div class="skeleton" style="width:80%;margin-top:12px"></div>
+      <div class="skeleton" style="width:65%;margin-top:12px"></div></div>
+  </div>
+
+  <!-- Not found -->
+  <div id="notFound" class="card hidden text-center" style="margin-top:18px;padding:34px 22px">
+    <div style="font-size:2.4rem;color:var(--orange)"><i class="fa-solid fa-box-open"></i></div>
+    <h2 style="margin-top:8px">Order not found</h2>
+    <p class="muted" id="notFoundMessage">We couldn't find a shipment with that tracking number. Please check it and try again.</p>
+    <a class="btn btn-wa" id="notFoundWa" target="_blank" rel="noopener" style="margin-top:16px">
+      <i class="fa-brands fa-whatsapp"></i> Ask us on WhatsApp
+    </a>
+  </div>
+
+  <!-- Result -->
+  <div id="result" class="hidden" style="margin-top:18px">
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
+        <div>
+          <div class="small muted" style="font-weight:700;letter-spacing:.05em">TRACKING NUMBER</div>
+          <div style="font-size:1.5rem;font-weight:800;color:var(--blue-dark)" id="rOrderId">—</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge badge-blue" id="rStatusBadge">—</span>
+          <span class="badge badge-amber" id="rPayBadge">—</span>
+        </div>
+      </div>
+      <div class="alert alert-error" id="cancelledBanner"></div>
+      <button class="btn btn-ghost btn-sm hidden" id="refreshUpsTracking" type="button" style="margin-top:12px"><i class="fa-solid fa-rotate"></i> Refresh UPS tracking</button>
+
+      <!-- Timeline -->
+      <ol class="timeline" id="timeline"></ol>
+    </div>
+
+    <!-- Live map (shown only while rider is sharing) -->
+    <div class="card hidden" id="mapCard" style="margin-bottom:16px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <h3><span class="live-dot"></span> Rider live location</h3>
+        <span class="small muted" id="mapUpdated">Waiting for rider…</span>
+      </div>
+      <div id="map" role="img" aria-label="Live map showing your rider's location"></div>
+      <p class="small muted" style="margin-top:10px"><i class="fa-solid fa-motorcycle" style="color:var(--orange)"></i> <span id="mapRiderName">Your rider</span> is on the way. The orange marker moves in real time.</p>
+    </div>
+    <div class="card hidden" id="mapWaiting" style="margin-bottom:16px">
+      <p class="muted"><i class="fa-solid fa-satellite-dish" style="color:var(--blue)"></i>
+      Your order is on the move. Live map will appear here automatically once the rider starts sharing location.</p>
+    </div>
+
+    <!-- Rider contact -->
+    <div class="card hidden" id="riderCard" style="margin-bottom:16px">
+      <h3 style="margin-bottom:8px"><i class="fa-solid fa-motorcycle" style="color:var(--orange)"></i> Your rider</h3>
+      <p style="font-size:1.05rem"><b id="riderName">—</b> <span class="muted" id="riderPhoneText"></span></p>
+      <p class="small muted" style="margin:4px 0 14px">Need to give directions or update the drop-off? Talk to your rider directly:</p>
+      <div class="btn-row">
+        <a class="btn btn-blue" id="callRider" style="flex:1"><i class="fa-solid fa-phone"></i> Call rider</a>
+        <a class="btn btn-wa" id="waRider" target="_blank" rel="noopener" style="flex:1"><i class="fa-brands fa-whatsapp"></i> WhatsApp rider</a>
+      </div>
+    </div>
+
+    <!-- Order details -->
+    <div class="card">
+      <h3 style="margin-bottom:10px">Delivery details</h3>
+      <dl class="kv" id="rDetails"></dl>
+      <div id="rStops" style="margin-top:14px"></div>
+      <div class="btn-row" style="margin-top:18px">
+        <button class="btn btn-ghost" id="shareBtn" style="flex:1"><i class="fa-solid fa-share-nodes"></i> Share tracking with receiver</button>
+        <a class="btn btn-wa" id="helpWa" target="_blank" rel="noopener" style="flex:1"><i class="fa-brands fa-whatsapp"></i> Need help? WhatsApp us</a>
+      </div>
+    </div>
+  </div>
+
+</div></section>
+</main>
+<div id="siteFooter"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="track.js"></script>
+</body>
+</html>

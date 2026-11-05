@@ -9,6 +9,7 @@ const PAYSTACK_SECRET_KEY = defineSecret("PAYSTACK_SECRET_KEY");
 const PAYSTACK_API = "https://api.paystack.co";
 const CURRENCY = "NGN";
 const SITE_URL = String(process.env.SITE_URL || "").replace(/\/$/, "");
+const SITE_HOST = (() => { try { return new URL(SITE_URL).hostname; } catch { return ""; } })();
 
 async function getProfile(uid) {
   const snap = await db.doc(`users/${uid}`).get();
@@ -26,6 +27,14 @@ async function requireAdmin(uid) {
 function requireUser(request) {
   if (!request.auth) throw new HttpsError("unauthenticated", "Please sign in first.");
   return request.auth;
+}
+
+function cleanString(value, name, maxLength = 180) {
+  const text = String(value || "").trim();
+  if (!text || text.length > maxLength) {
+    throw new HttpsError("invalid-argument", `${name} is required and must be ${maxLength} characters or fewer.`);
+  }
+  return text;
 }
 
 async function paystackRequest(path, options = {}) {
@@ -186,9 +195,19 @@ exports.initializePaystackPayment = onCall({ secrets: [PAYSTACK_SECRET_KEY] }, a
   }
   const reference = `DAB-${crypto.randomBytes(18).toString("hex")}`;
   const paymentRef = db.doc(`payments/${reference}`);
-  const callbackUrl = /^https:\/\//i.test(SITE_URL)
-    ? `${SITE_URL}/account.html?payment_reference=${encodeURIComponent(reference)}`
-    : undefined;
+  // Validate the redirect target server-side: must be our own site's account
+  // page, so the browser cannot be sent to a look-alike domain.
+  let callbackUrl;
+  if (/^https:\/\//i.test(SITE_URL)) {
+    callbackUrl = `${SITE_URL}/account.html?payment_reference=${encodeURIComponent(reference)}`;
+    if (SITE_HOST) {
+      let cbHost = "", cbPath = "";
+      try { const u = new URL(callbackUrl); cbHost = u.hostname; cbPath = u.pathname; } catch {}
+      if (cbHost !== SITE_HOST || !cbPath.endsWith("/account.html")) {
+        throw new HttpsError("failed-precondition", "Payment redirect is not configured to this site.");
+      }
+    }
+  }
   const now = FieldValue.serverTimestamp();
 
   await db.runTransaction(async tx => {
@@ -234,6 +253,9 @@ exports.initializePaystackPayment = onCall({ secrets: [PAYSTACK_SECRET_KEY] }, a
 exports.verifyPaystackPayment = onCall({ secrets: [PAYSTACK_SECRET_KEY] }, async request => {
   const user = requireUser(request);
   const reference = String(request.data?.reference || "").trim();
+  if (!/^[A-Za-z0-9._-]{8,100}$/.test(reference)) {
+    throw new HttpsError("invalid-argument", "Invalid payment reference.");
+  }
   const paymentSnap = await db.doc(`payments/${reference}`).get();
   if (!paymentSnap.exists) throw new HttpsError("not-found", "Payment reference not found.");
   const payment = paymentSnap.data();
@@ -246,6 +268,29 @@ exports.verifyPaystackPayment = onCall({ secrets: [PAYSTACK_SECRET_KEY] }, async
     throw new HttpsError("unavailable", "We could not verify this payment right now. Please retry shortly.");
   }
   return settleVerifiedPayment(reference, transaction);
+});
+
+// Admin: advance an order's delivery status (server-side, audited).
+// Delivery status is separate from payment status — this never marks Paid.
+exports.adminUpdateOrderStatus = onCall(async request => {
+  const user = requireUser(request);
+  await requireAdmin(user.uid);
+  const orderId = cleanString(request.data?.orderId, "orderId", 80);
+  const nextStatus = cleanString(request.data?.status, "status", 60);
+  const allowed = ["Order Placed", "Confirmed", "Picked Up", "In Transit", "Out for Delivery", "Delivered", "Cancelled"];
+  if (!allowed.includes(nextStatus)) throw new HttpsError("invalid-argument", "Unsupported order status.");
+  const orderRef = db.doc(`orders/${orderId}`);
+  const snap = await orderRef.get();
+  if (!snap.exists) throw new HttpsError("not-found", "Order not found.");
+  const order = snap.data();
+  if (order.status === nextStatus) return { ok: true, changed: false, status: nextStatus };
+  const now = FieldValue.serverTimestamp();
+  await orderRef.update({
+    status: nextStatus,
+    statusHistory: FieldValue.arrayUnion({ status: nextStatus, at: now, by: user.uid }),
+    updatedAt: now,
+  });
+  return { ok: true, changed: true, status: nextStatus };
 });
 
 exports.recordCodCollection = onCall(async request => {

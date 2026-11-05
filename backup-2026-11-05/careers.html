@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Careers | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Submit a rider application to DABOFFOODS & LOGISTICS SERVICES.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Careers</span>
+    <h1 style="color:#fff;font-size:2rem">Work with DABOFFOODS &amp; LOGISTICS SERVICES 🏍️</h1>
+    <p style="color:#d7e5ff;max-width:600px;margin:12px auto 0">Submit your interest to join our logistics operations. Our team will contact applicants about available roles and requirements.</p>
+  </div>
+</section>
+
+<section class="section"><div class="container" style="max-width:960px">
+  <div class="grid grid-3" style="margin-bottom:26px">
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-naira-sign"></i></div><h3>Fair, clear earnings</h3><p class="muted">Know your jobs and pay structure upfront — no hidden deductions.</p></div>
+    <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-mobile-screen"></i></div><h3>Simple rider app</h3><p class="muted">Jobs, navigation, customer calls and status updates from one phone page.</p></div>
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-people-group"></i></div><h3>Supportive team</h3><p class="muted">An office that answers the phone and backs you on the road.</p></div>
+  </div>
+
+  <div class="grid grid-2" style="align-items:start">
+    <div class="card reveal">
+      <h2 style="font-size:1.3rem">What you need</h2>
+      <ul class="lp-check">
+        <li><span class="ci"><i class="fa-solid fa-motorcycle"></i></span><span><b>Your own bike/vehicle</b><span>In good working condition with valid papers.</span></span></li>
+        <li><span class="ci"><i class="fa-solid fa-id-card"></i></span><span><b>Valid licence &amp; ID</b><span>Provide applicable documents for the role and location.</span></span></li>
+        <li><span class="ci"><i class="fa-solid fa-mobile-screen"></i></span><span><b>Android smartphone</b><span>With data, WhatsApp and Google Maps — our rider page runs in the browser.</span></span></li>
+        <li><span class="ci"><i class="fa-solid fa-map-location-dot"></i></span><span><b>Location details</b><span>Tell us where you live or operate.</span></span></li>
+        <li><span class="ci"><i class="fa-solid fa-handshake"></i></span><span><b>Honesty &amp; good manners</b><span>Careful with parcels and cash-on-delivery, polite to customers.</span></span></li>
+        <li><span class="ci"><i class="fa-solid fa-user-check"></i></span><span><b>References</b><span>Any role-specific onboarding requirements will be provided by the team.</span></span></li>
+      </ul>
+      <p class="small muted">Already a rider with us? <a href="rider.html"><b>Open the Rider Dashboard →</b></a></p>
+    </div>
+
+    <form class="form-card reveal" id="applyForm" novalidate>
+      <h2 style="font-size:1.3rem">Apply in 1 minute</h2>
+      <p class="small muted" style="margin-bottom:16px">Your application goes straight to our admin inbox, and you can also send it on WhatsApp.</p>
+      <div class="alert alert-success" id="aSuccess"></div>
+      <div class="field"><label for="aName">Full name <span class="req">*</span></label><input id="aName" autocomplete="name"><p class="field-error"></p></div>
+      <div class="field"><label for="aPhone">Phone / WhatsApp number <span class="req">*</span></label><input id="aPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0802 431 1091"><p class="field-error"></p></div>
+      <div class="field"><label for="aEmail">Email (optional)</label><input id="aEmail" type="email" autocomplete="email"><p class="field-error"></p></div>
+      <div class="field"><label for="aLocation">Where do you live / operate? <span class="req">*</span></label><input id="aLocation" placeholder="e.g. Ogba, Ikeja, Agege, Lekki"><p class="field-error"></p></div>
+      <div class="field"><label for="aVehicle">Bike / vehicle type <span class="req">*</span></label>
+        <select id="aVehicle">
+          <option value="">Select vehicle</option><option>Motorcycle (dispatch bike)</option>
+          <option>Scooter</option><option>Car</option><option>Mini van / bus</option><option>Truck</option><option>Other</option>
+        </select><p class="field-error"></p></div>
+      <div class="field"><label>Do you own the vehicle? <span class="req">*</span></label>
+        <div class="radio-row">
+          <label class="radio-pill"><input type="radio" name="owns" value="Yes" checked><span>Yes, mine</span></label>
+          <label class="radio-pill"><input type="radio" name="owns" value="No"><span>No / company bike</span></label>
+        </div></div>
+      <div class="field"><label for="aExperience">Delivery experience</label>
+        <textarea id="aExperience" placeholder="e.g. 2 years dispatch riding around Ikeja & Island; worked with online vendors…"></textarea><p class="field-error"></p></div>
+      <button class="btn btn-orange btn-block" id="aSubmit" type="submit"><i class="fa-solid fa-paper-plane"></i> Submit application</button>
+      <a class="btn btn-wa btn-block hidden" id="aSendWa" target="_blank" rel="noopener" style="margin-top:10px"><i class="fa-brands fa-whatsapp"></i> Also send on WhatsApp</a>
+      <p class="small muted text-center" style="margin-top:12px">By applying you agree we may contact you about this application. See our <a href="legal.html#privacy">Privacy Policy</a>.</p>
+    </form>
+  </div>
+</div></section>
+</main>
+<div id="siteFooter"></div>
+
+<script type="module">
+import { renderChrome, $, toast, db, firebaseReady, waLink, isValidNgPhone, isValidEmail, setFieldError, esc } from "./app.js";
+import { collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+renderChrome("careers.html");
+
+let sending = false;
+$("#applyForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (sending) return;
+  $("#aSuccess").classList.remove("show");
+
+  const owns = document.querySelector('input[name="owns"]:checked')?.value || "";
+  const data = {
+    name: $("#aName").value.trim(), phone: $("#aPhone").value.trim(),
+    email: $("#aEmail").value.trim().toLowerCase(), location: $("#aLocation").value.trim(),
+    vehicleType: $("#aVehicle").value,
+    experience: `Owns vehicle: ${owns}. ` + $("#aExperience").value.trim()
+  };
+  let ok = true;
+  const check = (id, pass, msg) => { setFieldError($("#" + id), pass ? "" : msg); if (!pass) ok = false; };
+  check("aName", data.name.length >= 3, "Please enter your full name.");
+  check("aPhone", isValidNgPhone(data.phone), "Enter a valid Nigerian phone/WhatsApp number.");
+  check("aLocation", data.location.length >= 2, "Tell us your area.");
+  check("aVehicle", !!data.vehicleType, "Select your vehicle type.");
+  if (data.email) check("aEmail", isValidEmail(data.email), "This email doesn't look right (optional — you can clear it).");
+  if (!ok) return;
+
+  sending = true;
+  const btn = $("#aSubmit"), original = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span> Submitting…`;
+
+  $("#aSendWa").href = waLink(
+    `Hello DABOFFOODS & LOGISTICS SERVICES, I'd like to apply for a logistics role.\n\nName: ${data.name}\nPhone: ${data.phone}\nLocation: ${data.location}\nVehicle: ${data.vehicleType}\n${data.experience}`);
+
+  let saved = false;
+  if (firebaseReady && db) {
+    try {
+      await addDoc(collection(db, "applications"), {
+        ...data, status: "new", source: "careers-page", createdAt: serverTimestamp()
+      });
+      saved = true;
+    } catch (err) { console.warn(err); }
+  }
+
+  const box = $("#aSuccess");
+  box.innerHTML = saved
+    ? `<b>Application received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>Our team will contact you about any next steps. You can also follow up on WhatsApp below.`
+    : `<b>Almost done!</b><br>Our online inbox is unreachable right now — tap the WhatsApp button below and your application will open ready to send.`;
+  box.classList.add("show");
+  $("#aSendWa").classList.remove("hidden");
+  toast(saved ? "Application submitted!" : "Please send via WhatsApp to complete your application.", saved ? "success" : "info");
+
+  e.target.reset();
+  btn.disabled = false; btn.innerHTML = original; sending = false;
+});
+</script>
+</body>
+</html>

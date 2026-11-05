@@ -1,4 +1,4 @@
-import { esc, waLink } from "./app.js";
+import { esc } from "./app.js";
 
 // Edit this array to update service names, copy, imagery or icons across both service views.
 const SERVICE_IMAGE = "https://images.unsplash.com/";
@@ -57,7 +57,7 @@ export const SERVICES = [
 export function renderServiceCards(container, services = SERVICES) {
   if (!container) return;
   container.innerHTML = services.map(service => {
-    const enquiry = `Hello DABOFFOODS & LOGISTICS SERVICES, I would like to enquire about ${service.title}. Please share the available options and a quotation.`;
+    const serviceQuery = encodeURIComponent(service.title);
     return `
       <article class="lp-svc">
         <div class="lp-svc-img">
@@ -66,8 +66,8 @@ export function renderServiceCards(container, services = SERVICES) {
         <div class="lp-svc-body">
           <h3><i class="fa-solid ${esc(service.icon)}" aria-hidden="true"></i> ${esc(service.title)}</h3>
           <p class="muted" style="margin-top:8px">${esc(service.description)}</p>
-          <a class="btn btn-wa btn-block" href="${waLink(enquiry)}" target="_blank" rel="noopener">
-            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Enquire on WhatsApp
+          <a class="btn btn-blue btn-block" href="book.html?service=${serviceQuery}">
+            <i class="fa-solid fa-box" aria-hidden="true"></i> Book this service
           </a>
         </div>
       </article>`;

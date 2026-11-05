@@ -1,4 +1,4 @@
-import { esc, waLink } from "./app.js";
+import { esc } from "./app.js";
 
 // Editable catalogue: add confirmed prices or packaging only after the business supplies them.
 const FOOD_IMAGE = "https://images.unsplash.com/";
@@ -14,10 +14,8 @@ export const FOOD_PRODUCTS = [
   { name: "Other Traditional Nigerian Food Products", description: "Looking for another traditional food product? Contact us to ask about sourcing and order options.", icon: "fa-basket-shopping", image: `${FOOD_IMAGE}photo-1547592180-85f173990554?q=80&w=1000&auto=format&fit=crop`, alt: "A selection of food ingredients" }
 ];
 
-export function productEnquiryMessage(productName) {
-  return `Hello DABOFFOODS & LOGISTICS SERVICES, I am interested in purchasing ${productName.toLowerCase()}. Please let me know the available quantities, prices and delivery options.`;
-}
-
+// Products are ordered on the website: each card links to the booking form
+// with the product pre-selected, then the customer pays online via Paystack.
 export function renderProductCards(container, products = FOOD_PRODUCTS) {
   if (!container) return;
   container.innerHTML = products.map(product => `
@@ -29,8 +27,8 @@ export function renderProductCards(container, products = FOOD_PRODUCTS) {
         <span class="food-card-label"><i class="fa-solid ${esc(product.icon)}" aria-hidden="true"></i> Nigerian food product</span>
         <h3>${esc(product.name)}</h3>
         <p>${esc(product.description)}</p>
-        <a class="btn btn-wa" href="${waLink(productEnquiryMessage(product.name))}" target="_blank" rel="noopener">
-          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Order / Enquire
+        <a class="btn btn-blue" href="book.html?service=Food%20Export%20Services&product=${encodeURIComponent(product.name)}">
+          <i class="fa-solid fa-box" aria-hidden="true"></i> Order on website
         </a>
       </div>
     </article>`).join("");
@@ -41,6 +39,3 @@ export function renderProductCards(container, products = FOOD_PRODUCTS) {
     image.src = `${FOOD_IMAGE}photo-1547592180-85f173990554?q=80&w=1000&auto=format&fit=crop`;
   }));
 }
-
-export const BULK_ORDER_MESSAGE = "Hello DABOFFOODS, I am interested in purchasing Nigerian food products in bulk. Please share your available products, wholesale prices and minimum order quantities.";
-export const FOOD_EXPORT_MESSAGE = "Hello DABOFFOODS & LOGISTICS SERVICES, I am interested in exporting Nigerian food products to my country. Please provide your available products, export requirements, shipping options and quotation.";

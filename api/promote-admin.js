@@ -16,100 +16,63 @@
 //  No Firebase custom claims are used (Firestore role model only).
 //
 //  Required Vercel env vars (set in Vercel Dashboard, never in code):
-//   FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY
+//   FIREBASE_SERVICE_ACCOUNT_KEY (full service-account JSON), or
+//   FIREBASE_PROJECT_ID + FIREBASE_CLIENT_EMAIL + FIREBASE_PRIVATE_KEY
 //   (service-account key with Firebase Auth Admin + Datastore User)
 // ============================================================
 
-let admin;
-try { admin = require("firebase-admin"); } catch { admin = null; }
-
-function getAdmin() {
-  if (!admin) throw Object.assign(new Error("firebase-admin not installed"), { status: 500, code: "not-configured" });
-  if (!admin.apps.length) {
-    const projectId = process.env.FIREBASE_PROJECT_ID;
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    let privateKey = process.env.FIREBASE_PRIVATE_KEY || "";
-    if (!projectId || !clientEmail || !privateKey) {
-      throw Object.assign(new Error("Firebase Admin env vars missing on Vercel"), { status: 500, code: "not-configured" });
-    }
-    privateKey = privateKey.replace(/\\n/g, "\n");
-    admin.initializeApp({ credential: admin.credential.cert({ projectId, clientEmail, privateKey }) });
-  }
-  return admin;
-}
-
-function cors(res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-}
-function send(res, status, body) { cors(res); res.status(status).json(body); }
+const { getAdmin } = require("./_lib/admin");
+const { verifyCaller, parseBody, send, errorResponse, httpError, requireAdmin } = require("./_lib/auth");
 
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") return send(res, 204, {});
   if (req.method !== "POST") return send(res, 405, { error: "method-not-allowed" });
-
   try {
     const adm = getAdmin();
-    const auth = adm.auth();
     const db = adm.firestore();
+    const FieldValue = adm.firestore.FieldValue;
 
     // 1) Verify caller identity (server-side, trusted).
-    const header = String(req.headers.authorization || "");
-    const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-    if (!token) return send(res, 401, { error: "unauthenticated", message: "Sign in required." });
-    let decoded;
-    try { decoded = await auth.verifyIdToken(token); }
-    catch { return send(res, 401, { error: "unauthenticated", message: "Invalid or expired token. Sign in again." }); }
-    const callerUid = decoded.uid;
+    const caller = await verifyCaller(req, adm);
+    const callerUid = caller.uid;
 
     // 2) Caller MUST be an active admin (Firestore role model).
-    const callerSnap = await db.doc(`users/${callerUid}`).get();
-    const caller = callerSnap.exists ? callerSnap.data() : null;
-    if (!caller || caller.role !== "admin" || caller.disabled === true) {
-      return send(res, 403, { error: "permission-denied", message: "Administrator access is required." });
-    }
+    await requireAdmin(db, callerUid);
 
-    // Parse body (Vercel provides req.body, but handle raw string too).
-    let body = req.body;
-    if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
-    body = body || {};
+    const body = parseBody(req);
     const targetUid = String(body.targetUid || "").trim();
     const action = String(body.action || "promote").trim().toLowerCase();
-    if (!targetUid || targetUid.length > 128) return send(res, 400, { error: "invalid-argument", message: "targetUid is required." });
-    if (!["promote", "demote"].includes(action)) return send(res, 400, { error: "invalid-argument", message: "action must be promote or demote." });
+    if (!targetUid || targetUid.length > 128) throw httpError(400, "invalid-argument", "targetUid is required.");
+    if (!["promote", "demote"].includes(action)) throw httpError(400, "invalid-argument", "action must be promote or demote.");
 
     // 4) No self role changes.
     if (targetUid === callerUid) {
-      return send(res, 400, { error: "failed-precondition", message: "You cannot change your own role. Ask another admin." });
+      throw httpError(400, "failed-precondition", "You cannot change your own role. Ask another admin.");
     }
 
     // 3) Target must be an existing Auth user + existing profile. Never create.
-    const userRecord = await auth.getUser(targetUid).catch(() => null);
-    if (!userRecord) return send(res, 404, { error: "not-found", message: "Firebase Authentication user not found." });
+    const userRecord = await adm.auth().getUser(targetUid).catch(() => null);
+    if (!userRecord) throw httpError(404, "not-found", "Firebase Authentication user not found.");
     const ref = db.doc(`users/${targetUid}`);
     const snap = await ref.get();
-    if (!snap.exists) return send(res, 404, { error: "not-found", message: "User profile not found. Ask the user to sign in once first." });
+    if (!snap.exists) throw httpError(404, "not-found", "User profile not found. Ask the user to sign in once first.");
     const before = snap.data();
 
     if (action === "demote") {
       if (before.role !== "admin") return send(res, 200, { ok: true, alreadyCustomer: true, uid: targetUid });
-      await ref.update({ role: "customer", updatedAt: adm.firestore.FieldValue.serverTimestamp() });
+      await ref.update({ role: "customer", updatedAt: FieldValue.serverTimestamp() });
     } else {
       if (before.role === "admin" && before.disabled !== true) return send(res, 200, { ok: true, alreadyAdmin: true, uid: targetUid });
-      await ref.update({ role: "admin", disabled: false, updatedAt: adm.firestore.FieldValue.serverTimestamp() });
+      await ref.update({ role: "admin", disabled: false, updatedAt: FieldValue.serverTimestamp() });
     }
 
     // Verify write.
     const after = (await ref.get()).data();
     const expected = action === "promote" ? "admin" : "customer";
-    if (after.role !== expected) return send(res, 500, { error: "internal", message: "Role change did not verify." });
+    if (after.role !== expected) throw httpError(500, "internal", "Role change did not verify.");
 
     return send(res, 200, { ok: true, uid: targetUid, email: userRecord.email || before.email || "", role: after.role, action });
   } catch (err) {
-    console.error("promote-admin error:", err);
-    if (err && err.code === "not-configured") return send(res, 500, { error: "not-configured", message: "Server admin credentials are not configured yet." });
-    return send(res, err.status || 500, { error: "internal", message: "Something went wrong. Check Vercel function logs." });
+    return errorResponse(res, err);
   }
 }
-

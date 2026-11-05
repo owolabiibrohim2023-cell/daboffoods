@@ -6,9 +6,10 @@
      active:true, ts: <millis>, updatedAt: serverTimestamp }
 ============================================================ */
 import { CONFIG, renderChrome, $, esc, toast, db, auth, firebaseReady,
-  fmtDateTime, normalizeNgPhone, waLink, copyText,
+  fmtDateTime, normalizeNgPhone, copyText,
   rememberOrderId, recentOrderIds } from "./app.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+// Backend is now Vercel Serverless Functions (no Cloud Functions).
+import { apiCall } from "./api/_lib/client.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 renderChrome("track.html");
@@ -23,7 +24,6 @@ const STATUS_ICONS = {
 const LIVE_STATUSES = ["Picked Up", "In Transit", "Out for Delivery"];
 const Lagos = [6.5244, 3.3792];
 
-const functions = getFunctions();
 let currentId = "", currentShipment = null, signedInUser = null;
 let map = null, riderMarker = null;
 let mapFitted = false, lastLocTs = 0;
@@ -49,11 +49,9 @@ $("#refreshUpsTracking").addEventListener("click", async () => {
   const button = $("#refreshUpsTracking"), original = button.innerHTML;
   button.disabled = true; button.innerHTML = `<span class="spinner"></span> Refreshing UPS…`;
   try {
-    const refresh = httpsCallable(functions, "trackUpsShipment");
-    await refresh({ shipmentId: currentShipment.shipmentId });
-    const lookup = httpsCallable(functions, "lookupShipment");
-    const result = await lookup({ trackingNumber: currentShipment.trackingNumber });
-    currentShipment = result.data;
+    await apiCall("/api/shipment/ups-refresh", { shipmentId: currentShipment.shipmentId }, auth);
+    const result = await apiCall("/api/shipment/lookup", { trackingNumber: currentShipment.trackingNumber }, auth);
+    currentShipment = result;
     renderShipment(currentShipment);
     toast("UPS tracking information refreshed.", "success");
   } catch (error) {
@@ -76,7 +74,7 @@ if (paramId) { $("#orderIdInput").value = paramId.toUpperCase(); startTracking(p
 
 async function startTracking(id) {
   if (!firebaseReady || !db) {
-    toast("Online tracking is not connected yet. Please WhatsApp us your Order ID and we'll update you immediately.", "error");
+    toast("Online tracking is not connected yet. Please try again in a moment or contact support.", "error");
     showNotFound(id);
     return;
   }
@@ -86,16 +84,15 @@ async function startTracking(id) {
   $("#notFound").classList.add("hidden");
   $("#result").classList.add("hidden");
   try {
-    const lookup = httpsCallable(functions, "lookupShipment");
-    const response = await lookup({ trackingNumber: id });
+    const response = await apiCall("/api/shipment/lookup", { trackingNumber: id }, auth);
     $("#loading").classList.add("hidden");
-    currentShipment = response.data;
+    currentShipment = response;
     rememberOrderId(id); renderRecent();
     renderShipment(currentShipment);
   } catch (err) {
     console.error(err);
     $("#loading").classList.add("hidden");
-    const message = err.code === "functions/resource-exhausted"
+    const message = /resource-exhausted|Too many tracking/i.test(err.message || "")
       ? "Too many tracking requests. Please wait a minute and try again."
       : err.message || "Tracking is temporarily unavailable. Please try again.";
     toast(message, "error");
@@ -107,7 +104,6 @@ function showNotFound(id, message = "We couldn't find a shipment with that track
   $("#result").classList.add("hidden");
   $("#notFound").classList.remove("hidden");
   $("#notFoundMessage").textContent = message;
-  $("#notFoundWa").href = waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help tracking a shipment. Tracking number: ${id || "(I don't have it)"}`);
   hideMapCards();
 }
 
@@ -129,7 +125,7 @@ function renderShipment(o) {
 
   const cb = $("#cancelledBanner");
   cb.classList.toggle("show", cancelled);
-  if (cancelled) cb.innerHTML = `<b>This order was cancelled.</b> If this is a mistake or you paid already, please WhatsApp us right away and we'll sort it out.`;
+  if (cancelled) cb.innerHTML = `<b>This order was cancelled.</b> If this is a mistake or you paid already, please contact support and we'll sort it out.`;
 
   /* Timeline */
   const events = Array.isArray(o.events) ? [...o.events].sort((a, b) => new Date(a.occurredAt || 0) - new Date(b.occurredAt || 0)) : [];
@@ -157,7 +153,7 @@ function renderShipment(o) {
 
   $("#rStops").innerHTML = "";
 
-  $("#helpWa").href = waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help with shipment ${o.trackingNumber || o.orderId || currentId} (currently: ${status}).`);
+  // Support is via the contact page / phone (see track.html buttons).
   $("#shareBtn").onclick = async () => {
     const url = new URL(`track.html?id=${encodeURIComponent(o.trackingNumber || o.orderId || currentId)}`, location.href).href;
     const text = `Track my DABOFFOODS & LOGISTICS SERVICES shipment (${o.trackingNumber || o.orderId || currentId}) here: ${url}`;

@@ -16,6 +16,12 @@
       ".git/**",
       ".vscode/**",
       "node_modules/**",
+      "backup-2026-11-05/**",
+      "api/**",
+      "scripts/**",
+      "ADMIN-SETUP-VERCEL.md",
+      "WEBSITE-CLEANUP-REPORT.md",
+      "FIREBASE-PAYMENTS-TRACKING.md",
       "README.md"
     ],
     "cleanUrls": false

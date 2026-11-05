@@ -120,25 +120,29 @@
   <div class="form-card hidden" id="summaryCard">
     <div class="text-center">
       <div style="font-size:2.6rem;color:var(--green)"><i class="fa-solid fa-circle-check"></i></div>
-      <h2>Shipment request received</h2>
-      <p class="muted">Your shipment reference is</p>
+      <h2>Order received</h2>
+      <p class="muted">Your tracking number is</p>
       <p style="font-size:2rem;font-weight:800;color:var(--blue-dark);letter-spacing:.04em" id="sumOrderId">DAB-XXXXX</p>
       <p id="sumSaveNote" class="small muted"></p>
+      <div class="alert alert-info show" id="sumPayNote" style="text-align:left;margin-top:16px">
+        <i class="fa-solid fa-credit-card"></i>
+        <span id="sumPayText">Our team will confirm your final price. Once confirmed, you can pay securely online with Paystack from your dashboard — no need to message us.</span>
+      </div>
     </div>
     <dl class="kv" id="sumDetails" style="margin:20px 0"></dl>
-    <a class="btn btn-wa btn-block" id="sumWhatsApp" target="_blank" rel="noopener" style="margin-bottom:10px">
-      <i class="fa-brands fa-whatsapp"></i> Continue on WhatsApp (request quotation)
-    </a>
     <div class="btn-row">
-      <button class="btn btn-ghost" id="copyIdBtn" style="flex:1"><i class="fa-regular fa-copy"></i> Copy Order ID</button>
+      <button class="btn btn-ghost" id="copyIdBtn" style="flex:1"><i class="fa-regular fa-copy"></i> Copy tracking number</button>
       <button class="btn btn-ghost" id="copyLinkBtn" style="flex:1"><i class="fa-solid fa-link"></i> Copy tracking link</button>
     </div>
     <div class="btn-row" style="margin-top:10px">
       <a class="btn btn-blue" id="sumTrack" style="flex:1"><i class="fa-solid fa-location-crosshairs"></i> View shipment status</a>
+      <a class="btn btn-orange hidden" id="sumPay" style="flex:1"><i class="fa-solid fa-lock"></i> Pay online now</a>
+    </div>
+    <div class="btn-row" style="margin-top:10px">
       <button class="btn btn-outline" id="bookAnotherBtn" style="flex:1">Book another</button>
     </div>
     <p class="small muted text-center" style="margin-top:16px">
-      <i class="fa-solid fa-bell"></i> Keep your shipment reference to check status updates. You may share the tracking link with your receiver.
+      <i class="fa-solid fa-bell"></i> Keep your tracking number to check status updates. You may share the tracking link with your receiver.
     </p>
   </div>
 
@@ -149,7 +153,7 @@
 <script type="module">
 import { CONFIG, renderChrome, $, $$, esc, toast, db, firebaseReady, onAuthReady,
   genOrderId, isValidNgPhone, normalizeNgPhone, isValidEmail,
-  setFieldError, bookingWhatsAppMessage, waLink, copyText, rememberOrderId }
+  setFieldError, copyText, rememberOrderId }
   from "./app.js";
 import { doc, setDoc, collection, getDocs, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -162,6 +166,9 @@ $("#serviceType").innerHTML = CONFIG.services.map(s => `<option>${s}</option>`).
 $("#zone").innerHTML = Object.keys(CONFIG.zones).map(z => `<option>${z}</option>`).join("");
 const urlService = new URLSearchParams(location.search).get("service");
 if (urlService && CONFIG.services.includes(urlService)) $("#serviceType").value = urlService;
+// Product deep-link from food catalogue: pre-fill the goods description.
+const urlProduct = new URLSearchParams(location.search).get("product");
+if (urlProduct) { const pkg = $("#packageDescription"); if (pkg && !pkg.value) pkg.value = urlProduct; }
 $("#pickupDate").min = new Date().toISOString().split("T")[0];
 
 let currentUser = null, currentProfile = null, addressesLoaded = false;
@@ -372,10 +379,10 @@ $("#bookingForm").addEventListener("submit", async e => {
       }
     } catch (err) {
       console.error(err);
-      saveError = "We couldn't save this shipment request online right now. Please send it on WhatsApp so our team can assist.";
+      saveError = "We couldn't save your order online right now. Please try again in a moment — your details are still on this page.";
     }
   } else {
-    saveError = "Online saving is unavailable right now. Please send this request on WhatsApp.";
+    saveError = "Online saving is unavailable right now. Please try again in a moment.";
   }
   rememberOrderId(order.orderId);
 
@@ -397,16 +404,29 @@ $("#bookingForm").addEventListener("submit", async e => {
     ["Quotation", "To be provided by our team"]
   ];
   $("#sumDetails").innerHTML = kv.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("");
-  $("#sumWhatsApp").href = waLink(bookingWhatsAppMessage(order));
-  $("#sumTrack").href = `track.html?id=${order.orderId}`;
-  $("#copyIdBtn").onclick = () => copyText(order.orderId, "Order ID copied!");
+  $("#sumTrack").href = `track.html?id=${encodeURIComponent(order.orderId)}`;
+  // Online payment: guests cannot pay (backend requires an account), and a
+  // guest order still needs a confirmed price first — so guide them instead.
+  const payBtn = $("#sumPay");
+  if (currentUser && order.finalPrice == null) {
+    payBtn.href = `account.html#orders`;
+    payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Go to dashboard to pay`;
+    payBtn.classList.remove("hidden");
+    $("#sumPayText").textContent = "Sign in → your dashboard shows a Pay Now button once our team confirms your final price. Payment is verified automatically by Paystack.";
+  } else if (!currentUser) {
+    payBtn.href = `login.html?next=account.html`;
+    payBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign in to pay online`;
+    payBtn.classList.remove("hidden");
+    $("#sumPayText").textContent = "To pay online, sign in with the same email you used for this order, then use Pay Now in your dashboard once our team confirms your final price.";
+  }
+  $("#copyIdBtn").onclick = () => copyText(order.orderId, "Tracking number copied!");
   $("#copyLinkBtn").onclick = () => copyText(liveTrackingLink(order.orderId), "Tracking link copied — share it with your receiver!");
 
   $("#bookingForm").classList.add("hidden");
   $("#guestPrompt").classList.remove("show"); $("#signedInNote").classList.remove("show");
   $("#summaryCard").classList.remove("hidden");
   $("#summaryCard").scrollIntoView({ behavior: "smooth" });
-  toast(savedOnline ? "Shipment request saved. Tap WhatsApp to discuss your quotation." : "Shipment request created — continue on WhatsApp.", savedOnline ? "success" : "info");
+  toast(savedOnline ? "Order saved. Track it anytime with your tracking number." : "Order created on this device. Please try again if tracking doesn't appear.", savedOnline ? "success" : "info");
 
   btn.disabled = false; btn.innerHTML = original; submitting = false;
 });

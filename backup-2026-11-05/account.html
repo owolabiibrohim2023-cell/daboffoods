@@ -1,0 +1,1058 @@
+}
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-orange" href="book.html"><i class="fa-solid fa-box"></i> Book a new delivery</a>
+          <button type="button" class="btn btn-outline" id="logoutBtnTop">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="grid grid-3" style="margin-bottom:22px">
+      <div class="stat-card">
+        <div class="n" id="statActive">0</div>
+        <div class="l"><i class="fa-solid fa-truck-fast" style="color:var(--orange)"></i> Active orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="n" id="statDelivered">0</div>
+        <div class="l"><i class="fa-solid fa-circle-check" style="color:var(--green)"></i> Delivered orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="n" id="statTotal">0</div>
+        <div class="l"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue)"></i> Total orders</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist" aria-label="Account sections">
+      <button type="button" class="tab-btn active" data-tab="orders" role="tab">
+        <i class="fa-solid fa-box-open"></i> My Orders
+      </button>
+      <button type="button" class="tab-btn" data-tab="addresses" role="tab">
+        <i class="fa-solid fa-address-book"></i> Saved Addresses
+      </button>
+      <button type="button" class="tab-btn" data-tab="profile" role="tab">
+        <i class="fa-solid fa-user-gear"></i> Profile Settings
+      </button>
+    </div>
+
+    <!-- ORDERS PANEL -->
+    <section id="panel-orders">
+      <div class="grid grid-3" id="paymentTotals" style="margin-bottom:16px">
+        <div class="stat-card"><div class="n" id="paidTotal">₦0</div><div class="l">Verified payments</div></div>
+        <div class="stat-card"><div class="n" id="unpaidTotal">₦0</div><div class="l">Unpaid confirmed orders</div></div>
+        <div class="stat-card"><div class="n" id="codTotal">₦0</div><div class="l">Cash on delivery due</div></div>
+      </div>
+      <div id="ordersLoading" class="card">
+        <div class="skeleton" style="width:55%"></div>
+        <div class="skeleton" style="width:85%;margin-top:12px"></div>
+        <div class="skeleton" style="width:70%;margin-top:12px"></div>
+      </div>
+
+      <div id="ordersEmpty" class="card text-center hidden" style="padding:36px 22px">
+        <div style="font-size:2.5rem;color:var(--orange)"><i class="fa-solid fa-box-open"></i></div>
+        <h2 style="margin-top:10px">No orders yet</h2>
+        <p class="muted" style="max-width:480px;margin:6px auto 18px">
+          When you book while signed in, your deliveries will appear here automatically and update in real time.
+        </p>
+        <a href="book.html" class="btn btn-orange"><i class="fa-solid fa-box"></i> Book your first delivery</a>
+      </div>
+
+      <div id="ordersList"></div>
+      <section class="card" id="paymentHistoryCard" style="margin-top:16px">
+        <h2 style="font-size:1.2rem"><i class="fa-solid fa-credit-card" style="color:var(--blue)"></i> Payment history</h2>
+        <p class="small muted" style="margin:4px 0 12px">Payment status is updated only after secure backend verification.</p>
+        <div id="paymentHistory"><p class="muted small">Loading payments…</p></div>
+      </section>
+      <section class="card" id="shipmentHistoryCard" style="margin-top:16px">
+        <h2 style="font-size:1.2rem"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue)"></i> Shipments</h2>
+        <p class="small muted" style="margin:4px 0 12px">Carrier and tracking details appear after a shipment is registered.</p>
+        <div id="shipmentHistory"><p class="muted small">Loading shipments…</p></div>
+      </section>
+    </section>
+
+    <!-- ADDRESSES PANEL -->
+    <section id="panel-addresses" class="hidden">
+      <div class="form-card" style="margin-bottom:18px">
+        <h2 id="addressFormTitle" style="font-size:1.25rem">Add a saved address</h2>
+        <p class="muted small" style="margin-bottom:16px">
+          Saved addresses appear in the booking form so you don't have to type them again.
+        </p>
+
+        <form id="addressForm" novalidate>
+          <input type="hidden" id="addressId">
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="addressLabel">Label <span class="req">*</span></label>
+              <input id="addressLabel" placeholder="e.g. Home, Shop, Office, Customer">
+              <p class="field-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="addressPhone">Contact phone <span class="muted">(optional)</span></label>
+              <input id="addressPhone" type="tel" inputmode="tel" placeholder="Phone for this address">
+              <p class="field-error"></p>
+            </div>
+
+            <div class="field span-2">
+              <label for="addressText">Full address <span class="req">*</span></label>
+              <textarea id="addressText" placeholder="House/flat, street, area, nearest bus stop, city/state"></textarea>
+              <p class="field-error"></p>
+            </div>
+          </div>
+
+          <div class="check-row">
+            <input type="checkbox" id="addressDefault">
+            <label for="addressDefault">Set as my default pickup address</label>
+          </div>
+
+          <div class="btn-row" style="margin-top:12px">
+            <button type="submit" class="btn btn-blue" id="addressSaveBtn">
+              <i class="fa-solid fa-floppy-disk"></i> Save address
+            </button>
+            <button type="button" class="btn btn-ghost hidden" id="addressCancelBtn">Cancel editing</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="addressEmpty" class="card text-center hidden" style="padding:32px 20px">
+        <div style="font-size:2.2rem;color:var(--blue)"><i class="fa-solid fa-address-book"></i></div>
+        <h3 style="margin-top:8px">No saved addresses yet</h3>
+        <p class="muted">Add your home, shop or frequent customer addresses above.</p>
+      </div>
+
+      <div id="addressList" class="grid grid-2"></div>
+    </section>
+
+    <!-- PROFILE PANEL -->
+    <section id="panel-profile" class="hidden">
+      <form class="form-card" id="profileForm" novalidate style="margin-bottom:18px">
+        <h2 style="font-size:1.3rem">Profile settings</h2>
+        <p class="muted small" style="margin-bottom:18px">
+          These details prefill your booking form and control where your alerts are sent.
+        </p>
+
+        <div class="alert alert-error" id="profileError"></div>
+        <div class="alert alert-success" id="profileSuccess"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="profileName">Full name <span class="req">*</span></label>
+            <input id="profileName" autocomplete="name">
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="profilePhone">Phone number <span class="req">*</span></label>
+            <input id="profilePhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0802 431 1091 or +234…">
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="profileEmail">Email address</label>
+            <input id="profileEmail" disabled>
+            <p class="small muted">Email is your sign-in ID and can't be changed here.</p>
+          </div>
+
+          <div class="field">
+            <label for="profileAccountType">Account type</label>
+            <select id="profileAccountType">
+              <option>Individual</option>
+              <option>Business</option>
+            </select>
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field hidden" id="profileBizWrap">
+            <label for="profileBusinessName">Business name <span class="req">*</span></label>
+            <input id="profileBusinessName" autocomplete="organization">
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="profileArea">City / area</label>
+            <input id="profileArea" placeholder="e.g. Ijebu Ode">
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field span-2">
+            <label for="profileDefaultAddress">Default pickup address</label>
+            <textarea id="profileDefaultAddress" placeholder="Your normal pickup address"></textarea>
+            <p class="field-error"></p>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend><i class="fa-solid fa-bell"></i> Notification preferences</legend>
+          <div class="check-row">
+            <input type="checkbox" id="profilePrefEmail">
+            <label for="profilePrefEmail">Email alerts</label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="profilePrefSms">
+            <label for="profilePrefSms">SMS alerts</label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="profilePrefWhatsapp">
+            <label for="profilePrefWhatsapp">WhatsApp updates</label>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-blue" id="profileSaveBtn">
+          <i class="fa-solid fa-floppy-disk"></i> Save profile changes
+        }
+          Past shipment records may be retained by DABOFFOODS &amp; LOGISTICS SERVICES for business records.
+        </p>
+
+        <div class="field hidden" id="deletePasswordWrap">
+          <label for="deletePassword">Enter your current password to delete</label>
+          <div class="pw-wrap">
+            <input id="deletePassword" type="password" autocomplete="current-password">
+            <button type="button" class="pw-toggle" data-target="deletePassword">Show</button>
+          </div>
+          <p class="field-error"></p>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-danger" id="deleteAccountBtn">
+            <i class="fa-solid fa-user-xmark"></i> Delete my account
+          </button>
+          <button type="button" class="btn btn-outline" id="logoutBtnBottom">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div></section>
+</main>
+
+<div id="siteFooter"></div>
+
+<script type="module">
+import {
+  CONFIG, renderChrome, $, $$, esc, toast, confirmDialog,
+  db, fmtMoney, fmtDateTime, waLink, setFieldError,
+  isValidNgPhone, normalizeNgPhone
+} from "./app.js";
+import {
+  watchAuth,
+  signOutUser,
+  resendVerification,
+  changeUserPassword,
+  deleteUserAccount,
+  friendlyAuthError,
+  getPasswordStrength,
+  setupPasswordToggles,
+  hasPasswordProvider
+} from "./auth.js";
+import {
+  doc, updateDoc, collection, query, where, onSnapshot,
+  addDoc, deleteDoc, writeBatch, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
+renderChrome("account.html");
+setupPasswordToggles();
+
+let currentUser = null;
+let currentProfile = null;
+let listenersStarted = false;
+let profileFilled = false;
+let ordersById = {};
+let addressesById = {};
+const functions = getFunctions();
+
+/* ---------------- Tabs ---------------- */
+function activateTab(name, updateHash = true) {
+  const valid = ["orders", "addresses", "profile"].includes(name) ? name : "orders";
+
+  $$(".tab-btn").forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.tab === valid)
+  );
+
+  ["orders", "addresses", "profile"].forEach(panel =>
+    $("#panel-" + panel).classList.toggle("hidden", panel !== valid)
+  );
+
+  if (updateHash) history.replaceState(null, "", "#" + valid);
+}
+
+$$(".tab-btn").forEach(btn =>
+  btn.addEventListener("click", () => activateTab(btn.dataset.tab))
+);
+
+addEventListener("hashchange", () =>
+  activateTab(location.hash.replace("#", ""), false)
+);
+
+/* ---------------- Auth guard ---------------- */
+watchAuth(async (user, profile) => {
+  if (!user) {
+    location.href = "login.html?next=account.html";
+    return;
+  }
+
+  if (profile?.role === "admin") {
+    location.href = "admin.html";
+    return;
+  }
+
+  if (profile?.role === "rider") {
+    location.href = "rider.html";
+    return;
+  }
+
+  if (profile?.disabled) {
+    await signOutUser();
+    location.href = "login.html";
+    return;
+  }
+
+  currentUser = user;
+  currentProfile = profile || {};
+
+  $("#accountLoading").classList.add("hidden");
+  $("#accountApp").classList.remove("hidden");
+
+  fillHeader(user, currentProfile);
+  if (!profileFilled) fillProfileForm(user, currentProfile);
+
+  const showVerify =
+    hasPasswordProvider(user) && !user.emailVerified;
+  $("#verifyAlert").classList.toggle("show", showVerify);
+
+  $("#passwordForm").classList.toggle(
+    "hidden",
+    !hasPasswordProvider(user)
+  );
+  $("#deletePasswordWrap").classList.toggle(
+    "hidden",
+    !hasPasswordProvider(user)
+  );
+
+  if (new URLSearchParams(location.search).get("welcome") === "1") {
+    const name = currentProfile.fullName || user.displayName || "there";
+    const el = $("#welcomeAlert");
+    el.innerHTML = `
+      <b>Welcome to DABOFFOODS &amp; LOGISTICS SERVICES, ${esc(String(name).split(" ")[0])}!</b>
+      Your dashboard is ready. Book a delivery, save your addresses and track everything here.`;
+    el.classList.add("show");
+  }
+
+  activateTab(location.hash.replace("#", "") || "orders", false);
+
+  if (!listenersStarted && db) {
+    listenersStarted = true;
+    listenToOrders(user.uid);
+    listenToAddresses(user.uid);
+    listenToPayments(user.uid);
+    listenToShipments();
+    verifyPaymentReturn();
+  }
+});
+
+function initials(name = "") {
+  return String(name)
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(x => x[0].toUpperCase())
+    .join("") || "FL";
+}
+
+function fillHeader(user, profile) {
+  const name = profile.fullName || user.displayName || user.email || "Customer";
+  $("#avatar").textContent = initials(name);
+  $("#welcomeTitle").textContent = `Hello, ${String(name).split(" ")[0]} 👋`;
+
+  const bits = [
+    profile.accountType || "Individual",
+    profile.businessName || "",
+    user.email || "",
+    profile.createdAt ? `Member since ${fmtDateTime(profile.createdAt)}` : ""
+  ].filter(Boolean);
+
+  $("#accountMeta").textContent = bits.join(" · ");
+}
+
+/* ---------------- Real-time My Orders ---------------- */
+function statusBadgeClass(status) {
+  if (status === "Delivered") return "badge-green";
+  if (status === "Cancelled") return "badge-red";
+  if (status === "Out for Delivery" || status === "In Transit") return "badge-orange";
+  if (status === "Confirmed" || status === "Picked Up") return "badge-blue";
+  return "badge-amber";
+}
+
+function orderMillis(order) {
+  if (order.createdAt?.toMillis) return order.createdAt.toMillis();
+  if (order.createdAt?.seconds) return order.createdAt.seconds * 1000;
+  return 0;
+}
+function listenToOrders(uid) {
+  const q = query(collection(db, "orders"), where("customerUid", "==", uid));
+  onSnapshot(q, snap => {
+    const orders = [];
+    snap.forEach(d => orders.push({ orderId: d.id, ...d.data() }));
+    orders.sort((a, b) => orderMillis(b) - orderMillis(a));
+    ordersById = {};
+    orders.forEach(o => (ordersById[o.orderId] = o));
+    $("#statActive").textContent = orders.filter(o => !["Delivered", "Cancelled"].includes(o.status)).length;
+    $("#statDelivered").textContent = orders.filter(o => o.status === "Delivered").length;
+    $("#statTotal").textContent = orders.length;
+    const confirmedAmount = order => Number.isFinite(Number(order.finalPrice)) ? Number(order.finalPrice) : 0;
+    $("#paidTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus === "Paid").reduce((sum, o) => sum + confirmedAmount(o), 0));
+    $("#unpaidTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus !== "Paid" && o.paymentStatus !== "COD" && o.paymentOption !== "Cash on delivery").reduce((sum, o) => sum + confirmedAmount(o), 0));
+    $("#codTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus === "COD" || o.paymentOption === "Cash on delivery").reduce((sum, o) => sum + confirmedAmount(o), 0));
+    $("#ordersLoading").classList.add("hidden");
+    $("#ordersEmpty").classList.toggle("hidden", orders.length > 0);
+    $("#ordersList").innerHTML = orders.map(orderCardHtml).join("");
+    bindOrderButtons();
+  }, err => {
+    console.error(err);
+    $("#ordersLoading").innerHTML = `<h3>Couldn't load your orders</h3><p class="muted">Please check your network connection and refresh this page.</p>`;
+  });
+}
+function shortAddress(address = "") {
+  const text = String(address).trim();
+  return text.length > 90 ? text.slice(0, 90) + "…" : text;
+}
+function bindOrderButtons() {
+  $$('[data-pay]').forEach(btn => btn.addEventListener("click", async () => {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> Connecting to Paystack…`;
+    try {
+      const initializePayment = httpsCallable(functions, "initializePaystackPayment");
+      const result = await initializePayment({ orderId: btn.dataset.pay });
+      const checkoutUrl = result.data?.authorizationUrl;
+      if (!checkoutUrl || !checkoutUrl.startsWith("https://checkout.paystack.com/")) throw new Error("Paystack did not return a valid checkout URL.");
+      location.assign(checkoutUrl);
+    } catch (error) {
+      console.error(error);
+      toast(error.message || "Could not start payment. Please try again.", "error");
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }
+  }));
+  $$('[data-reorder]').forEach(btn => btn.addEventListener("click", () => {
+    const o = ordersById[btn.dataset.reorder];
+    if (!o) return;
+    sessionStorage.setItem("fl_reorder", JSON.stringify({
+      senderName: o.senderName || "", senderPhone: o.senderPhone || "",
+      senderEmail: o.senderEmail || o.customerEmail || "", pickupAddress: o.pickupAddress || "",
+      receiverName: o.receiverName || "", receiverPhone: o.receiverPhone || "",
+      receiverEmail: o.receiverEmail || "", dropoffAddress: o.dropoffAddress || "",
+      packageType: o.packageType || "", packageDescription: o.packageDescription || "",
+      weightKg: o.weightKg || 1, serviceType: o.serviceType || "", zone: o.zone || "",
+      instructions: o.instructions || ""
+    }));
+    location.href = "book.html";
+  }));
+}
+
+function orderCardHtml(o) {
+  const price =
+    o.finalPrice != null
+      ? `${fmtMoney(o.finalPrice)} confirmed`
+      : o.estimatedPrice != null ? `${fmtMoney(o.estimatedPrice)} estimate` : "Quotation requested";
+
+  const payClass =
+    o.paymentStatus === "Paid"
+      ? "badge-green"
+      : o.paymentStatus === "COD"
+        ? "badge-orange"
+        : "badge-amber";
+
+  const extraStops = Math.max(0, (o.stops?.length || 1) - 1);
+
+  return `
+  <article class="order-row">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+      <div>
+        <div style="font-weight:800;color:var(--blue-dark);font-size:1.08rem">${esc(o.orderId)}</div>
+        <div class="small muted">${fmtDateTime(o.createdAt)} · ${esc(o.serviceType || "Delivery")}</div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <span class="badge ${statusBadgeClass(o.status)}">${esc(o.status || "Order Placed")}</span>
+        <span class="badge ${payClass}">Payment: ${esc(o.paymentStatus || "Pending")}</span>
+      </div>
+    </div>
+
+    <div style="margin:14px 0;display:grid;gap:8px">
+      <p class="small">
+        <i class="fa-solid fa-circle-dot" style="color:var(--blue)"></i>
+        <b>Pickup:</b> ${esc(shortAddress(o.pickupAddress))}
+      </p>
+      <p class="small">
+        <i class="fa-solid fa-location-dot" style="color:var(--green)"></i>
+        <b>Drop-off:</b> ${esc(shortAddress(o.dropoffAddress))}
+        ${extraStops ? `<span class="badge badge-blue">+${extraStops} extra</span>` : ""}
+      </p>
+      <p class="small muted">
+        <i class="fa-solid fa-box"></i>
+        ${esc(o.packageType || "Package")}
+        ${o.packageDescription ? "— " + esc(o.packageDescription) : ""}
+        (${esc(o.weightKg || 1)}kg)
+        · <b>${esc(price)}</b>
+      </p>
+      ${o.riderName ? `
+        <p class="small">
+          <i class="fa-solid fa-motorcycle" style="color:var(--orange)"></i>
+          Rider: <b>${esc(o.riderName)}</b>
+          ${o.riderPhone ? `· <a href="tel:${esc(normalizeNgPhone(o.riderPhone))}">${esc(o.riderPhone)}</a>` : ""}
+        </p>` : ""}
+    </div>
+
+    <div class="btn-row">
+      ${o.finalPrice != null && o.paymentStatus !== "Paid" && o.paymentOption !== "Cash on delivery" ? `<button type="button" class="btn btn-orange btn-sm" data-pay="${esc(o.orderId)}"><i class="fa-solid fa-lock"></i> Pay now · ${fmtMoney(o.finalPrice)}</button>` : ""}
+      <a class="btn btn-blue btn-sm" href="track.html?id=${encodeURIComponent(o.orderId)}">
+        <i class="fa-solid fa-location-crosshairs"></i> Track
+      </a>
+      <button type="button" class="btn btn-ghost btn-sm" data-reorder="${esc(o.orderId)}">
+        <i class="fa-solid fa-rotate-right"></i> Repeat this shipment request
+      </button>
+      <a class="btn btn-wa btn-sm" target="_blank" rel="noopener"
+         href="${waLink(`Hello DABOFFOODS & LOGISTICS SERVICES, I need help with my shipment ${o.orderId}.`)}">
+        <i class="fa-brands fa-whatsapp"></i> Help
+      </a>
+    </div>
+  </article>`;
+}
+
+/* ---------------- Saved addresses ---------------- */
+function listenToPayments(uid) {
+  const paymentQuery = query(collection(db, "payments"), where("customerUid", "==", uid));
+  onSnapshot(paymentQuery, snapshot => {
+    const payments = [];
+    snapshot.forEach(payment => payments.push({ id: payment.id, ...payment.data() }));
+    const timestamp = value => value?.toMillis ? value.toMillis() : value?.seconds ? value.seconds * 1000 : 0;
+    payments.sort((a, b) => timestamp(b.createdAt) - timestamp(a.createdAt));
+    $("#paymentHistory").innerHTML = payments.length ? payments.map(payment => `
+      <article class="order-row" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+          <div><b>${esc(payment.orderId || "Order")}</b><div class="small muted">Reference: ${esc(payment.reference || payment.id)}</div></div>
+          <span class="badge ${payment.status === "success" ? "badge-green" : payment.status === "failed" || payment.status === "duplicate_success" ? "badge-red" : "badge-amber"}">${esc(payment.status === "duplicate_success" ? "duplicate success · support review" : payment.status || "pending")}</span>
+        </div>
+        <p class="small muted" style="margin-top:7px">${esc(payment.currency || "NGN")} · ${payment.amountNaira == null ? "Amount unavailable" : fmtMoney(payment.amountNaira)} · ${payment.paidAt ? `Paid ${fmtDateTime(payment.paidAt)}` : `Started ${fmtDateTime(payment.createdAt)}`}</p>
+      </article>`).join("") : `<p class="muted small">No online payments recorded yet.</p>`;
+  }, error => {
+    console.error(error);
+    $("#paymentHistory").innerHTML = `<p class="muted small">Payment history is unavailable right now. Refresh the page to retry.</p>`;
+  });
+}
+
+async function listenToShipments() {
+  try {
+    const listShipments = httpsCallable(functions, "listMyShipments");
+    const result = await listShipments({});
+    const shipments = result.data?.shipments || [];
+    $("#shipmentHistory").innerHTML = shipments.length ? shipments.map(shipment => `
+      <article class="order-row" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+          <div><b>${esc(shipment.trackingNumber || shipment.orderId)}</b><div class="small muted">${esc(shipment.carrier || "Carrier pending")} · Order ${esc(shipment.orderId || "—")}</div></div>
+          <span class="badge ${shipment.shipmentStatus === "Delivered" ? "badge-green" : ["In Transit", "Out for Delivery"].includes(shipment.shipmentStatus) ? "badge-orange" : "badge-blue"}">${esc(shipment.shipmentStatus || "Shipment Registered")}</span>
+        </div>
+        <p class="small muted" style="margin:7px 0">${esc(shipment.origin || "Origin not provided")} → ${esc(shipment.destination || "Destination not provided")} · Estimated delivery: ${shipment.estimatedDelivery ? fmtDateTime(shipment.estimatedDelivery) : "Not available"}</p>
+        <div class="btn-row"><a class="btn btn-blue btn-sm" href="track.html?id=${encodeURIComponent(shipment.trackingNumber || shipment.orderId)}"><i class="fa-solid fa-location-crosshairs"></i> Track shipment</a></div>
+      </article>`).join("") : `<p class="muted small">No carrier shipments have been registered for your orders yet.</p>`;
+  } catch (error) {
+    console.error(error);
+    $("#shipmentHistory").innerHTML = `<p class="muted small">Shipment list is unavailable right now. Refresh the page to retry.</p>`;
+  }
+}
+
+async function verifyPaymentReturn() {
+  const params = new URLSearchParams(location.search);
+  const reference = params.get("payment_reference") || params.get("reference") || params.get("trxref");
+  if (!reference) return;
+  const notice = document.createElement("div");
+  notice.className = "alert alert-info show";
+  notice.textContent = "Verifying your Paystack payment securely…";
+  $("#panel-orders").prepend(notice);
+  try {
+    const verifyPayment = httpsCallable(functions, "verifyPaystackPayment");
+    const result = await verifyPayment({ reference });
+    notice.className = `alert ${result.data?.verified ? "alert-success" : "alert-info"} show`;
+    notice.textContent = result.data?.verified
+      ? "Payment verified successfully. Your order payment status is updated."
+      : `Payment status: ${result.data?.status || "pending"}. If you completed checkout, refresh shortly or contact support.`;
+  } catch (error) {
+    console.error(error);
+    notice.className = "alert alert-error show";
+    notice.textContent = error.message || "Payment verification is unavailable. Please contact support.";
+  } finally {
+    params.delete("payment_reference"); params.delete("reference"); params.delete("trxref");
+    history.replaceState(null, "", `${location.pathname}${params.toString() ? `?${params}` : ""}${location.hash}`);
+  }
+}
+
+function listenToAddresses(uid) {
+  onSnapshot(collection(db, "users", uid, "addresses"), snap => {
+    const addresses = [];
+    snap.forEach(d => addresses.push({ id: d.id, ...d.data() }));
+
+    addresses.sort((a, b) =>
+      Number(!!b.isDefault) - Number(!!a.isDefault) ||
+      String(a.label || "").localeCompare(String(b.label || ""))
+    );
+
+    addressesById = {};
+    addresses.forEach(a => (addressesById[a.id] = a));
+
+    $("#addressEmpty").classList.toggle("hidden", addresses.length > 0);
+    $("#addressList").innerHTML = addresses.map(addressCardHtml).join("");
+    bindAddressButtons(uid);
+  }, err => {
+    console.error(err);
+    toast("Couldn't load saved addresses. Please refresh.", "error");
+  });
+}
+
+function addressCardHtml(a) {
+  return `
+  <article class="card">
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+      <h3><i class="fa-solid fa-location-dot" style="color:var(--orange)"></i> ${esc(a.label || "Saved address")}</h3>
+      ${a.isDefault ? `<span class="badge badge-green">Default pickup</span>` : ""}
+    </div>
+    <p class="muted" style="margin:10px 0">${esc(a.address || "")}</p>
+    ${a.phone ? `<p class="small"><i class="fa-solid fa-phone"></i> ${esc(a.phone)}</p>` : ""}
+    <div class="btn-row" style="margin-top:14px">
+      ${a.isDefault ? "" : `
+        <button type="button" class="btn btn-ghost btn-sm" data-default-address="${esc(a.id)}">
+          Set default
+        </button>`}
+      <button type="button" class="btn btn-outline btn-sm" data-edit-address="${esc(a.id)}">
+        <i class="fa-solid fa-pen"></i> Edit
+      </button>
+      <button type="button" class="btn btn-danger btn-sm" data-delete-address="${esc(a.id)}">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  </article>`;
+}
+
+async function setDefaultAddress(uid, addressId, addressText) {
+  const batch = writeBatch(db);
+
+  Object.values(addressesById).forEach(a => {
+    batch.update(doc(db, "users", uid, "addresses", a.id), {
+      isDefault: a.id === addressId,
+      updatedAt: serverTimestamp()
+    });
+  });
+
+  batch.update(doc(db, "users", uid), {
+    defaultAddress: addressText,
+    updatedAt: serverTimestamp()
+  });
+
+  await batch.commit();
+
+  currentProfile.defaultAddress = addressText;
+  $("#profileDefaultAddress").value = addressText;
+}
+
+function resetAddressForm() {
+  $("#addressForm").reset();
+  $("#addressId").value = "";
+  $("#addressFormTitle").textContent = "Add a saved address";
+  $("#addressSaveBtn").innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save address`;
+  $("#addressCancelBtn").classList.add("hidden");
+}
+
+function bindAddressButtons(uid) {
+  $$("[data-edit-address]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const a = addressesById[btn.dataset.editAddress];
+      if (!a) return;
+
+      $("#addressId").value = a.id;
+      $("#addressLabel").value = a.label || "";
+      $("#addressPhone").value = a.phone || "";
+      $("#addressText").value = a.address || "";
+      $("#addressDefault").checked = !!a.isDefault;
+      $("#addressFormTitle").textContent = "Edit saved address";
+      $("#addressSaveBtn").innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save changes`;
+      $("#addressCancelBtn").classList.remove("hidden");
+      $("#addressForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+
+  $$("[data-default-address]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const a = addressesById[btn.dataset.defaultAddress];
+      if (!a) return;
+
+      try {
+        await setDefaultAddress(uid, a.id, a.address);
+        toast("Default pickup address updated.", "success");
+      } catch (err) {
+        console.error(err);
+        toast("Couldn't set the default address. Please try again.", "error");
+      }
+    });
+  });
+
+  $$("[data-delete-address]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const a = addressesById[btn.dataset.deleteAddress];
+      if (!a) return;
+
+      const yes = await confirmDialog(
+        "Delete this address?",
+        `"${a.label || "This address"}" will be removed from your saved addresses.`,
+        "Yes, delete"
+      );
+      if (!yes) return;
+
+      try {
+        await deleteDoc(doc(db, "users", uid, "addresses", a.id));
+
+        if (a.isDefault) {
+          await updateDoc(doc(db, "users", uid), {
+            defaultAddress: "",
+            updatedAt: serverTimestamp()
+          });
+          currentProfile.defaultAddress = "";
+          $("#profileDefaultAddress").value = "";
+        }
+
+        if ($("#addressId").value === a.id) resetAddressForm();
+        toast("Address deleted.", "success");
+      } catch (err) {
+        console.error(err);
+        toast("Couldn't delete the address. Please try again.", "error");
+      }
+    });
+  });
+}
+
+$("#addressCancelBtn").addEventListener("click", resetAddressForm);
+
+$("#addressForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!currentUser || !db) return;
+
+  const label = $("#addressLabel").value.trim();
+  const phone = $("#addressPhone").value.trim();
+  const address = $("#addressText").value.trim();
+  const makeDefault = $("#addressDefault").checked;
+  const editingId = $("#addressId").value;
+
+  let ok = true;
+  if (label.length < 2) {
+    setFieldError($("#addressLabel"), "Give this address a short label, e.g. Home or Shop.");
+    ok = false;
+  } else setFieldError($("#addressLabel"), "");
+
+  if (address.length < 8) {
+    setFieldError($("#addressText"), "Please enter the full address with a nearby landmark.");
+    ok = false;
+  } else setFieldError($("#addressText"), "");
+
+  if (phone && !isValidNgPhone(phone)) {
+    setFieldError($("#addressPhone"), "Enter a valid Nigerian number, or leave this blank.");
+    ok = false;
+  } else setFieldError($("#addressPhone"), "");
+
+  if (!ok) return;
+
+  const btn = $("#addressSaveBtn");
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Saving…`;
+
+  try {
+    let addressId = editingId;
+
+    if (editingId) {
+      await updateDoc(doc(db, "users", currentUser.uid, "addresses", editingId), {
+        label,
+        phone,
+        address,
+        updatedAt: serverTimestamp()
+      });
+    } else {
+      const ref = await addDoc(
+        collection(db, "users", currentUser.uid, "addresses"),
+        {
+          label,
+          phone,
+          address,
+          isDefault: false,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }
+      );
+      addressId = ref.id;
+
+      // Small wait so the real-time listener includes the new address
+      // before the default-address batch runs.
+      addressesById[addressId] = {
+        id: addressId, label, phone, address, isDefault: false
+      };
+    }
+
+    if (makeDefault) {
+      await setDefaultAddress(currentUser.uid, addressId, address);
+    } else if (
+      editingId &&
+      addressesById[editingId]?.isDefault
+    ) {
+      // Keep profile and the edited default address in sync.
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        defaultAddress: address,
+        updatedAt: serverTimestamp()
+      });
+      $("#profileDefaultAddress").value = address;
+    }
+
+    resetAddressForm();
+    toast(editingId ? "Address updated." : "Address saved.", "success");
+  } catch (err) {
+    console.error(err);
+    toast("Couldn't save this address. Please check your network and try again.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+});
+
+/* ---------------- Profile settings ---------------- */
+function syncProfileBusinessField() {
+  $("#profileBizWrap").classList.toggle(
+    "hidden",
+    $("#profileAccountType").value !== "Business"
+  );
+}
+$("#profileAccountType").addEventListener("change", syncProfileBusinessField);
+
+function fillProfileForm(user, profile) {
+  profileFilled = true;
+
+  $("#profileName").value = profile.fullName || user.displayName || "";
+  $("#profilePhone").value = profile.phone || "";
+  $("#profileEmail").value = profile.email || user.email || "";
+  $("#profileAccountType").value = profile.accountType || "Individual";
+  $("#profileBusinessName").value = profile.businessName || "";
+  $("#profileArea").value = profile.area || "";
+  $("#profileDefaultAddress").value = profile.defaultAddress || "";
+
+  const prefs = profile.notificationPrefs || {};
+  $("#profilePrefEmail").checked = prefs.email !== false;
+  $("#profilePrefSms").checked = prefs.sms !== false;
+  $("#profilePrefWhatsapp").checked = prefs.whatsapp !== false;
+
+  syncProfileBusinessField();
+}
+
+$("#profileForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!currentUser || !db) return;
+
+  $("#profileError").classList.remove("show");
+  $("#profileSuccess").classList.remove("show");
+
+  const data = {
+    fullName: $("#profileName").value.trim(),
+    phone: $("#profilePhone").value.trim(),
+    accountType: $("#profileAccountType").value,
+    businessName: $("#profileBusinessName").value.trim(),
+    area: $("#profileArea").value.trim(),
+    defaultAddress: $("#profileDefaultAddress").value.trim()
+  };
+
+  let ok = true;
+
+  if (data.fullName.length < 3) {
+    setFieldError($("#profileName"), "Please enter your full name.");
+    ok = false;
+  } else setFieldError($("#profileName"), "");
+
+  if (!isValidNgPhone(data.phone)) {
+    setFieldError($("#profilePhone"), "Enter a valid Nigerian phone number.");
+    ok = false;
+  } else setFieldError($("#profilePhone"), "");
+
+  if (data.accountType === "Business" && data.businessName.length < 2) {
+    setFieldError($("#profileBusinessName"), "Please enter your business name.");
+    ok = false;
+  } else setFieldError($("#profileBusinessName"), "");
+
+  if (!ok) {
+    const el = $("#profileError");
+    el.textContent = "Please check the highlighted fields.";
+    el.classList.add("show");
+    return;
+  }
+
+  const btn = $("#profileSaveBtn");
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Saving…`;
+
+  try {
+    const updates = {
+      ...data,
+      businessName:
+        data.accountType === "Business" ? data.businessName : "",
+      phoneIntl: normalizeNgPhone(data.phone),
+      notificationPrefs: {
+        email: $("#profilePrefEmail").checked,
+        sms: $("#profilePrefSms").checked,
+        whatsapp: $("#profilePrefWhatsapp").checked
+      },
+      updatedAt: serverTimestamp()
+    };
+
+    await updateDoc(doc(db, "users", currentUser.uid), updates);
+    currentProfile = { ...currentProfile, ...updates };
+    fillHeader(currentUser, currentProfile);
+
+    const success = $("#profileSuccess");
+    success.textContent = "Profile saved successfully.";
+    success.classList.add("show");
+    toast("Profile updated.", "success");
+  } catch (err) {
+    console.error(err);
+    const el = $("#profileError");
+    el.textContent = "Couldn't save your profile. Please check your network and try again.";
+    el.classList.add("show");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+});
+
+/* ---------------- Email verification ---------------- */
+$("#resendVerifyBtn").addEventListener("click", async () => {
+  const btn = $("#resendVerifyBtn");
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Sending…`;
+
+  try {
+    await resendVerification();
+    toast("Verification email sent. Please check your inbox and spam folder.", "success");
+  } catch (err) {
+    toast(friendlyAuthError(err), "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+});
+
+/* ---------------- Change password ---------------- */
+$("#newPassword").addEventListener("input", e => {
+  const result = getPasswordStrength(e.target.value);
+  $("#newPwBar").style.width = result.width;
+  $("#newPwBar").style.background = result.color;
+  $("#newPwLabel").textContent = result.label;
+});
+
+$("#passwordForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const current = $("#currentPassword").value;
+  const next = $("#newPassword").value;
+  const confirm = $("#confirmNewPassword").value;
+  let ok = true;
+
+  if (!current) {
+    setFieldError($("#currentPassword"), "Enter your current password.");
+    ok = false;
+  } else setFieldError($("#currentPassword"), "");
+
+  if (next.length < 8) {
+    setFieldError($("#newPassword"), "New password must be at least 8 characters.");
+    ok = false;
+  } else setFieldError($("#newPassword"), "");
+
+  if (confirm !== next) {
+    setFieldError($("#confirmNewPassword"), "New passwords do not match.");
+    ok = false;
+  } else setFieldError($("#confirmNewPassword"), "");
+
+  if (!ok) return;
+
+  const btn = $("#passwordSaveBtn");
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Updating…`;
+
+  try {
+    await changeUserPassword(current, next);
+    $("#passwordForm").reset();
+    $("#newPwBar").style.width = "0";
+    $("#newPwLabel").textContent = "";
+    toast("Password updated successfully.", "success");
+  } catch (err) {
+    console.error(err);
+    toast(friendlyAuthError(err), "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+});
+
+/* ---------------- Logout ---------------- */
+async function logout() {
+  try {
+    await signOutUser();
+    location.href = "index.html";
+  } catch {
+    toast("Couldn't sign out. Please try again.", "error");
+  }
+}
+$("#logoutBtnTop").addEventListener("click", logout);
+$("#logoutBtnBottom").addEventListener("click", logout);
+
+/* ---------------- Delete account ---------------- */
+$("#deleteAccountBtn").addEventListener("click", async () => {
+  const needsPassword =
+    currentUser && hasPasswordProvider(currentUser);
+  const password = needsPassword ? $("#deletePassword").value : "";
+
+  if (needsPassword && !password) {
+    setFieldError(
+      $("#deletePassword"),
+      "Enter your current password before deleting your account."
+    );
+    $("#deletePassword").focus();
+    return;
+  }
+  setFieldError($("#deletePassword"), "");
+
+  const yes = await confirmDialog(
+    "Delete your DABOFFOODS & LOGISTICS SERVICES account?",
+    "This permanently removes your profile and saved addresses. You will no longer be able to sign in with this account. This cannot be undone.",
+    "Yes, delete my account"
+  );
+  if (!yes) return;
+
+  const btn = $("#deleteAccountBtn");
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Deleting…`;
+
+  try {
+    await deleteUserAccount(password);
+    sessionStorage.setItem("fl_account_deleted", "1");
+    location.href = "index.html";
+  } catch (err) {
+    console.error(err);
+    toast(friendlyAuthError(err), "error");
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+});
+</script>
+</body>
+</html>

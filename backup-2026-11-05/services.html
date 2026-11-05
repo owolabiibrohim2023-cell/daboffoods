@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Services | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Explore international shipping, freight forwarding, food exports, UK and USA cargo, customs clearance support, food sales and doorstep delivery.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Our Services</span>
+    <h1 style="color:#fff;font-size:2rem">Our Services</h1>
+    <p style="color:#d7e5ff;max-width:760px;margin:12px auto 0">From authentic Nigerian food products to international shipping and export solutions, DABOFFOODS provides reliable services connecting Nigerian products and businesses to local and international markets.</p>
+  </div>
+</section>
+
+<section class="section" id="services"><div class="container">
+  <div class="grid grid-4" id="servicesGrid" aria-live="polite"></div>
+</div></section>
+
+<section class="section alt"><div class="container">
+  <div class="section-head reveal"><span class="kicker">Why Choose Us?</span>
+    <h2>Support for your international shipment</h2></div>
+  <div class="grid grid-4">
+    <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-handshake"></i></div><h3>Carrier partnerships</h3><p class="muted">International express delivery through international carrier partners.</p></div>
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-globe"></i></div><h3>Multiple shipping options</h3><p class="muted">Discuss options according to your shipment and destination.</p></div>
+    <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-file-circle-check"></i></div><h3>Customs support</h3><p class="muted">Customs clearance support at destination countries.</p></div>
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-solid fa-house"></i></div><h3>Doorstep delivery</h3><p class="muted">Doorstep delivery options for international logistics services.</p></div>
+  </div>
+  <div class="cta-banner reveal" style="margin-top:30px">
+    <h2>Need a shipment quotation?</h2>
+    <p style="margin:8px auto 18px;max-width:500px">Tell us what you are sending and its destination. We will discuss available options and applicable requirements.</p>
+    <a class="btn btn-blue" id="svcWa" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp</a>
+  </div>
+</div></section>
+</main>
+<div id="siteFooter"></div>
+
+<script type="module">
+import { renderChrome } from "./app.js";
+import { renderServiceCards } from "./services.js";
+renderChrome("services.html");
+renderServiceCards(document.querySelector("#servicesGrid"));
+</script>
+</body>
+</html>

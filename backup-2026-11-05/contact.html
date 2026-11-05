@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact | DABOFFOODS &amp; LOGISTICS SERVICES</title>
+<meta name="description" content="Contact DABOFFOODS & LOGISTICS SERVICES at 24 Ibadan Road, Ijebu Ode, Ogun State, or call 0802 431 1091 for shipping and export enquiries.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="siteHeader"></div>
+<main>
+<section class="section" style="background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:44px 0">
+  <div class="container text-center">
+    <span class="kicker" style="background:rgba(255,255,255,.14);color:#ffd9ad">Contact Us</span>
+    <h1 style="color:#fff;font-size:2rem">We'd love to hear from you</h1>
+    <p style="color:#d7e5ff;margin-top:10px">Talk to us about international shipping, food exports, cargo or an existing shipment.</p>
+  </div>
+</section>
+
+<section class="section"><div class="container">
+  <div class="grid grid-4" style="margin-bottom:26px">
+    <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-phone"></i></div><h3>Call us</h3><p class="muted"><a href="tel:+2348024311091"><b>0802 431 1091</b></a></p></div>
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-brands fa-whatsapp"></i></div><h3>WhatsApp</h3><p class="muted"><a id="cWaCard" target="_blank" rel="noopener"><b>Chat now →</b></a><br>Fastest response</p></div>
+    <div class="card reveal"><div class="icon-badge"><i class="fa-solid fa-location-dot"></i></div><h3>Visit us</h3><p class="muted" id="cAddress">—</p></div>
+    <div class="card reveal"><div class="icon-badge orange"><i class="fa-regular fa-clock"></i></div><h3>Working hours</h3><p class="muted" id="cHours">—</p><p id="cOpenBadge" style="margin-top:6px"></p></div>
+  </div>
+
+  <div class="grid grid-2" style="align-items:start">
+    <!-- Contact form: saves to Firestore messages + offers WhatsApp send -->
+    <form class="form-card reveal" id="contactForm" novalidate>
+      <h2 style="font-size:1.3rem">Send us a message</h2>
+      <p class="small muted" style="margin-bottom:16px">Submit your enquiry and, if preferred, open the same message in WhatsApp.</p>
+      <div class="alert alert-error" id="cError"></div>
+      <div class="alert alert-success" id="cSuccess"></div>
+      <div class="form-grid">
+        <div class="field"><label for="cName">Your name <span class="req">*</span></label><input id="cName" autocomplete="name"><p class="field-error"></p></div>
+        <div class="field"><label for="cPhone">Phone number <span class="req">*</span></label><input id="cPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0802 431 1091"><p class="field-error"></p></div>
+        <div class="field"><label for="cEmail">Email (optional)</label><input id="cEmail" type="email" autocomplete="email"><p class="field-error"></p></div>
+        <div class="field"><label for="cSubject">Subject</label>
+          <select id="cSubject"><option>General enquiry</option><option>International shipping quotation</option><option>Freight forwarding</option><option>Food export enquiry</option><option>UK cargo</option><option>USA cargo</option><option>Customs clearance support</option><option>Existing shipment</option><option>Other</option></select></div>
+        <div class="field span-2"><label for="cOrderId">Order ID (if about an order)</label><input id="cOrderId" placeholder="e.g. FLG-4A8K2" style="text-transform:uppercase"><p class="field-error"></p></div>
+        <div class="field span-2"><label for="cMessage">Message <span class="req">*</span></label><textarea id="cMessage" placeholder="How can we help?"></textarea><p class="field-error"></p></div>
+      </div>
+      <button class="btn btn-orange btn-block" id="cSubmit" type="submit"><i class="fa-solid fa-paper-plane"></i> Send message</button>
+      <a class="btn btn-wa btn-block hidden" id="cSendWa" target="_blank" rel="noopener" style="margin-top:10px"><i class="fa-brands fa-whatsapp"></i> Also send it on WhatsApp now</a>
+    </form>
+
+    <div class="reveal">
+      <div class="card" style="padding:14px">
+        <iframe id="mapEmbed" title="Map — DABOFFOODS &amp; LOGISTICS SERVICES, Ijebu Ode, Ogun State"
+          style="width:100%;height:320px;border:0;border-radius:12px" loading="lazy" allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="btn-row" style="margin-top:12px">
+          <a class="btn btn-blue" id="dirBtn" target="_blank" rel="noopener" style="flex:1"><i class="fa-solid fa-diamond-turn-right"></i> Get directions</a>
+          <a class="btn btn-ghost" href="book.html" style="flex:1"><i class="fa-solid fa-box"></i> Request a shipment</a>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3><i class="fa-solid fa-circle-info" style="color:var(--blue)"></i> Faster help for live orders</h3>
+        <p class="muted" style="margin-top:8px">Already have an Order ID? <a href="track.html"><b>Track it here</b></a> — you can also call or WhatsApp your rider directly from the tracking page while delivery is in progress.</p>
+      </div>
+    </div>
+  </div>
+</div></section>
+</main>
+<div id="siteFooter"></div>
+
+<script type="module">
+import { CONFIG, renderChrome, $, toast, db, firebaseReady, waLink, businessOpen,
+  hoursText, isValidNgPhone, isValidEmail, setFieldError, esc } from "./app.js";
+import { collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+renderChrome("contact.html");
+$("#cWaCard").href = waLink("Hello DABOFFOODS & LOGISTICS SERVICES, I have a general enquiry.");
+$("#cAddress").textContent = CONFIG.address;
+$("#cHours").textContent = hoursText();
+$("#cOpenBadge").textContent = "Please call to confirm current opening hours.";
+
+const q = encodeURIComponent(CONFIG.mapsQuery);
+$("#mapEmbed").src = `https://maps.google.com/maps?q=${q}&z=15&output=embed`;
+$("#dirBtn").href = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+
+let sending = false;
+$("#contactForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (sending) return;
+  $("#cError").classList.remove("show"); $("#cSuccess").classList.remove("show");
+
+  const data = {
+    name: $("#cName").value.trim(), phone: $("#cPhone").value.trim(),
+    email: $("#cEmail").value.trim().toLowerCase(), subject: $("#cSubject").value,
+    orderId: $("#cOrderId").value.trim().toUpperCase(), message: $("#cMessage").value.trim()
+  };
+  let ok = true;
+  const check = (id, pass, msg) => { setFieldError($("#" + id), pass ? "" : msg); if (!pass) ok = false; };
+  check("cName", data.name.length >= 2, "Please tell us your name.");
+  check("cPhone", isValidNgPhone(data.phone), "Enter a valid Nigerian phone number so we can reach you.");
+  check("cMessage", data.message.length >= 5, "Please write a short message.");
+  if (data.email) check("cEmail", isValidEmail(data.email), "This email doesn't look right (optional — you can clear it).");
+  if (!ok) return;
+
+  sending = true;
+  const btn = $("#cSubmit"), original = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span> Sending…`;
+
+  const waText = `Hello DABOFFOODS & LOGISTICS SERVICES, my name is ${data.name}.\nEnquiry: ${data.subject}${data.orderId ? `\nShipment reference: ${data.orderId}` : ""}\n\n${data.message}\n\nMy phone: ${data.phone}`;
+  const sendWaBtn = $("#cSendWa");
+  sendWaBtn.href = waLink(waText);
+
+  let saved = false;
+  if (firebaseReady && db) {
+    try {
+      await addDoc(collection(db, "messages"), {
+        name: data.name, phone: data.phone, email: data.email,
+        subject: data.subject, orderId: data.orderId,
+        message: data.orderId ? `[${data.orderId}] ${data.message}` : data.message,
+        read: false, source: "contact-page", createdAt: serverTimestamp()
+      });
+      saved = true;
+    } catch (err) { console.warn("Could not save message:", err); }
+  }
+
+  const success = $("#cSuccess");
+  success.innerHTML = saved
+    ? `<b>Message received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>We'll reply soon during working hours. For an instant response, also send it on WhatsApp below.`
+    : `<b>Almost there!</b><br>Our message inbox is unreachable right now, but no wahala — tap the WhatsApp button below and your exact message will open ready to send.`;
+  success.classList.add("show");
+  sendWaBtn.classList.remove("hidden");
+  toast(saved ? "Message sent successfully." : "Please send via WhatsApp to reach us instantly.", saved ? "success" : "info");
+
+  e.target.reset();
+  btn.disabled = false; btn.innerHTML = original; sending = false;
+});
+</script>
+</body>
+</html>

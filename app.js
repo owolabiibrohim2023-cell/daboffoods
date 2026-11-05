@@ -88,6 +88,12 @@ export const fmtDateTime = ts => {
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleString("en-NG", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" });
 };
+/**
+ * WhatsApp is an OPTIONAL support channel only. Ordering, payment and
+ * tracking complete on the website — no transaction requires WhatsApp.
+ * This helper is kept for the Contact page / admin replies only.
+ */
+export const SUPPORT_WHATSAPP = true;
 export const waLink = (message, number = CONFIG.whatsappNumber) =>
   `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 export const trackingLink = id => `${CONFIG.siteUrl}/track.html?id=${id}`;
@@ -259,17 +265,15 @@ export function renderChrome(active = "") {
         <div><h4>Contact</h4><ul>
           <li><i class="fa-solid fa-location-dot"></i> ${esc(CONFIG.address)}</li>
           <li><a href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> ${CONFIG.phoneDisplay}</a></li>
-          <li><a href="${waLink(`Hello ${CONFIG.businessName}!`)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a></li>
+          <li><a href="${waLink(`Hello ${CONFIG.businessName}!`)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp support (optional)</a></li>
           <li><i class="fa-regular fa-clock"></i> ${hoursText()}</li>
           <li><a href="${mapsUrl}" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Get Directions (Google Maps)</a></li></ul></div>
       </div>
       <div class="footer-bottom">© ${new Date().getFullYear()} ${esc(CONFIG.businessName)}, Ijebu Ode, Ogun State, Nigeria. All rights reserved.</div>
     </div></footer>`;
   }
-  /* Floating WhatsApp + back-to-top + mobile sticky CTA */
+  /* Support button (optional WhatsApp) + back-to-top + mobile sticky CTA */
   document.body.insertAdjacentHTML("beforeend", `
-    <a class="wa-float" data-tip="Chat with us" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener"
-      href="${waLink(`Hello ${CONFIG.businessName}, I have a logistics enquiry.`)}"><i class="fa-brands fa-whatsapp"></i></a>
     <button id="backTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <div class="mobile-cta">
       <a class="btn btn-blue" href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> Call Now</a>
