@@ -1,0 +1,152 @@
+/* ============================================================
+   DABOFFOODS — customer dashboard styles (account.html)
+   Served from /css/dashboard.css (site root, never /api).
+   Depends on the design tokens / base components defined in
+   /style.css (loaded first). This file adds dashboard layout
+   + every class/id used by account.html and its generated HTML.
+   ============================================================ */
+
+/* ---------- Dashboard shell ---------- */
+.dash-shell{max-width:1280px;margin:0 auto;padding:28px 16px 56px}
+.dash-head{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
+  background:linear-gradient(120deg,var(--blue-dark),var(--blue));color:#fff;border-radius:20px;
+  padding:24px 22px;margin-bottom:20px;box-shadow:var(--shadow)}
+.dash-head h1{color:#fff;font-size:1.65rem}
+.dash-head .meta{color:#cfe0fa;font-size:.9rem;margin-top:4px}
+.dash-avatar{width:58px;height:58px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font-weight:800;font-size:1.2rem;color:var(--blue-dark);background:#ffd9ad}
+.dash-head .who{display:flex;gap:14px;align-items:center}
+.dash-head .who h1{font-size:1.5rem}
+.dash-head .who .meta{color:#cfe0fa}
+
+.dash-nav{position:sticky;top:0;z-index:20;background:#fff;border:1px solid var(--line);
+  border-radius:16px;padding:8px;display:flex;gap:8px;overflow-x:auto;margin-bottom:18px;
+  -webkit-overflow-scrolling:touch}
+.dash-nav a{flex:none;display:inline-flex;align-items:center;gap:8px;border:1.6px solid var(--line);
+  background:#fff;border-radius:999px;padding:10px 16px;font-weight:600;font-size:.92rem;color:var(--ink)}
+.dash-nav a:hover{text-decoration:none;border-color:var(--blue)}
+.dash-nav a.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.dash-nav{scrollbar-width:none}
+.dash-nav::-webkit-scrollbar{display:none}
+
+/* ---------- Summary cards ---------- */
+.stat-grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:640px){.stat-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.stat-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+  box-shadow:0 2px 10px rgba(11,61,145,.05)}
+.stat-card .n{font-size:1.9rem;font-weight:800;color:var(--blue-dark);line-height:1.1}
+.stat-card .l{font-size:.86rem;color:var(--muted);font-weight:600;margin-top:6px;display:flex;gap:7px;align-items:center}
+.stat-card.accent{border-top:4px solid var(--blue)}
+.stat-card.accent-green{border-top:4px solid var(--green)}
+.stat-card.accent-orange{border-top:4px solid var(--orange)}
+
+/* ---------- Track-order box ---------- */
+.track-box{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow);margin-bottom:18px}
+.track-box h2{font-size:1.2rem;margin-bottom:4px}
+.track-box .row{display:flex;gap:8px;margin-top:12px}
+.track-box input{flex:1;min-width:0;text-transform:uppercase;font-weight:600}
+.track-box .hint{font-size:.84rem;color:var(--muted);margin-top:8px}
+
+/* ---------- Sections / cards ---------- */
+.dash-section{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;box-shadow:0 2px 10px rgba(11,61,145,.05);margin-bottom:18px}
+.dash-section > h2{font-size:1.2rem;margin-bottom:4px}
+.dash-section .sub{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+
+/* ---------- Orders table ---------- */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+.orders-table{width:100%;border-collapse:collapse;min-width:680px;font-size:.92rem}
+.orders-table th{background:var(--blue);color:#fff;text-align:left;padding:12px;font-size:.8rem;
+  letter-spacing:.03em;white-space:nowrap}
+.orders-table td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.orders-table tr:hover td{background:#f8fbff}
+.orders-table .oid{font-weight:800;color:var(--blue-dark)}
+.orders-table .small{font-size:.82rem}
+@media(max-width:640px){
+  .orders-table{min-width:0}
+  .orders-table thead{display:none}
+  .orders-table tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}
+  .orders-table td{display:flex;justify-content:space-between;gap:16px;border:0;padding:6px 12px}
+  .orders-table td::before{content:attr(data-label);font-weight:700;color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}
+}
+
+/* ---------- Order cards (generated) ---------- */
+.order-row{border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:#fff}
+.order-row+.order-row{margin-top:12px}
+.order-row .oid{font-weight:800;color:var(--blue-dark);font-size:1.02rem}
+.order-row .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.order-row .meta{font-size:.86rem;color:var(--muted)}
+.order-row .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* ---------- Badges ---------- */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;
+  padding:4px 11px;border-radius:999px;white-space:nowrap}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+.badge-orange{background:#ffedda;color:var(--orange-dark)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-grey{background:#eef1f6;color:var(--muted)}
+
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px;-webkit-overflow-scrolling:touch}
+.tab-btn{flex:none;border:1.6px solid var(--line);background:#fff;border-radius:999px;
+  padding:10px 18px;font:600 .9rem var(--font);cursor:pointer;color:var(--ink)}
+.tab-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ---------- Layout helpers reused from /style.css ---------- */
+.grid{display:grid;gap:16px}
+.grid-2,.grid-3{grid-template-columns:1fr}
+@media(min-width:640px){.grid-2,.grid-3{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+  box-shadow:0 2px 10px rgba(11,61,145,.05)}
+.form-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px 18px;box-shadow:var(--shadow)}
+@media(min-width:700px){.form-card{padding:32px}}
+.field{margin-bottom:15px}
+.field label{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px;color:var(--blue-dark)}
+.field label .req{color:var(--red)}
+.field-error{color:var(--red);font-size:.83rem;margin-top:5px;display:none;font-weight:500}
+.field-error.show{display:block}
+.form-grid{display:grid;gap:0 16px}
+@media(min-width:680px){.form-grid{grid-template-columns:1fr 1fr}.span-2{grid-column:span 2}}
+.check-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0}
+.check-row input{width:22px;height:22px;min-height:22px;flex:none;margin-top:2px;accent-color:var(--blue)}
+.check-row label{font-weight:500;font-size:.93rem}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px}
+.filters{display:grid;gap:10px;margin-bottom:16px}
+@media(min-width:760px){.filters{grid-template-columns:2fr 1fr 1fr 1fr}}
+
+/* ---------- States ---------- */
+.skeleton{background:linear-gradient(90deg,#e8eef8 25%,#f4f8ff 50%,#e8eef8 75%);
+  background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:10px;min-height:18px}
+@keyframes shimmer{to{background-position:-200% 0}}
+.alert{border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:.94rem;display:none}
+.alert.show{display:block}
+.alert-error{background:var(--red-bg);color:#7c2115;border:1px solid #f3c0b8}
+.alert-success{background:var(--green-bg);color:#0b4d36;border:1px solid #a9ddc9}
+.alert-info{background:var(--blue-light);color:var(--blue-dark);border:1px solid #bcd2f5}
+.spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;
+  border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{border:1.6px dashed var(--line);border-radius:var(--radius);padding:28px 18px;text-align:center}
+.empty .ic{font-size:2.2rem;color:var(--orange)}
+.live-dot{width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 1.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(18,128,92,.5)}70%{box-shadow:0 0 0 9px rgba(18,128,92,0)}100%{box-shadow:0 0 0 0 rgba(18,128,92,0)}}
+
+/* ---------- Footer spacing fix (overrides global body padding on dashboard) ---------- */
+body.dash{padding-bottom:0}
+@media(min-width:900px){body.dash{padding-bottom:0}}
+
+/* ---------- Mobile ---------- */
+@media(max-width:640px){
+  .dash-shell{padding:18px 12px 40px}
+  .dash-head{flex-direction:column;align-items:flex-start}
+  .stat-card .n{font-size:1.5rem}
+  .track-box .row{flex-direction:column}
+  .track-box .btn{width:100%}
+  .order-row .actions .btn{flex:1}
+}
+
