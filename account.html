@@ -273,7 +273,7 @@ import {
   addDoc, deleteDoc, writeBatch, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 // Backend is now Vercel Serverless Functions (no Cloud Functions).
-import { apiCall } from "./api/_lib/client.js";
+import { apiCall } from "./lib/client.js";
 import { auth as firebaseAuth } from "./app.js";
 
 renderChrome("account.html");

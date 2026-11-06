@@ -11,7 +11,7 @@ import { getApp, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.
 import { getAuth as getAuthFor, createUserWithEmailAndPassword, signOut as signOutAuth }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 // Backend is now Vercel Serverless Functions (no Cloud Functions).
-import { apiCall } from "./api/_lib/client.js";
+import { apiCall } from "./lib/client.js";
 import { auth as firebaseAuth } from "./app.js";
 import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot,
   arrayUnion, serverTimestamp }

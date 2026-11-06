@@ -9,7 +9,7 @@ import { CONFIG, renderChrome, $, esc, toast, db, auth, firebaseReady,
   fmtDateTime, normalizeNgPhone, copyText,
   rememberOrderId, recentOrderIds } from "./app.js";
 // Backend is now Vercel Serverless Functions (no Cloud Functions).
-import { apiCall } from "./api/_lib/client.js";
+import { apiCall } from "./lib/client.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 renderChrome("track.html");
