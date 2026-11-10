@@ -6,7 +6,7 @@ const { getAdmin } = require("../_lib/admin");
 const { verifyCaller, parseBody, send, errorResponse, httpError } = require("../_lib/auth");
 const { paystackRequest, koboAmount, siteUrl, CURRENCY } = require("../_lib/paystack");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return send(res, 204, {});
   if (req.method !== "POST") return send(res, 405, { error: "method-not-allowed" });
   try {
@@ -24,7 +24,9 @@ export default async function handler(req, res) {
     const order = orderSnap.data();
     if (order.customerUid !== user.uid) throw httpError(403, "permission-denied", "You can only pay for your own orders.");
     if (order.paymentStatus === "Paid") throw httpError(409, "failed-precondition", "This order is already paid.");
-    if (order.paymentStatus === "COD" || order.paymentOption === "Cash on delivery") throw httpError(409, "failed-precondition", "Cash-on-delivery orders are settled when the cash is collected; online payment is not available for them.");
+    // Legacy guard only: Cash on Delivery is no longer offered, but old COD
+    // records are preserved and must not be paid online by mistake.
+    if (order.paymentStatus === "COD" || order.paymentOption === "Cash on delivery") throw httpError(409, "failed-precondition", "This order was booked before cash on delivery was discontinued. Please contact support to settle it.");
     if (!["Order Placed", "Confirmed"].includes(order.status)) throw httpError(409, "failed-precondition", "This order is no longer awaiting payment.");
     if (order.finalPrice == null) throw httpError(409, "failed-precondition", "Our team has not confirmed a final amount for this order yet.");
 
@@ -32,6 +34,7 @@ export default async function handler(req, res) {
     const customerSnap = await db.doc(`users/${user.uid}`).get();
     if (!customerSnap.exists) throw httpError(404, "not-found", "Your customer profile was not found.");
     const customerProfile = customerSnap.data();
+    if (customerProfile.disabled === true) throw httpError(403, "permission-denied", "This account is disabled. Please contact support.");
     const customerRecord = await adm.auth().getUser(user.uid).catch(() => null);
     const email = customerProfile.email || (customerRecord && customerRecord.email);
     if (!email) throw httpError(409, "failed-precondition", "Your account is missing an email address. Please contact support.");
@@ -45,16 +48,13 @@ export default async function handler(req, res) {
       createdAt: FieldValue.serverTimestamp(),
     });
 
+    // Callback only works with a full https:// site URL (see siteUrl()).
     const baseSite = siteUrl();
     const callbackUrl = /^https:\/\//i.test(baseSite)
       ? `${baseSite}/account.html?payment_reference=${encodeURIComponent(reference)}`
       : undefined;
-    if (callbackUrl) {
-      const cbHost = new URL(callbackUrl).hostname;
-      const siteHost = new URL(baseSite).hostname;
-      if (cbHost !== siteHost || !new URL(callbackUrl).pathname.endsWith("/account.html")) {
-        throw httpError(412, "failed-precondition", "Payment redirect is not configured to this site.");
-      }
+    if (!callbackUrl) {
+      console.warn("SITE_URL is not an https URL; Paystack will use the callback set in the Paystack dashboard.");
     }
 
     let data;
@@ -74,6 +74,7 @@ export default async function handler(req, res) {
     }
 
     if (!data.authorization_url || !String(data.authorization_url).startsWith("https://checkout.paystack.com/")) {
+      try { await paymentRef.update({ status: "failed", updatedAt: FieldValue.serverTimestamp() }); } catch {}
       throw httpError(502, "unavailable", "Paystack did not return a valid checkout URL.");
     }
     await paymentRef.update({ updatedAt: FieldValue.serverTimestamp() });
@@ -81,4 +82,4 @@ export default async function handler(req, res) {
   } catch (err) {
     return errorResponse(res, err);
   }
-}
+};

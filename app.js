@@ -34,7 +34,7 @@ export const CONFIG = {
   phoneDisplay: "0802 431 1091",
   phoneIntl: "+2348024311091",
   whatsappNumber: "2348024311091", // digits only, no +
-  paystackPublicKey: "pk_test_REPLACE_WITH_YOUR_PAYSTACK_PUBLIC_KEY", // REPLACE with your Paystack public key (pk_test_... for sandbox, pk_live_... for production)
+  paystackPublicKey: "pk_test_264e9dbb99bbfe5dcb17c6cbf68029393061a573", // REPLACE with your Paystack public key (pk_test_... for sandbox, pk_live_... for production)
   address: "24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria",
   mapsQuery: "24 Ibadan Road, behind Tala book shop, Ijebu Ode, Ogun State, Nigeria",
   hoursText: "Listed as open; closes at 5:00 PM. Please call to confirm current hours.",

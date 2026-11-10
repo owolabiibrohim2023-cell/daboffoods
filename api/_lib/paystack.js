@@ -13,7 +13,13 @@ function secretKey() {
 }
 
 function siteUrl() {
-  return String(process.env.SITE_URL || process.env.VERCEL_URL || "").replace(/\/$/, "");
+  const clean = v => String(v || "").trim().replace(/\/+$/, "");
+  const withScheme = v => (v && !/^https?:\/\//i.test(v) ? `https://${v}` : v);
+  const configured = clean(process.env.SITE_URL);
+  // Ignore the placeholder from .env.example if it was never replaced.
+  if (configured && !/your-deployed-domain/i.test(configured)) return withScheme(configured);
+  // Vercel provides hosts without "https://", so add it.
+  return withScheme(clean(process.env.VERCEL_PROJECT_PRODUCTION_URL) || clean(process.env.VERCEL_URL));
 }
 
 async function paystackRequest(path, options = {}) {
