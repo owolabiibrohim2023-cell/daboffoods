@@ -1,3 +1,4 @@
+
 // POST /api/payments/initialize  { orderId }  → { authorizationUrl, reference }
 // Auth: signed-in customer who owns the order + confirmed finalPrice.
 // Mirrors Cloud Functions `initializePaystackPayment` (functions/payments.js).

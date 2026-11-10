@@ -12,23 +12,41 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/css/dashboard.css">
-  
 </head>
 <body class="dash">
 <div id="siteHeader"></div>
 <main>
 <section class="section" style="background:var(--bg)"><div class="container dash-shell">
-<div id="accountLoading" class="card"><div class="skeleton" style="width:40%"></div><div class="skeleton" style="width:75%;margin-top:12px"></div><p class="muted small" style="margin-top:12px">Loading your dashboard…</p></div>
-<div id="accountApp" class="hidden">
-<div class="dash-head">
-<div class="who"><div id="avatar" class="dash-avatar">FL</div><div><h1 id="welcomeTitle">Hello</h1><p class="meta" id="accountMeta"></p></div></div>
+
+  <div id="accountLoading" class="card">
+    <div class="skeleton" style="width:40%"></div>
+    <div class="skeleton" style="width:75%;margin-top:12px"></div>
+    <p class="muted small" style="margin-top:12px">Loading your dashboard…</p>
+  </div>
+
+  <div id="accountApp" class="hidden">
+
+    <div class="alert alert-success" id="welcomeAlert"></div>
+    <div class="alert alert-info" id="verifyAlert">
+      <b>Please verify your email address.</b> We sent a verification link to your inbox.
+      <button type="button" class="btn btn-ghost btn-sm" id="resendVerifyBtn" style="margin-left:8px">
+        <i class="fa-solid fa-envelope"></i> Resend email
+      </button>
+    </div>
+
+    <div class="dash-head">
+      <div class="who">
+        <div id="avatar" class="dash-avatar">FL</div>
+        <div>
+          <h1 id="welcomeTitle">Hello</h1>
+          <p class="meta" id="accountMeta"></p>
         </div>
-        <div class="btn-row">
-          <a class="btn btn-orange" href="/book.html"><i class="fa-solid fa-box"></i> Book a new delivery</a>
-          <button type="button" class="btn btn-outline" id="logoutBtnTop">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
-          </button>
-        </div>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-orange" href="/book.html"><i class="fa-solid fa-box"></i> Book a new delivery</a>
+        <button type="button" class="btn btn-outline" id="logoutBtnTop">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
       </div>
     </div>
 
@@ -47,36 +65,7 @@
         <div class="l"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue)"></i> Total orders</div>
       </div>
     </div>
- <h1>Contact Us</h1>
-    <form id="contactForm" class="contact-form">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="tel" id="phone" name="phone" required>
-        </div>
-        <div class="form-group">
-            <label for="address">Address</label>
-            <input type="text" id="address" name="address" required>
-        </div>
-        <div class="form-group">
-            <label for="gmail">Gmail Address</label>
-            <input type="email" id="gmail" name="gmail" value="daboffoods@gmail.com" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Send Message</button>
-        <!-- Pay Now button with Paystack integration -->
-       
-         <button type="button" class="btn btn-orange btn-sm" data-pay="order-123">Pay Now</button>
-    </form>
 
-    <script src="https://js.paystack.com/client.js"></script>
-</body>
     <!-- Tabs -->
     <div class="tabs" role="tablist" aria-label="Account sections">
       <button type="button" class="tab-btn active" data-tab="orders" role="tab">
@@ -92,11 +81,11 @@
 
     <!-- ORDERS PANEL -->
     <section id="panel-orders">
-      <div class="grid grid-3" id="paymentTotals" style="margin-bottom:16px">
+      <div class="grid grid-2" id="paymentTotals" style="margin-bottom:16px">
         <div class="stat-card"><div class="n" id="paidTotal">₦0</div><div class="l">Verified payments</div></div>
         <div class="stat-card"><div class="n" id="unpaidTotal">₦0</div><div class="l">Unpaid confirmed orders</div></div>
-        <div class="stat-card"><div class="n" id="codTotal">₦0</div><div class="l">Cash on delivery due</div></div>
       </div>
+
       <div id="ordersLoading" class="card">
         <div class="skeleton" style="width:55%"></div>
         <div class="skeleton" style="width:85%;margin-top:12px"></div>
@@ -113,11 +102,13 @@
       </div>
 
       <div id="ordersList"></div>
+
       <section class="card" id="paymentHistoryCard" style="margin-top:16px">
         <h2 style="font-size:1.2rem"><i class="fa-solid fa-credit-card" style="color:var(--blue)"></i> Payment history</h2>
         <p class="small muted" style="margin:4px 0 12px">Payment status is updated only after secure backend verification.</p>
         <div id="paymentHistory"><p class="muted small">Loading payments…</p></div>
       </section>
+
       <section class="card" id="shipmentHistoryCard" style="margin-top:16px">
         <h2 style="font-size:1.2rem"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue)"></i> Shipments</h2>
         <p class="small muted" style="margin:4px 0 12px">Carrier and tracking details appear after a shipment is registered.</p>
@@ -251,7 +242,57 @@
 
         <button type="submit" class="btn btn-blue" id="profileSaveBtn">
           <i class="fa-solid fa-floppy-disk"></i> Save profile changes
-        }
+        </button>
+      </form>
+
+      <!-- Change password -->
+      <form class="form-card" id="passwordForm" novalidate style="margin-bottom:18px">
+        <h2 style="font-size:1.3rem"><i class="fa-solid fa-key"></i> Change password</h2>
+        <p class="muted small" style="margin-bottom:18px">Use at least 8 characters.</p>
+
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="currentPassword">Current password</label>
+            <div class="pw-wrap">
+              <input id="currentPassword" type="password" autocomplete="current-password">
+              <button type="button" class="pw-toggle" data-target="currentPassword">Show</button>
+            </div>
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="newPassword">New password</label>
+            <div class="pw-wrap">
+              <input id="newPassword" type="password" autocomplete="new-password">
+              <button type="button" class="pw-toggle" data-target="newPassword">Show</button>
+            </div>
+            <div style="height:6px;background:#e5e7eb;border-radius:4px;margin-top:8px;overflow:hidden">
+              <div id="newPwBar" style="height:100%;width:0;transition:width .2s"></div>
+            </div>
+            <p class="small muted" id="newPwLabel"></p>
+            <p class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="confirmNewPassword">Confirm new password</label>
+            <div class="pw-wrap">
+              <input id="confirmNewPassword" type="password" autocomplete="new-password">
+              <button type="button" class="pw-toggle" data-target="confirmNewPassword">Show</button>
+            </div>
+            <p class="field-error"></p>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-blue" id="passwordSaveBtn" style="margin-top:12px">
+          <i class="fa-solid fa-lock"></i> Update password
+        </button>
+      </form>
+
+      <!-- Delete account -->
+      <div class="card" style="border:1px solid #f3c1c1">
+        <h2 style="font-size:1.2rem;color:#b42318"><i class="fa-solid fa-triangle-exclamation"></i> Delete account</h2>
+        <p class="muted small" style="margin:6px 0 14px">
+          Deleting your account permanently removes your profile and saved addresses.
           Past shipment records may be retained by DABOFFOODS &amp; LOGISTICS SERVICES for business records.
         </p>
 
@@ -302,7 +343,7 @@ import {
   doc, updateDoc, collection, query, where, onSnapshot,
   addDoc, deleteDoc, writeBatch, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-// Backend is now Vercel Serverless Functions (no Cloud Functions).
+// Backend is Vercel Serverless Functions.
 import { apiCall } from "./lib/client.js";
 import { auth as firebaseAuth } from "./app.js";
 
@@ -315,7 +356,16 @@ let listenersStarted = false;
 let profileFilled = false;
 let ordersById = {};
 let addressesById = {};
-/* Payment/shipping backend lives on Vercel (see apiCall helper). */
+
+// Orders booked as Cash on Delivery before it was discontinued.
+// Kept only so historical records still display correctly.
+const isLegacyCod = o => o.paymentStatus === "COD" || o.paymentOption === "Cash on delivery";
+// Same states the backend (api/payments/initialize.js) accepts for payment.
+const isPayable = o =>
+  o.finalPrice != null &&
+  o.paymentStatus !== "Paid" &&
+  !isLegacyCod(o) &&
+  ["Order Placed", "Confirmed"].includes(o.status);
 
 /* ---------------- Tabs ---------------- */
 function activateTab(name, updateHash = true) {
@@ -326,7 +376,7 @@ function activateTab(name, updateHash = true) {
   );
 
   ["orders", "addresses", "profile"].forEach(panel =>
-    $("#panel-" + panel).classList.toggle("hidden", panel !== valid)
+    $("#panel-" + panel)?.classList.toggle("hidden", panel !== valid)
   );
 
   if (updateHash) history.replaceState(null, "", "#" + valid);
@@ -339,6 +389,9 @@ $$(".tab-btn").forEach(btn =>
 addEventListener("hashchange", () =>
   activateTab(location.hash.replace("#", ""), false)
 );
+
+// Restore the page when coming back from Paystack with the browser Back button.
+addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 
 /* ---------------- Auth guard ---------------- */
 watchAuth(async (user, profile) => {
@@ -366,32 +419,27 @@ watchAuth(async (user, profile) => {
   currentUser = user;
   currentProfile = profile || {};
 
-  $("#accountLoading").classList.add("hidden");
-  $("#accountApp").classList.remove("hidden");
+  $("#accountLoading")?.classList.add("hidden");
+  $("#accountApp")?.classList.remove("hidden");
 
   fillHeader(user, currentProfile);
   if (!profileFilled) fillProfileForm(user, currentProfile);
 
-  const showVerify =
-    hasPasswordProvider(user) && !user.emailVerified;
-  $("#verifyAlert").classList.toggle("show", showVerify);
+  const showVerify = hasPasswordProvider(user) && !user.emailVerified;
+  $("#verifyAlert")?.classList.toggle("show", showVerify);
 
-  $("#passwordForm").classList.toggle(
-    "hidden",
-    !hasPasswordProvider(user)
-  );
-  $("#deletePasswordWrap").classList.toggle(
-    "hidden",
-    !hasPasswordProvider(user)
-  );
+  $("#passwordForm")?.classList.toggle("hidden", !hasPasswordProvider(user));
+  $("#deletePasswordWrap")?.classList.toggle("hidden", !hasPasswordProvider(user));
 
   if (new URLSearchParams(location.search).get("welcome") === "1") {
     const name = currentProfile.fullName || user.displayName || "there";
     const el = $("#welcomeAlert");
-    el.innerHTML = `
-      <b>Welcome to DABOFFOODS &amp; LOGISTICS SERVICES, ${esc(String(name).split(" ")[0])}!</b>
-      Your dashboard is ready. Book a delivery, save your addresses and track everything here.`;
-    el.classList.add("show");
+    if (el) {
+      el.innerHTML = `
+        <b>Welcome to DABOFFOODS &amp; LOGISTICS SERVICES, ${esc(String(name).split(" ")[0])}!</b>
+        Your dashboard is ready. Book a delivery, save your addresses and track everything here.`;
+      el.classList.add("show");
+    }
   }
 
   activateTab(location.hash.replace("#", "") || "orders", false);
@@ -444,6 +492,7 @@ function orderMillis(order) {
   if (order.createdAt?.seconds) return order.createdAt.seconds * 1000;
   return 0;
 }
+
 function listenToOrders(uid) {
   const q = query(collection(db, "orders"), where("customerUid", "==", uid));
   onSnapshot(q, snap => {
@@ -452,45 +501,68 @@ function listenToOrders(uid) {
     orders.sort((a, b) => orderMillis(b) - orderMillis(a));
     ordersById = {};
     orders.forEach(o => (ordersById[o.orderId] = o));
+
     $("#statActive").textContent = orders.filter(o => !["Delivered", "Cancelled"].includes(o.status)).length;
     $("#statDelivered").textContent = orders.filter(o => o.status === "Delivered").length;
     $("#statTotal").textContent = orders.length;
+
     const confirmedAmount = order => Number.isFinite(Number(order.finalPrice)) ? Number(order.finalPrice) : 0;
-    $("#paidTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus === "Paid").reduce((sum, o) => sum + confirmedAmount(o), 0));
-    $("#unpaidTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus !== "Paid" && o.paymentStatus !== "COD" && o.paymentOption !== "Cash on delivery").reduce((sum, o) => sum + confirmedAmount(o), 0));
-    $("#codTotal").textContent = fmtMoney(orders.filter(o => o.paymentStatus === "COD" || o.paymentOption === "Cash on delivery").reduce((sum, o) => sum + confirmedAmount(o), 0));
+    $("#paidTotal").textContent = fmtMoney(
+      orders.filter(o => o.paymentStatus === "Paid").reduce((sum, o) => sum + confirmedAmount(o), 0)
+    );
+    $("#unpaidTotal").textContent = fmtMoney(
+      orders.filter(o => o.paymentStatus !== "Paid" && !isLegacyCod(o)).reduce((sum, o) => sum + confirmedAmount(o), 0)
+    );
+
     $("#ordersLoading").classList.add("hidden");
     $("#ordersEmpty").classList.toggle("hidden", orders.length > 0);
     $("#ordersList").innerHTML = orders.map(orderCardHtml).join("");
-    bindOrderButtons();
   }, err => {
     console.error(err);
     $("#ordersLoading").innerHTML = `<h3>Couldn't load your orders</h3><p class="muted">Please check your network connection and refresh this page.</p>`;
   });
 }
+
 function shortAddress(address = "") {
   const text = String(address).trim();
   return text.length > 90 ? text.slice(0, 90) + "…" : text;
 }
-function bindOrderButtons() {
-  $$('[data-pay]').forEach(btn => btn.addEventListener("click", async () => {
-    const original = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = `<span class="spinner"></span> Connecting to Paystack…`;
-    try {
-      const result = await apiCall("/api/payments/initialize", { orderId: btn.dataset.pay }, firebaseAuth);
-      const checkoutUrl = result.authorizationUrl;
-      if (!checkoutUrl || !checkoutUrl.startsWith("https://checkout.paystack.com/")) throw new Error("Paystack did not return a valid checkout URL.");
-      location.assign(checkoutUrl);
-    } catch (error) {
-      console.error(error);
-      toast(error.message || "Could not start payment. Please try again.", "error");
-      btn.disabled = false;
-      btn.innerHTML = original;
+
+/* ---------------- Pay Now ---------------- */
+async function startPayment(btn) {
+  const orderId = btn.dataset.pay;
+  if (!orderId || btn.disabled) return;
+
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Connecting to Paystack…`;
+
+  try {
+    const result = await apiCall("/api/payments/initialize", { orderId }, firebaseAuth);
+    const checkoutUrl = result.authorizationUrl;
+    if (!checkoutUrl || !checkoutUrl.startsWith("https://checkout.paystack.com/")) {
+      throw new Error("Paystack did not return a valid checkout URL.");
     }
-  }));
-  $$('[data-reorder]').forEach(btn => btn.addEventListener("click", () => {
-    const o = ordersById[btn.dataset.reorder];
+    location.assign(checkoutUrl);
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Could not start payment. Please try again.", "error");
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+// One delegated handler: works no matter how many times the list re-renders.
+$("#ordersList")?.addEventListener("click", e => {
+  const payBtn = e.target.closest("[data-pay]");
+  if (payBtn) {
+    startPayment(payBtn);
+    return;
+  }
+
+  const reorderBtn = e.target.closest("[data-reorder]");
+  if (reorderBtn) {
+    const o = ordersById[reorderBtn.dataset.reorder];
     if (!o) return;
     sessionStorage.setItem("fl_reorder", JSON.stringify({
       senderName: o.senderName || "", senderPhone: o.senderPhone || "",
@@ -502,8 +574,8 @@ function bindOrderButtons() {
       instructions: o.instructions || ""
     }));
     location.href = "book.html";
-  }));
-}
+  }
+});
 
 function orderCardHtml(o) {
   const price =
@@ -511,12 +583,9 @@ function orderCardHtml(o) {
       ? `${fmtMoney(o.finalPrice)} confirmed`
       : o.estimatedPrice != null ? `${fmtMoney(o.estimatedPrice)} estimate` : "Quotation requested";
 
-  const payClass =
-    o.paymentStatus === "Paid"
-      ? "badge-green"
-      : o.paymentStatus === "COD"
-        ? "badge-orange"
-        : "badge-amber";
+  const legacyCod = isLegacyCod(o);
+  const payClass = o.paymentStatus === "Paid" ? "badge-green" : legacyCod ? "badge-orange" : "badge-amber";
+  const payLabel = legacyCod && o.paymentStatus === "COD" ? "COD (legacy)" : (o.paymentStatus || "Pending");
 
   const extraStops = Math.max(0, (o.stops?.length || 1) - 1);
 
@@ -529,7 +598,7 @@ function orderCardHtml(o) {
       </div>
       <div style="display:flex;gap:7px;flex-wrap:wrap">
         <span class="badge ${statusBadgeClass(o.status)}">${esc(o.status || "Order Placed")}</span>
-        <span class="badge ${payClass}">Payment: ${esc(o.paymentStatus || "Pending")}</span>
+        <span class="badge ${payClass}">Payment: ${esc(payLabel)}</span>
       </div>
     </div>
 
@@ -559,7 +628,7 @@ function orderCardHtml(o) {
     </div>
 
     <div class="btn-row">
-      ${o.finalPrice != null && o.paymentStatus !== "Paid" && o.paymentOption !== "Cash on delivery" ? `<button type="button" class="btn btn-orange btn-sm" data-pay="${esc(o.orderId)}"><i class="fa-solid fa-lock"></i> Pay now · ${fmtMoney(o.finalPrice)}</button>` : ""}
+      ${isPayable(o) ? `<button type="button" class="btn btn-orange btn-sm" data-pay="${esc(o.orderId)}"><i class="fa-solid fa-lock"></i> Pay now · ${fmtMoney(o.finalPrice)}</button>` : ""}
       <a class="btn btn-blue btn-sm" href="track.html?id=${encodeURIComponent(o.orderId)}">
         <i class="fa-solid fa-location-crosshairs"></i> Track
       </a>
@@ -573,7 +642,7 @@ function orderCardHtml(o) {
   </article>`;
 }
 
-/* ---------------- Saved addresses ---------------- */
+/* ---------------- Payments & shipments ---------------- */
 function listenToPayments(uid) {
   const paymentQuery = query(collection(db, "payments"), where("customerUid", "==", uid));
   onSnapshot(paymentQuery, snapshot => {
@@ -638,6 +707,7 @@ async function verifyPaymentReturn() {
   }
 }
 
+/* ---------------- Saved addresses ---------------- */
 function listenToAddresses(uid) {
   onSnapshot(collection(db, "users", uid, "addresses"), snap => {
     const addresses = [];
@@ -780,9 +850,9 @@ function bindAddressButtons(uid) {
   });
 }
 
-$("#addressCancelBtn").addEventListener("click", resetAddressForm);
+$("#addressCancelBtn")?.addEventListener("click", resetAddressForm);
 
-$("#addressForm").addEventListener("submit", async e => {
+$("#addressForm")?.addEventListener("submit", async e => {
   e.preventDefault();
   if (!currentUser || !db) return;
 
@@ -839,8 +909,7 @@ $("#addressForm").addEventListener("submit", async e => {
       );
       addressId = ref.id;
 
-      // Small wait so the real-time listener includes the new address
-      // before the default-address batch runs.
+      // Make sure the default-address batch below includes the new address.
       addressesById[addressId] = {
         id: addressId, label, phone, address, isDefault: false
       };
@@ -848,10 +917,7 @@ $("#addressForm").addEventListener("submit", async e => {
 
     if (makeDefault) {
       await setDefaultAddress(currentUser.uid, addressId, address);
-    } else if (
-      editingId &&
-      addressesById[editingId]?.isDefault
-    ) {
+    } else if (editingId && addressesById[editingId]?.isDefault) {
       // Keep profile and the edited default address in sync.
       await updateDoc(doc(db, "users", currentUser.uid), {
         defaultAddress: address,
@@ -878,7 +944,7 @@ function syncProfileBusinessField() {
     $("#profileAccountType").value !== "Business"
   );
 }
-$("#profileAccountType").addEventListener("change", syncProfileBusinessField);
+$("#profileAccountType")?.addEventListener("change", syncProfileBusinessField);
 
 function fillProfileForm(user, profile) {
   profileFilled = true;
@@ -898,7 +964,7 @@ function fillProfileForm(user, profile) {
   syncProfileBusinessField();
 }
 
-$("#profileForm").addEventListener("submit", async e => {
+$("#profileForm")?.addEventListener("submit", async e => {
   e.preventDefault();
   if (!currentUser || !db) return;
 
@@ -946,8 +1012,7 @@ $("#profileForm").addEventListener("submit", async e => {
   try {
     const updates = {
       ...data,
-      businessName:
-        data.accountType === "Business" ? data.businessName : "",
+      businessName: data.accountType === "Business" ? data.businessName : "",
       phoneIntl: normalizeNgPhone(data.phone),
       notificationPrefs: {
         email: $("#profilePrefEmail").checked,
@@ -976,7 +1041,7 @@ $("#profileForm").addEventListener("submit", async e => {
 });
 
 /* ---------------- Email verification ---------------- */
-$("#resendVerifyBtn").addEventListener("click", async () => {
+$("#resendVerifyBtn")?.addEventListener("click", async () => {
   const btn = $("#resendVerifyBtn");
   const original = btn.innerHTML;
   btn.disabled = true;
@@ -994,14 +1059,14 @@ $("#resendVerifyBtn").addEventListener("click", async () => {
 });
 
 /* ---------------- Change password ---------------- */
-$("#newPassword").addEventListener("input", e => {
+$("#newPassword")?.addEventListener("input", e => {
   const result = getPasswordStrength(e.target.value);
   $("#newPwBar").style.width = result.width;
   $("#newPwBar").style.background = result.color;
   $("#newPwLabel").textContent = result.label;
 });
 
-$("#passwordForm").addEventListener("submit", async e => {
+$("#passwordForm")?.addEventListener("submit", async e => {
   e.preventDefault();
 
   const current = $("#currentPassword").value;
@@ -1055,13 +1120,12 @@ async function logout() {
     toast("Couldn't sign out. Please try again.", "error");
   }
 }
-$("#logoutBtnTop").addEventListener("click", logout);
-$("#logoutBtnBottom").addEventListener("click", logout);
+$("#logoutBtnTop")?.addEventListener("click", logout);
+$("#logoutBtnBottom")?.addEventListener("click", logout);
 
 /* ---------------- Delete account ---------------- */
-$("#deleteAccountBtn").addEventListener("click", async () => {
-  const needsPassword =
-    currentUser && hasPasswordProvider(currentUser);
+$("#deleteAccountBtn")?.addEventListener("click", async () => {
+  const needsPassword = currentUser && hasPasswordProvider(currentUser);
   const password = needsPassword ? $("#deletePassword").value : "";
 
   if (needsPassword && !password) {
