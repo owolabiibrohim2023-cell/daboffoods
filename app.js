@@ -1,3 +1,4 @@
+
 /* ============================================================
   DABOFFOODS & LOGISTICS SERVICES — app.js
    Shared module: CONFIG, Firebase init, navbar/footer, helpers.
@@ -49,15 +50,15 @@ export const CONFIG = {
   // Order statuses, in order (timeline). "Cancelled" handled separately.
   statuses: ["Order Placed", "Confirmed", "Picked Up", "In Transit", "Out for Delivery", "Delivered"],
   paymentStatuses: ["Pending", "Paid", "COD"],
-  services: ["International Shipping", "Freight Forwarding", "Food Export Services", "UK Cargo", "USA Cargo", "Customs Clearance Support", "Food Sales", "Doorstep Delivery"],
+  services: ["International Shipping", "Freight Forwarding", "Food Export Services", "UK Cargo", "USA Cargo", "Canada Cargo", "Customs Clearance Support", "Food Sales", "Doorstep Delivery"],
   packageTypes: ["Documents", "Parcel", "Food", "Clothing", "Electronics", "Fragile", "Other"],
   /* Price ESTIMATOR (editable; final price always confirmed on WhatsApp).
      base = first 1kg, perKg = each extra kg. zone multiplier applied. */
   pricing: {},
-  zones: { zones: { "United Kingdom": 1, "United States": 1, "Canada": 1, "Other international destination": 1 },
+  zones: { "United Kingdom": 1, "United States": 1, "Canada": 1, "Other international destination": 1 },
   // Rate table shown on pricing.html (admin can later override from Firestore "pricing/main")
   rateTable: [],
-  coverage: ["United Kingdom", "United States", "Canada","United Kingdom", "United States", "Other international destinations (confirm availability)"],
+  coverage: ["United Kingdom", "United States", "Canada", "Other international destinations (confirm availability)"],
   testimonials: []
 };
 
@@ -66,7 +67,7 @@ export const firebaseReady = !firebaseConfig.apiKey.includes("PASTE");
 export let auth = null, db = null;
 if (firebaseReady) {
   try {
-    const app = initializeApp(firebaseConfig);//
+    const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
   } catch (e) { console.error("Firebase init failed:", e); }

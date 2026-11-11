@@ -6,7 +6,7 @@ const { getAdmin } = require("../_lib/admin");
 const { verifyCaller, parseBody, send, errorResponse, httpError, requireAdmin, cleanString } = require("../_lib/auth");
 const { statusAllowed, safeDate } = require("../_lib/shipping");
 
-const ALLOWED_CARRIERS = ["UPS", "DHL", "FedEx", "Other / Manual Carrier"];
+const ALLOWED_CARRIERS = ["UPS", "DHL", "FedEx", "Aramex", "Other / Manual Carrier"];
 
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") return send(res, 204, {});

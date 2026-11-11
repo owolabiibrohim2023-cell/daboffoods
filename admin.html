@@ -62,7 +62,7 @@
       <div class="stat-card"><div class="n" id="stTransit">0</div><div class="l">In transit</div></div>
       <div class="stat-card"><div class="n" id="stDelivered">0</div><div class="l">Delivered</div></div>
       <div class="stat-card"><div class="n" id="stUnpaid">0</div><div class="l">Unpaid</div></div>
-      <div class="stat-card"><div class="n" id="stCod">0</div><div class="l">COD orders</div></div>
+      <div class="stat-card"><div class="n" id="stPaid">0</div><div class="l">Paid</div></div>
       <div class="stat-card"><div class="n" id="stToday">0</div><div class="l">Today's orders</div></div>
       <div class="stat-card"><div class="n" id="stCustomers">0</div><div class="l">Registered customers</div></div>
     </div>
@@ -117,7 +117,7 @@
           <div class="field"><label>Service</label><select id="mService"></select></div>
           <div class="field"><label>Zone</label><select id="mZone"></select></div>
           <div class="field"><label>Pickup date</label><input id="mDate" type="date"></div>
-          <div class="field"><label>Payment option</label><select id="mPayOpt"><option>Bank transfer</option><option>Cash on delivery</option><option>Pay on pickup</option></select></div>
+          <div class="field"><label>Payment option</label><select id="mPayOpt"><option>Bank transfer</option><option>Pay on pickup</option></select></div>
           <div class="field span-2"><label>Package description</label><input id="mPkgDesc"></div>
         </div>
         <div class="btn-row"><button class="btn btn-blue" id="manualSaveBtn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Create order</button>
@@ -133,7 +133,7 @@
     <!-- ============ PAYMENTS ============ -->
     <section id="panel-payments" class="hidden">
       <div class="section-head" style="text-align:left;margin:0 0 16px;max-width:none">
-        <h2>Payment records</h2><p>Paystack payments are changed only after verified backend settlement. COD remains unpaid until collection is recorded.</p>
+        <h2>Payment records</h2><p></p>Paystack payments are changed only after verified backend settlement.</p>
       </div>
       <div class="filters" style="grid-template-columns:2fr 1fr">
         <input id="paymentSearch" placeholder="Search order, customer UID or reference" aria-label="Search payments">
@@ -150,7 +150,7 @@
         <p class="small muted" style="margin:5px 0 14px">Register carrier details separately from order payment and delivery statuses.</p>
         <div class="form-grid">
           <div class="field"><label for="shipmentOrder">Order</label><select id="shipmentOrder" required></select></div>
-          <div class="field"><label for="shipmentCarrier">Carrier</label><select id="shipmentCarrier"><option>UPS</option><option>DHL</option><option>FedEx</option><option>Other / Manual Carrier</option></select></div>
+          <div class="field"><label for="shipmentCarrier">Carrier</label><option value="">All carriers</option><option>UPS</option><option>DHL</option><option>FedEx</option><option>Aramex</option>
           <div class="field"><label for="shipmentTracking">Tracking number</label><input id="shipmentTracking" required maxlength="80"></div>
           <div class="field"><label for="shipmentStatus">Initial shipment status</label><select id="shipmentStatus"><option>Shipment Registered</option><option>Awaiting Pickup</option><option>Picked Up</option><option>In Transit</option></select></div>
           <div class="field"><label for="shipmentOrigin">Origin</label><input id="shipmentOrigin" required></div>
@@ -168,7 +168,8 @@
           <div class="field"><label for="eventLocation">Location (optional)</label><input id="eventLocation" maxlength="180"></div>
           <div class="field"><label for="eventTime">Event date/time (optional)</label><input id="eventTime" type="datetime-local"></div>
         </div>
-        <div class="btn-row"><button class="btn btn-blue" type="submit"><i class="fa-solid fa-clock-rotate-left"></i> Add tracking event</button><button class="btn btn-ghost" id="refreshUpsBtn" type="button"><i class="fa-solid fa-rotate"></i> Refresh from UPS</button></div>
+        <div class="btn-row"><button class="btn btn-blue" type="submit"><i class="fa-solid fa-clock-rotate-left"></i> Add tracking event</button>
+        </div>
       </form>
       <div class="filters" style="grid-template-columns:2fr 1fr 1fr">
         <input id="shipmentSearch" placeholder="Search tracking, order or customer" aria-label="Search shipments">
@@ -302,7 +303,7 @@
       <div id="dPaymentHistory" class="small muted" style="margin-bottom:14px"></div>
       <div class="btn-row">
         <button class="btn btn-blue" id="dSave" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save changes (sends alerts)</button>
-        <button class="btn btn-orange hidden" id="dCollectCod" type="button"><i class="fa-solid fa-money-bill-wave"></i> Record COD collected</button>
+        <button class="btn btn-orange hidden" id="dCollectCod" type="button"><i class="fa-solid fa-money-bill-wave"></i> Record COD collected (legacy)</button>
         <a class="btn btn-wa" id="dWhatsApp" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Message customer</a>
       </div>
       <div class="btn-row" style="margin-top:10px">

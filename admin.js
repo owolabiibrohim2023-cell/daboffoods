@@ -106,7 +106,7 @@ function renderStats() {
   $("#stTransit").textContent = o.filter(x => ["Picked Up", "In Transit", "Out for Delivery"].includes(x.status)).length;
   $("#stDelivered").textContent = o.filter(x => x.status === "Delivered").length;
   $("#stUnpaid").textContent = o.filter(x => x.paymentStatus === "Pending" && x.status !== "Cancelled").length;
-  $("#stCod").textContent = o.filter(x => x.paymentStatus === "COD" || x.paymentOption === "Cash on delivery").length;
+   $("#stPaid").textContent = o.filter(x => x.paymentStatus === "Paid").length;
   $("#stToday").textContent = o.filter(x => dateKey(x.createdAt) === today).length;
   $("#stCustomers").textContent = customers().length;
 }
@@ -168,7 +168,8 @@ function renderShipments() {
       <td>${esc(shipment.origin || "—")} → ${esc(shipment.destination || "—")}</td>
       <td>${shipment.estimatedDelivery ? fmtDateTime(shipment.estimatedDelivery) : "Not provided"}</td>
       <td><div class="btn-row"><button type="button" class="btn btn-ghost btn-sm" data-shipment-history="${esc(shipment.shipmentId)}">History</button><button type="button" class="btn btn-ghost btn-sm" data-edit-shipment="${esc(shipment.shipmentId)}">Edit</button>
-        ${shipment.carrier === "UPS" ? `<button type="button" class="btn btn-blue btn-sm" data-ups-refresh="${esc(shipment.shipmentId)}">Refresh UPS</button>` : ""}
+
+      
       </div></td></tr>`;
   }).join("") : `<tr><td colspan="7" class="text-center muted" style="padding:24px">No shipments match these filters.</td></tr>`;
   $$('[data-edit-shipment]').forEach(button => button.onclick = () => {
@@ -203,15 +204,8 @@ function renderShipments() {
     overlay.querySelector("[data-history-close]").addEventListener("click", close);
     overlay.addEventListener("click", event => { if (event.target === overlay) close(); });
   });
-  $$('[data-ups-refresh]').forEach(button => button.onclick = async () => {
-    button.disabled = true;
-    const old = button.innerHTML; button.innerHTML = `<span class="spinner"></span>`;
-    try {
-      await apiCall("/api/shipment/ups-refresh", { shipmentId: button.dataset.upsRefresh }, firebaseAuth);
-      toast("UPS tracking information refreshed.", "success");
-    } catch (error) { toast(error.message || "UPS tracking refresh failed.", "error"); }
-    finally { button.disabled = false; button.innerHTML = old; }
-  });
+  
+  
 }
 ["shipmentSearch", "shipmentCarrierFilter", "shipmentStatusFilter"].forEach(id => $("#" + id).addEventListener("input", renderShipments));
 
@@ -252,14 +246,8 @@ $("#trackingEventForm").addEventListener("submit", async event => {
   } catch (error) { toast(error.message || "Tracking event could not be added.", "error"); }
 });
 
-$("#refreshUpsBtn").addEventListener("click", async () => {
-  const shipmentId = $("#eventShipment").value;
-  if (!shipmentId) return toast("Select an existing shipment first.", "error");
-  try {
-    await apiCall("/api/shipment/ups-refresh", { shipmentId }, firebaseAuth);
-    toast("UPS tracking information refreshed.", "success");
-  } catch (error) { toast(error.message || "UPS tracking refresh failed.", "error"); }
-});
+
+
 
 /* ---------------- Orders table ---------------- */
 ["fSearch","fStatus","fPayment","fService","fDate","fSort"].forEach(id => $("#" + id).addEventListener("input", renderOrders));
@@ -471,7 +459,7 @@ $("#manualForm").addEventListener("submit", async e => {
       stops: [{ receiverName: g("mReceiverName"), receiverPhone: g("mReceiverPhone"), dropoffAddress: g("mDropoff") }],
       packageType: $("#mPkgType").value, packageDescription: g("mPkgDesc"), weightKg: Number($("#mWeight").value) || 1,
       serviceType: $("#mService").value, zone: $("#mZone").value, pickupDate: $("#mDate").value, pickupTime: "",
-      paymentOption: $("#mPayOpt").value, paymentStatus: $("#mPayOpt").value === "Cash on delivery" ? "COD" : "Pending", insurance: false, instructions: "",
+      paymentOption: $("#mPayOpt").value,paymentStatus: "Pending", insurance: false, instructions: "",
       estimatedPrice: est, finalPrice: $("#mFinalPrice").value === "" ? null : Number($("#mFinalPrice").value),
       status: "Order Placed", statusHistory: [{ status: "Order Placed", at: new Date().toISOString(), note: "Created manually by admin" }],
       riderId: null, riderName: "", riderPhone: "", internalNotes: "",

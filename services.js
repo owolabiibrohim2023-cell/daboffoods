@@ -36,6 +36,14 @@ export const SERVICES = [
     description: "We offer international cargo shipping solutions to the United Kingdom and United States, with convenient doorstep delivery options.",
     icon: "fa-earth-americas",
     image: `${SERVICE_IMAGE}photo-1601584115197-04ecc0da31d7?q=80&w=1000&auto=format&fit=crop`,
+   
+        alt: "Cargo truck transporting goods"
+  },
+  {
+    title: "Canada Cargo",
+    description: "We offer international cargo shipping solutions to Canada. Contact our team to confirm shipping options and a quotation for your shipment.",
+    icon: "fa-earth-americas",
+    image: `${SERVICE_IMAGE}photo-1601584115197-04ecc0da31d7?q=80&w=1000&auto=format&fit=crop`,
     alt: "Cargo truck transporting goods"
   },
   {
