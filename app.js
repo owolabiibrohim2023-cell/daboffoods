@@ -45,7 +45,9 @@ export const CONFIG = {
   // Feature switches
   features: { emailAlerts: true, smsAlerts: true },
   // EmailJS FALLBACK (only if Cloud Functions not deployed). See Part 6 notes.
-  emailjs: { enabled: false, publicKey: "PASTE_EMAILJS_PUBLIC_KEY", serviceId: "PASTE_SERVICE_ID", templateId: "PASTE_TEMPLATE_ID" },
+   emailjs: { enabled: false, publicKey: "RsqnzT3CKZdL8if1x", serviceId: "service_bc1q0kv", templateId: "template_9lwtg55" },
+  // Office alert when a customer places an order (separate from the customer status-email fallback above).
+  adminAlert: { enabled: false, publicKey: "RsqnzT3CKZdL8if1x", serviceId: "service_bc1q0kv", templateId: "template_9lwtg55" },
   socials: {},
   // Order statuses, in order (timeline). "Cancelled" handled separately.
   statuses: ["Order Placed", "Confirmed", "Picked Up", "In Transit", "Out for Delivery", "Delivered"],
@@ -98,6 +100,28 @@ export const SUPPORT_WHATSAPP = true;
 export const waLink = (message, number = CONFIG.whatsappNumber) =>
   `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 export const trackingLink = id => `${CONFIG.siteUrl}/track.html?id=${id}`;
+
+/** Emails the office when a new order is placed (EmailJS; the recipient is fixed in the EmailJS template). */
+let adminAlertReady = false;
+export async function notifyAdminNewOrder(order) {
+  const cfg = CONFIG.adminAlert;
+  if (!cfg?.enabled || !window.emailjs) return false;
+  const key = "fl_admin_alerted_" + order.orderId;
+  try {
+    if (sessionStorage.getItem(key)) return false;
+    if (!adminAlertReady) { window.emailjs.init({ publicKey: cfg.publicKey }); adminAlertReady = true; }
+    await window.emailjs.send(cfg.serviceId, cfg.templateId, {
+      order_id: order.orderId,
+      customer_name: order.senderName,
+      customer_phone: order.senderPhone,
+      service: order.serviceType,
+      destination: order.destinationCountry,
+      admin_link: `${CONFIG.siteUrl}/admin.html`
+    });
+    sessionStorage.setItem(key, "1");
+    return true;
+  } catch (e) { console.warn("Admin alert email failed:", e); return false; }
+}
 
 /** Nigerian phone validation: accepts 0813…, +234…, 234… */
 export function isValidNgPhone(raw = "") {

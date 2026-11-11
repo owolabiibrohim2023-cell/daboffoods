@@ -16,19 +16,51 @@
   .fl-pin i{transform:rotate(45deg);color:#fff;font-size:15px}
   .modal-wide{max-width:760px!important}
   @media(min-width:900px){.admin-filters{grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr!important}}
+    /* ---- Admin header ---- */
+  .admin-top{background:var(--blue-dark);color:#fff;position:sticky;top:0;z-index:900}
+  .admin-top-in{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding-top:10px;padding-bottom:10px;max-width:1280px}
+  .admin-brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .admin-brand .staff-brand-logo{height:44px!important;width:auto!important;max-width:100%}
+  .admin-badge{font-size:1.05rem;white-space:nowrap}
+  #adminName{color:#bcd3ff;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .admin-actions{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px}
+
+  /* ---- Dashboard body ---- */
+  #adminApp .tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;padding-bottom:6px}
+  #adminApp .tabs .tab-btn{flex:0 0 auto;white-space:nowrap}
+  #adminApp .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .modal-wide{width:min(760px,96vw);max-height:92vh;overflow-y:auto}
+  @media(max-width:899px){
+    .admin-filters,#panel-payments .filters,#panel-shipments .filters,#panel-customers .filters{grid-template-columns:1fr 1fr!important}
+    #panel-riders .grid-2{grid-template-columns:1fr!important}
+  }
+  @media(max-width:640px){
+    .admin-top-in{padding-left:12px;padding-right:12px}
+    .admin-brand .staff-brand-logo{height:34px!important}
+    #adminName{order:3;flex-basis:100%;max-width:none}
+    .admin-actions{gap:6px}
+    .admin-actions .btn span{display:none}
+    .admin-filters,#panel-payments .filters,#panel-shipments .filters,#panel-customers .filters{grid-template-columns:1fr!important}
+    #adminApp .grid-4{grid-template-columns:repeat(2,1fr)!important}
+    #adminApp .form-grid,.modal-wide .form-grid{grid-template-columns:1fr!important}
+    #adminApp .span-2,.modal-wide .span-2{grid-column:auto!important}
+  }
 </style>
 </head>
 <body style="padding-bottom:0;background:var(--bg)">
 
-<header style="background:var(--blue-dark);color:#fff;position:sticky;top:0;z-index:900">
-  <div class="container" style="display:flex;align-items:center;gap:10px;padding-top:12px;padding-bottom:12px;max-width:1280px">
-    <img class="staff-brand-logo" src="daboffoods_logo_wordmark.png" alt="DABOFFOODS &amp; LOGISTICS SERVICES official logo" width="180" height="76">
-    <b style="font-size:1.08rem"><i class="fa-solid fa-gauge-high" style="color:var(--orange)"></i> ADMIN</b>
-    <span class="small hidden" id="adminName" style="color:#bcd3ff"></span>
-    <span style="margin-left:auto;display:flex;gap:8px">
-      <a class="btn btn-ghost btn-sm" href="index.html"><i class="fa-solid fa-globe"></i> View site</a>
-      <button type="button" class="btn btn-orange btn-sm hidden" id="adminLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-    </span>
+<header class="admin-top">
+  <div class="container admin-top-in">
+    <div class="admin-brand">
+      <img class="staff-brand-logo" src="daboffoods_logo_wordmark.png" alt="DABOFFOODS &amp; LOGISTICS SERVICES official logo" width="180" height="76">
+      <b class="admin-badge"><i class="fa-solid fa-gauge-high" style="color:var(--orange)"></i> ADMIN</b>
+    </div>
+    <span class="small hidden" id="adminName"></span>
+    <div class="admin-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="enableAlertsBtn" aria-label="Enable order alerts"><i class="fa-solid fa-bell"></i> <span>Alerts</span></button>
+      <a class="btn btn-ghost btn-sm" href="index.html" aria-label="View site"><i class="fa-solid fa-globe"></i> <span>View site</span></a>
+      <button type="button" class="btn btn-orange btn-sm hidden" id="adminLogout" aria-label="Logout"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
+    </div>
   </div>
 </header>
 
@@ -55,7 +87,8 @@
   </div>
 
   <!-- Admin app -->
-  <div id="adminApp" class="hidden">
+    <div id="adminApp" class="hidden">
+    <div class="alert alert-info" id="priceBanner" style="display:none"></div>
     <div class="grid grid-4" style="margin-bottom:20px">
       <div class="stat-card"><div class="n" id="stTotal">0</div><div class="l">Total orders</div></div>
       <div class="stat-card"><div class="n" id="stPending">0</div><div class="l">Pending (new)</div></div>

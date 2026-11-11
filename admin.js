@@ -20,7 +20,8 @@ import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot,
 setupPasswordToggles();
 
 const S = { orders: [], users: [], alerts: [], messages: [], apps: [], locs: [], payments: [], shipments: [], trackingEvents: [],
-  current: null, customerUid: "", customerLabel: "", started: false, map: null, markers: {} };
+  current: null, customerUid: "", customerLabel: "", started: false, map: null, markers: {},
+  ordersReady: false, needsPriceOnly: false };
 const ALL_STATUSES = [...CONFIG.statuses, "Cancelled"];
 const SHIPMENT_STATUS_ICONS = {
   "Shipment Registered": "fa-box", "Awaiting Pickup": "fa-clock", "Picked Up": "fa-hand",
@@ -79,7 +80,16 @@ function initAdmin() {
   $("#alertConfigInfo").innerHTML = `<b>Automatic alerts:</b> Email <b>${CONFIG.features.emailAlerts ? "ON" : "OFF"}</b> · SMS <b>${CONFIG.features.smsAlerts ? "ON" : "OFF"}</b> (switches live in <code>app.js → CONFIG.features</code>).
     ${CONFIG.emailjs.enabled ? "<br><b>EmailJS fallback is ON</b> — status emails are sent from this dashboard. Turn it OFF once Cloud Functions is deployed to avoid duplicate emails." : "Status emails/SMS are sent by Cloud Functions (Part 6)."} Resend needs Cloud Functions deployed.`;
 
-  onSnapshot(collection(db, "orders"), s => { S.orders = []; s.forEach(d => S.orders.push({ orderId: d.id, ...d.data() })); renderStats(); renderOrders(); renderCustomers(); renderRiders(); renderShipments(); }, e => toast("Orders failed to load: " + e.message, "error"));
+   onSnapshot(collection(db, "orders"), s => {
+    const fresh = [];
+    if (S.ordersReady) s.docChanges().forEach(c => {
+      if (c.type === "added" && !c.doc.metadata.hasPendingWrites) fresh.push({ orderId: c.doc.id, ...c.doc.data() });
+    });
+    S.orders = []; s.forEach(d => S.orders.push({ orderId: d.id, ...d.data() }));
+    S.ordersReady = true;
+    renderStats(); renderOrders(); renderCustomers(); renderRiders(); renderShipments();
+    fresh.forEach(announceNewOrder);
+  }, e => toast("Orders failed to load: " + e.message, "error"));
   onSnapshot(collection(db, "users"), s => { S.users = []; s.forEach(d => S.users.push({ uid: d.id, ...d.data() })); renderStats(); renderCustomers(); renderRiders(); renderShipments(); });
   onSnapshot(collection(db, "alerts"), s => { S.alerts = []; s.forEach(d => S.alerts.push({ id: d.id, ...d.data() })); S.alerts.sort((a, b) => millis(b.createdAt || b.time || b.at) - millis(a.createdAt || a.time || a.at)); renderAlerts(); });
   onSnapshot(collection(db, "messages"), s => { S.messages = []; s.forEach(d => S.messages.push({ id: d.id, ...d.data() })); S.messages.sort((a, b) => millis(b.createdAt) - millis(a.createdAt)); renderInbox(); });
@@ -97,7 +107,49 @@ $$(".tab-btn").forEach(b => b.addEventListener("click", () => {
   ["orders","customers","riders","live","alerts","inbox","payments","shipments","pricing"].forEach(t => $("#panel-" + t).classList.toggle("hidden", t !== b.dataset.tab));
   if (b.dataset.tab === "live") setTimeout(initLiveMap, 60);
 }));
+/* ---------------- New-order alerts ---------------- */
+const needsPrice = o => o.finalPrice == null && !["Cancelled", "Delivered"].includes(o.status);
 
+function renderPriceBanner() {
+  const box = $("#priceBanner"); if (!box) return;
+  const n = S.orders.filter(needsPrice).length;
+  if (!n) S.needsPriceOnly = false;
+  box.style.display = n ? "block" : "none";
+  box.classList.toggle("show", n > 0);
+  box.innerHTML = n
+    ? `<i class="fa-solid fa-bell"></i> <b>${n} order${n === 1 ? "" : "s"} awaiting price confirmation.</b> Open each order, enter the final price and save so the customer can pay. <button type="button" class="btn btn-orange btn-sm" id="showNeedsPrice" style="margin-left:8px">${S.needsPriceOnly ? "Show all orders" : "Show them"}</button>`
+    : "";
+  const b = $("#showNeedsPrice");
+  if (b) b.onclick = () => {
+    S.needsPriceOnly = !S.needsPriceOnly;
+    document.querySelector('[data-tab="orders"]').click();
+    renderOrders(); renderPriceBanner();
+  };
+  document.title = (n ? `(${n}) ` : "") + "Admin Dashboard | DABOFFOODS & LOGISTICS SERVICES";
+}
+
+function announceNewOrder(o) {
+  if (o.source === "admin-manual") return;
+  toast(`New order ${o.orderId} from ${o.senderName || "a customer"}. Open it and confirm the price.`, "info");
+  try { // short beep (browsers only allow sound after you have clicked on the page once)
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880; gain.gain.value = 0.08;
+    osc.start(); osc.stop(ctx.currentTime + 0.35);
+  } catch {}
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(`New order ${o.orderId}`, { body: "Open the admin dashboard to confirm the price." });
+    }
+  } catch {}
+}
+
+$("#enableAlertsBtn")?.addEventListener("click", async () => {
+  if (!("Notification" in window)) return toast("This browser does not support desktop notifications.", "error");
+  const p = await Notification.requestPermission();
+  toast(p === "granted" ? "Desktop alerts enabled for new orders." : "Desktop alerts were not allowed.", p === "granted" ? "success" : "error");
+});
 /* ---------------- Stats ---------------- */
 function renderStats() {
   const o = S.orders, today = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
@@ -109,6 +161,7 @@ function renderStats() {
    $("#stPaid").textContent = o.filter(x => x.paymentStatus === "Paid").length;
   $("#stToday").textContent = o.filter(x => dateKey(x.createdAt) === today).length;
   $("#stCustomers").textContent = customers().length;
+  renderPriceBanner();  $("#stCustomers").textContent = customers().length;
 }
 
 /* ---------------- Payments and carrier shipments ---------------- */
@@ -255,7 +308,8 @@ function filteredOrders() {
   const q = $("#fSearch").value.trim().toLowerCase(), st = $("#fStatus").value, pay = $("#fPayment").value,
     svc = $("#fService").value, d = $("#fDate").value, sort = $("#fSort").value;
   let list = S.orders.filter(o =>
-    (!S.customerUid || o.customerUid === S.customerUid) &&
+        (!S.customerUid || o.customerUid === S.customerUid) &&
+    (!S.needsPriceOnly || needsPrice(o)) &&
     (!st || o.status === st) && (!pay || o.paymentStatus === pay) && (!svc || o.serviceType === svc) &&
     (!d || dateKey(o.createdAt) === d) &&
     (!q || [o.orderId, o.senderName, o.receiverName, o.senderPhone, o.receiverPhone, o.senderEmail, o.customerEmail].join(" ").toLowerCase().includes(q)));

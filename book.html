@@ -152,10 +152,11 @@
 </main>
 <div id="siteFooter"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="module">
 import { CONFIG, renderChrome, $, $$, esc, toast, db, firebaseReady, onAuthReady,
   genOrderId, isValidNgPhone, normalizeNgPhone, isValidEmail,
-  setFieldError, copyText, rememberOrderId }
+  setFieldError, copyText, rememberOrderId, notifyAdminNewOrder }
   from "./app.js";
 import { doc, setDoc, collection, getDocs, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -386,7 +387,8 @@ $("#bookingForm").addEventListener("submit", async e => {
   } else {
     saveError = "Online saving is unavailable right now. Please try again in a moment.";
   }
-  rememberOrderId(order.orderId);
+   rememberOrderId(order.orderId);
+  if (savedOnline) notifyAdminNewOrder(order); // fire-and-forget
 
   /* Fill summary card */
   $("#sumOrderId").textContent = order.orderId;
