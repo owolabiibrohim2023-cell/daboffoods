@@ -5,7 +5,7 @@ const { getAdmin } = require("../_lib/admin");
 const { verifyCaller, parseBody, send, errorResponse, httpError, requireAdmin } = require("../_lib/auth");
 const { verifyWithPaystack, settleVerifiedPayment } = require("../_lib/paystack");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return send(res, 204, {});
   if (req.method !== "POST") return send(res, 405, { error: "method-not-allowed" });
   try {

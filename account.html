@@ -501,7 +501,10 @@ function listenToOrders(uid) {
     orders.sort((a, b) => orderMillis(b) - orderMillis(a));
     ordersById = {};
     orders.forEach(o => (ordersById[o.orderId] = o));
-
+          console.log(JSON.stringify(orders.map(o => ({
+      orderId: o.orderId, status: o.status, paymentStatus: o.paymentStatus,
+      finalPrice: o.finalPrice, paymentOption: o.paymentOption, payable: isPayable(o)
+    }))));
     $("#statActive").textContent = orders.filter(o => !["Delivered", "Cancelled"].includes(o.status)).length;
     $("#statDelivered").textContent = orders.filter(o => o.status === "Delivered").length;
     $("#statTotal").textContent = orders.length;
@@ -696,7 +699,9 @@ async function verifyPaymentReturn() {
     notice.className = `alert ${result.verified ? "alert-success" : "alert-info"} show`;
     notice.textContent = result.verified
       ? "Payment verified successfully. Your order payment status is updated."
-      : `Payment status: ${result.status || "pending"}. If you completed checkout, refresh shortly or contact support.`;
+            : result.status === "duplicate_success"
+        ? "This order was already paid, so this extra payment has been flagged for a refund review. Please contact support."
+        : `Payment status: ${result.status || "pending"}. If you completed checkout, refresh shortly or contact support.`;
   } catch (error) {
     console.error(error);
     notice.className = "alert alert-error show";

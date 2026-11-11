@@ -1,35 +1,35 @@
+
 // POST /api/webhooks/paystack — raw Paystack webhook (NO auth header).
 // Verifies HMAC-SHA512 signature over the RAW body with a timing-safe
 // compare, then independently verifies the transaction with Paystack and
 // settles idempotently. Mirrors `paystackWebhook`.
-// NOTE: Vercel passes the parsed body when Content-Type is JSON. Paystack
-// signs the EXACT bytes, so we re-serialize only if the raw body is absent
-// (Vercel Node functions receive req.body parsed; we accept both). If the
-// signature check fails we never write state.
 const crypto = require("node:crypto");
 const { getAdmin } = require("../_lib/admin");
-const { send, httpError } = require("../_lib/auth");
 const { secretKey, verifyWithPaystack, settleVerifiedPayment } = require("../_lib/paystack");
 
-function rawBodyOf(req) {
+async function getRawBody(req) {
+  if (Buffer.isBuffer(req.rawBody)) return req.rawBody;
   if (Buffer.isBuffer(req.body)) return req.body;
   if (typeof req.body === "string") return Buffer.from(req.body);
-  // Vercel gives parsed JSON when Content-Type is JSON; re-serializing is
-  // byte-identical for Paystack's JSON payloads in practice. We also accept
-  // req.rawBody if the runtime provides it.
-  if (Buffer.isBuffer(req.rawBody)) return req.rawBody;
+  // With bodyParser disabled (see config below) the body is still a stream.
+  if (req.body === undefined && typeof req.on === "function") {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    return Buffer.concat(chunks);
+  }
+  // Fallback: runtime already parsed the JSON, so re-serialize it.
   if (req.body && typeof req.body === "object") return Buffer.from(JSON.stringify(req.body));
   return Buffer.alloc(0);
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Method not allowed");
   try {
     const adm = getAdmin();
     const db = adm.firestore();
     const FieldValue = adm.firestore.FieldValue;
     const signature = String(req.headers["x-paystack-signature"] || "");
-    const rawBody = rawBodyOf(req);
+    const rawBody = await getRawBody(req);
     if (!rawBody.length || !signature) return res.status(400).send("Invalid webhook request");
     const expected = crypto.createHmac("sha512", secretKey()).update(rawBody).digest("hex");
     const suppliedBuffer = Buffer.from(signature, "hex");
@@ -58,3 +58,7 @@ export default async function handler(req, res) {
     return res.status(500).send("Retry later");
   }
 }
+
+module.exports = handler;
+// Ask Vercel not to parse the body so the signature is checked on Paystack's exact bytes.
+module.exports.config = { api: { bodyParser: false } };

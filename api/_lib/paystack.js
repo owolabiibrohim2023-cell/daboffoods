@@ -86,10 +86,27 @@ async function settleVerifiedPayment(db, FieldValue, reference, transaction) {
     if (String(transaction.metadata?.orderId || "") !== payment.orderId || String(transaction.metadata?.customerUid || "") !== payment.customerUid) throw httpError(409, "failed-precondition", "Paystack ownership metadata does not match this payment record.");
 
     if (payment.status === "success") { outcome = { status: "success", verified: true, orderId: payment.orderId }; return; }
-    if (payment.status === "duplicate_success") throw httpError(409, "failed-precondition", "This payment was already settled. Please contact support for review.");
-    if (order.paymentStatus === "Paid") throw httpError(409, "failed-precondition", "This order is already marked as paid. Please contact support for review.");
+       if (payment.status === "duplicate_success") { outcome = { status: "duplicate_success", verified: false, orderId: payment.orderId }; return; }
+    if (order.paymentStatus === "Paid") {
+      // Order already settled by another reference. If Paystack also took money
+      // for THIS reference, flag it so an admin can refund it.
+      if (transaction.status === "success") {
+        tx.update(paymentRef, { status: "duplicate_success", verifiedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
+        outcome = { status: "duplicate_success", verified: false, orderId: payment.orderId };
+      } else {
+        outcome = { status: String(transaction.status || "pending"), verified: false, orderId: payment.orderId };
+      }
+      return;
+    }
     if (!["Order Placed", "Confirmed"].includes(order.status) || order.finalPrice == null) throw httpError(409, "failed-precondition", "This payment can no longer be settled because the order is no longer awaiting payment.");
-    if (transaction.status !== "success") throw httpError(409, "failed-precondition", "Paystack has not confirmed this transaction as successful.");
+    if (transaction.status !== "success") {
+      const terminal = ["failed", "reversed"].includes(transaction.status);
+      if (terminal && payment.status === "pending") {
+        tx.update(paymentRef, { status: "failed", updatedAt: FieldValue.serverTimestamp() });
+      }
+      outcome = { status: terminal ? "failed" : String(transaction.status || "pending"), verified: false, orderId: payment.orderId };
+      return;
+    }
 
     tx.update(paymentRef, {
       status: "success", paidAt: FieldValue.serverTimestamp(),
