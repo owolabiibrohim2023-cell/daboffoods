@@ -59,6 +59,13 @@ export const SERVICES = [
     icon: "fa-house-circle-check",
     image: `${SERVICE_IMAGE}photo-1553413077-190dd305871c?q=80&w=1000&auto=format&fit=crop`,
     alt: "Packages organized for delivery"
+  },
+  {
+    title: "Interstate Shipping (Nigeria)",
+    description: "Send parcels and goods from one Nigerian state to another. Contact our team to confirm routes and a quotation for your shipment.",
+    icon: "fa-truck-fast",
+    image: `${SERVICE_IMAGE}photo-1601584115197-04ecc0da31d7?q=80&w=1000&auto=format&fit=crop`,
+    alt: "Cargo truck transporting goods"
   }
 ];
 

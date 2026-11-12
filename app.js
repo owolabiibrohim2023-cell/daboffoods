@@ -33,7 +33,12 @@ export const CONFIG = {
   tagline: "International logistics, freight forwarding, food sales and export solutions.",
   description: "DABOFFOODS & LOGISTICS SERVICES provides food sales, Nigerian food products, food export solutions, international express delivery and freight forwarding services. Through our international carrier partners, we help individuals and businesses access convenient shipping options, customs clearance support and doorstep deliveries. We are dedicated to providing reliable solutions for your food sourcing, export and international logistics needs.",
   phoneDisplay: "0802 431 1091",
-  phoneIntl: "+2348024311091",
+   phoneIntl: "+2348024311091",
+  extraPhones: [
+    { display: "0803 398 6196", intl: "+2348033986196" },
+    { display: "0807 358 7999", intl: "+2348073587999" },
+    { display: "0705 515 9184", intl: "+2347055159184" }
+  ],
   whatsappNumber: "2348024311091", // digits only, no +
   paystackPublicKey: "pk_test_264e9dbb99bbfe5dcb17c6cbf68029393061a573", // REPLACE with your Paystack public key (pk_test_... for sandbox, pk_live_... for production)
   address: "24 Ibadan Road, Behind Tala Book Shop, Ijebu Ode, Ogun State, Nigeria",
@@ -45,22 +50,22 @@ export const CONFIG = {
   // Feature switches
   features: { emailAlerts: true, smsAlerts: true },
   // EmailJS FALLBACK (only if Cloud Functions not deployed). See Part 6 notes.
-   emailjs: { enabled: false, publicKey: "RsqnzT3CKZdL8if1x", serviceId: "service_bc1q0kv", templateId: "template_9lwtg55" },
+   emailjs: { enabled: false, publicKey: "RsqnzT3CKZdL8if1x", serviceId: "service_6xgujtc", templateId: "template_pvx0jen" },
   // Office alert when a customer places an order (separate from the customer status-email fallback above).
-  adminAlert: { enabled: false, publicKey: "RsqnzT3CKZdL8if1x", serviceId: "service_bc1q0kv", templateId: "template_9lwtg55" },
+  adminAlert: { enabled: false, publicKey: "RsqnzT3CKZdL8if1x", serviceId: "service_6xgujtc", templateId: "template_pvx0jen" },
   socials: {},
   // Order statuses, in order (timeline). "Cancelled" handled separately.
   statuses: ["Order Placed", "Confirmed", "Picked Up", "In Transit", "Out for Delivery", "Delivered"],
   paymentStatuses: ["Pending", "Paid", "COD"],
-  services: ["International Shipping", "Freight Forwarding", "Food Export Services", "UK Cargo", "USA Cargo", "Canada Cargo", "Customs Clearance Support", "Food Sales", "Doorstep Delivery"],
+  services: ["International Shipping", "Freight Forwarding", "Food Export Services", "Interstate Shipping (Nigeria)", "UK Cargo", "USA Cargo", "Canada Cargo", "Customs Clearance Support", "Food Sales", "Doorstep Delivery"],
   packageTypes: ["Documents", "Parcel", "Food", "Clothing", "Electronics", "Fragile", "Other"],
   /* Price ESTIMATOR (editable; final price always confirmed on WhatsApp).
      base = first 1kg, perKg = each extra kg. zone multiplier applied. */
-  pricing: {},
-  zones: { "United Kingdom": 1, "United States": 1, "Canada": 1, "Other international destination": 1 },
+  pricing: {},zones: { "Nigeria (Interstate)": 1, "United Kingdom": 1, "United States": 1, "Canada": 1,
+   "Other international destination": 1 },
   // Rate table shown on pricing.html (admin can later override from Firestore "pricing/main")
   rateTable: [],
-  coverage: ["United Kingdom", "United States", "Canada", "Other international destinations (confirm availability)"],
+ coverage: ["Nigeria (interstate)", "United Kingdom", "United States", "Canada", "Other international destinations (confirm availability)"],
   testimonials: []
 };
 
@@ -289,7 +294,8 @@ export function renderChrome(active = "") {
           <li><a href="legal.html#privacy">Privacy Policy</a></li><li><a href="legal.html#claims">Claims &amp; Refunds</a></li></ul></div>
         <div><h4>Contact</h4><ul>
           <li><i class="fa-solid fa-location-dot"></i> ${esc(CONFIG.address)}</li>
-          <li><a href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> ${CONFIG.phoneDisplay}</a></li>
+                  <li><a href="tel:${CONFIG.phoneIntl}"><i class="fa-solid fa-phone"></i> ${CONFIG.phoneDisplay}</a></li>
+          ${CONFIG.extraPhones.map(p => `<li><a href="tel:${p.intl}"><i class="fa-solid fa-phone"></i> ${p.display}</a></li>`).join("")}
           <li><a href="${waLink(`Hello ${CONFIG.businessName}!`)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp support (optional)</a></li>
           <li><i class="fa-regular fa-clock"></i> ${hoursText()}</li>
           <li><a href="${mapsUrl}" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Get Directions (Google Maps)</a></li></ul></div>

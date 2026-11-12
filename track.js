@@ -1,18 +1,28 @@
+
 /* ============================================================
   DABOFFOODS & LOGISTICS SERVICES — track.js
-   Real-time order tracking (onSnapshot) + Leaflet live rider map.
-   riderLocations/{orderId} schema (written by rider.js, Part 4):
+   1) Carrier tracking: the customer is sent to the carrier's OFFICIAL
+      tracking page (DHL, FedEx, Aramex, UPS). Nothing from those sites
+      is copied into our database.
+   2) Our own shipments (DAB-XXXXX or a registered carrier number):
+      recorded status updates via /api/shipment/lookup + live rider map.
+   riderLocations/{orderId} schema (written by rider.js):
    { riderId, riderName, lat, lng, speed, heading, accuracy,
      active:true, ts: <millis>, updatedAt: serverTimestamp }
 ============================================================ */
-import { CONFIG, renderChrome, $, esc, toast, db, auth, firebaseReady,
-  fmtDateTime, normalizeNgPhone, copyText,
-  rememberOrderId, recentOrderIds } from "./app.js";
-// Backend is now Vercel Serverless Functions (no Cloud Functions).
+import { renderChrome, $, esc, toast, db, auth, firebaseReady,
+  fmtDateTime, copyText, rememberOrderId, recentOrderIds } from "./app.js";
 import { apiCall } from "./lib/client.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 renderChrome("track.html");
+
+/* ---------- External carriers (official tracking pages) ---------- */
+const CARRIERS = {
+  DHL:    { name: "DHL",    url: n => `https://www.dhl.com/global-en/home/tracking.html?tracking-id=${encodeURIComponent(n)}&submit=1` },
+  FedEx:  { name: "FedEx",  url: n => `https://www.fedex.com/fedextrack/?trknbr=${encodeURIComponent(n)}` },
+  Aramex: { name: "Aramex", url: n => `https://www.aramex.com/track/track-results-new?ShipmentNumber=${encodeURIComponent(n)}` },
+  UPS:    { name: "UPS",    url: n => `https://www.ups.com/track?loc=en_US&tracknum=${encodeURIComponent(n)}` }
+};
 
 const STATUS_ICONS = {
   "Order Placed": "fa-receipt", "Shipment Registered": "fa-box", "Awaiting Pickup": "fa-clock",
@@ -24,51 +34,51 @@ const STATUS_ICONS = {
 const LIVE_STATUSES = ["Picked Up", "In Transit", "Out for Delivery"];
 const Lagos = [6.5244, 3.3792];
 
-let currentId = "", currentShipment = null, signedInUser = null;
+let currentId = "", currentShipment = null;
 let map = null, riderMarker = null;
 let mapFitted = false, lastLocTs = 0;
 
-onAuthStateChanged(auth, user => {
-  signedInUser = user;
-  const refresh = $("#refreshUpsTracking");
-  if (refresh) refresh.classList.toggle("hidden", !user || currentShipment?.carrier !== "UPS");
-});
-
-/* ---------- Recent order chips ---------- */
+/* ---------- Recent tracking number chips ---------- */
 function renderRecent() {
   const ids = recentOrderIds();
   $("#recentWrap").classList.toggle("hidden", !ids.length);
   $("#recentChips").innerHTML = ids.map(id => `<button type="button" class="chip" data-id="${esc(id)}">${esc(id)}</button>`).join("");
-  $$("#recentChips .chip").forEach(c => c.addEventListener("click", () => startTracking(c.dataset.id)));
+  $$("#recentChips .chip").forEach(c => c.addEventListener("click", () => {
+    $("#carrierSelect").value = "";
+    startTracking(c.dataset.id);
+  }));
 }
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 renderRecent();
 
-$("#refreshUpsTracking").addEventListener("click", async () => {
-  if (!signedInUser || !currentShipment?.shipmentId || currentShipment.carrier !== "UPS") return;
-  const button = $("#refreshUpsTracking"), original = button.innerHTML;
-  button.disabled = true; button.innerHTML = `<span class="spinner"></span> Refreshing UPS…`;
-  try {
-    await apiCall("/api/shipment/ups-refresh", { shipmentId: currentShipment.shipmentId }, auth);
-    const result = await apiCall("/api/shipment/lookup", { trackingNumber: currentShipment.trackingNumber }, auth);
-    currentShipment = result;
-    renderShipment(currentShipment);
-    toast("UPS tracking information refreshed.", "success");
-  } catch (error) {
-    toast(error.message || "UPS tracking refresh is unavailable.", "error");
-  } finally { button.disabled = false; button.innerHTML = original; }
-});
-
 /* ---------- Search ---------- */
 $("#trackForm").addEventListener("submit", e => {
   e.preventDefault();
-  const id = $("#orderIdInput").value.trim().toUpperCase();
-  if (!id) return toast("Please enter your Order ID.", "error");
-  history.replaceState(null, "", "?id=" + encodeURIComponent(id));
-  startTracking(id);
+  const number = $("#orderIdInput").value.replace(/\s+/g, "").toUpperCase();
+  const carrier = $("#carrierSelect").value;
+  if (!number) return toast("Please enter your tracking number.", "error");
+  if (!/^[A-Z0-9-]{5,40}$/.test(number)) return toast("Tracking numbers contain only letters, numbers and hyphens.", "error");
+  if (carrier) { redirectToCarrier(carrier, number); return; }
+  history.replaceState(null, "", "?id=" + encodeURIComponent(number));
+  startTracking(number);
 });
 
-/* Auto-open shared links: track.html?id=shipment-reference */
+function redirectToCarrier(key, number) {
+  const carrier = CARRIERS[key];
+  if (!carrier) return;
+  const url = carrier.url(number);
+  $("#loading").classList.add("hidden");
+  $("#notFound").classList.add("hidden");
+  $("#result").classList.add("hidden");
+  hideMapCards();
+  $("#redirectText").textContent = `Taking you to ${carrier.name}'s official tracking page…`;
+  $("#redirectLink").href = url;
+  $("#redirectLink").textContent = `Open ${carrier.name} tracking`;
+  $("#redirectCard").classList.remove("hidden");
+  location.assign(url);
+}
+
+/* Auto-open shared links: track.html?id=tracking-number */
 const paramId = new URLSearchParams(location.search).get("id");
 if (paramId) { $("#orderIdInput").value = paramId.toUpperCase(); startTracking(paramId.toUpperCase()); }
 
@@ -82,6 +92,7 @@ async function startTracking(id) {
   $("#orderIdInput").value = id;
   $("#loading").classList.remove("hidden");
   $("#notFound").classList.add("hidden");
+  $("#redirectCard").classList.add("hidden");
   $("#result").classList.add("hidden");
   try {
     const response = await apiCall("/api/shipment/lookup", { trackingNumber: id }, auth);
@@ -92,29 +103,39 @@ async function startTracking(id) {
   } catch (err) {
     console.error(err);
     $("#loading").classList.add("hidden");
-    const message = /resource-exhausted|Too many tracking/i.test(err.message || "")
-      ? "Too many tracking requests. Please wait a minute and try again."
-      : err.message || "Tracking is temporarily unavailable. Please try again.";
-    toast(message, "error");
-    showNotFound(id, message);
+    const raw = err.message || "";
+    if (/Too many tracking/i.test(raw)) {
+      toast("Too many tracking requests. Please wait a minute and try again.", "error");
+      showNotFound(id, "Too many tracking requests. Please wait a minute and try again.");
+    } else if (/not found/i.test(raw)) {
+      showNotFound(id, "We couldn't find this number in our system. If it is a DHL, FedEx, Aramex or UPS number, use a button below, or pick the carrier above and press Track.");
+    } else {
+      toast(raw || "Tracking is temporarily unavailable. Please try again.", "error");
+      showNotFound(id, raw || "Tracking is temporarily unavailable. Please try again.");
+    }
   }
 }
 
 function showNotFound(id, message = "We couldn't find a shipment with that tracking number. Please check it and try again.") {
   $("#result").classList.add("hidden");
+  $("#redirectCard").classList.add("hidden");
   $("#notFound").classList.remove("hidden");
   $("#notFoundMessage").textContent = message;
+  const canOfferCarriers = /^[A-Z0-9-]{5,40}$/.test(id || "") && !/^DAB-/.test(id || "");
+  $("#carrierButtons").innerHTML = canOfferCarriers
+    ? Object.values(CARRIERS).map(c => `<a class="btn btn-outline btn-sm" href="${esc(c.url(id))}" target="_blank" rel="noopener noreferrer">Track on ${esc(c.name)}</a>`).join("")
+    : "";
   hideMapCards();
 }
 
 /* ---------- Render sanitized shipment result ---------- */
 function renderShipment(o) {
   $("#notFound").classList.add("hidden");
+  $("#redirectCard").classList.add("hidden");
   $("#result").classList.remove("hidden");
   $("#rOrderId").textContent = o.trackingNumber || o.orderId || currentId;
 
   const status = o.shipmentStatus || "Shipment Registered";
-  $("#refreshUpsTracking").classList.toggle("hidden", !signedInUser || o.carrier !== "UPS");
   const cancelled = status === "Cancelled";
   const sb = $("#rStatusBadge");
   sb.textContent = status;
@@ -126,6 +147,19 @@ function renderShipment(o) {
   const cb = $("#cancelledBanner");
   cb.classList.toggle("show", cancelled);
   if (cancelled) cb.innerHTML = `<b>This order was cancelled.</b> If this is a mistake or you paid already, please contact support and we'll sort it out.`;
+
+  /* Link to the carrier's official page (not an automatic sync) */
+  const carrier = CARRIERS[o.carrier];
+  const carrierLink = $("#carrierLink");
+  if (carrier && o.trackingNumber) {
+    carrierLink.href = carrier.url(o.trackingNumber);
+    carrierLink.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> Track on ${esc(carrier.name)}'s website`;
+    carrierLink.classList.remove("hidden");
+    $("#carrierNote").textContent = `Status updates on this page are recorded by our team. For ${carrier.name}'s own latest scan information, use the button above to open ${carrier.name}'s official tracking page.`;
+  } else {
+    carrierLink.classList.add("hidden");
+    $("#carrierNote").textContent = "Status updates on this page are recorded by our team.";
+  }
 
   /* Timeline */
   const events = Array.isArray(o.events) ? [...o.events].sort((a, b) => new Date(a.occurredAt || 0) - new Date(b.occurredAt || 0)) : [];
@@ -153,7 +187,6 @@ function renderShipment(o) {
 
   $("#rStops").innerHTML = "";
 
-  // Support is via the contact page / phone (see track.html buttons).
   $("#shareBtn").onclick = async () => {
     const url = new URL(`track.html?id=${encodeURIComponent(o.trackingNumber || o.orderId || currentId)}`, location.href).href;
     const text = `Track my DABOFFOODS & LOGISTICS SERVICES shipment (${o.trackingNumber || o.orderId || currentId}) here: ${url}`;
@@ -162,14 +195,14 @@ function renderShipment(o) {
   };
 
   /* Map visibility rules */
-  const location = o.liveLocation;
-  const fresh = location?.active && location.lat != null && location.lng != null && Date.now() - location.ts < 5 * 60 * 1000;
+  const live = o.liveLocation;
+  const fresh = live?.active && live.lat != null && live.lng != null && Date.now() - live.ts < 5 * 60 * 1000;
   if (fresh && LIVE_STATUSES.includes(status)) {
-    lastLocTs = location.ts || Date.now();
+    lastLocTs = live.ts || Date.now();
     $("#mapWaiting").classList.add("hidden");
     $("#mapCard").classList.remove("hidden");
-    $("#mapRiderName").textContent = location.riderName || "Your rider";
-    showOnMap(location, o);
+    $("#mapRiderName").textContent = live.riderName || "Your rider";
+    showOnMap(live, o);
   } else {
     $("#mapCard").classList.add("hidden");
     $("#mapWaiting").classList.toggle("hidden", !LIVE_STATUSES.includes(status));

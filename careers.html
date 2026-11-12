@@ -116,7 +116,9 @@ $("#applyForm").addEventListener("submit", async e => {
   const box = $("#aSuccess");
   box.innerHTML = saved
     ? `<b>Application received — thank you, ${esc(data.name.split(" ")[0])}!</b><br>Our team will contact you about any next steps.`
-    : `<b>We couldn't save your application right now.</b><br>Please try again in a moment, or call us at <a href="tel:+2348024311091"><b>0802 431 1091</b></a>.`;
+    : `<b>We couldn't save your application right now.</b><br>Please try again in a moment, or call us at <a href="tel:+2348024311091"><b>0802 431 1091</b></a>.<a href="tel:+2348033986196"><b>0803 398 6196</b></a>
+<a href="tel:+2348073587999"><b>0807 358 7999</b></a>
+<a href="tel:+2347055159184"><b>0705 515 9184</b></a>`;
   box.classList.add("show");
   toast(saved ? "Application submitted!" : "Application not saved — please try again.", saved ? "success" : "error");
 

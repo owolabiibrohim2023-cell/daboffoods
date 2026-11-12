@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Track Your Shipment | DABOFFOODS &amp; LOGISTICS SERVICES</title>
-<meta name="description" content="Look up recorded status updates for your DABOFFOODS & LOGISTICS SERVICES shipment using its tracking number.">
+<meta name="description" content="Track your DABOFFOODS & LOGISTICS SERVICES shipment, or open the official DHL, FedEx, Aramex or UPS tracking page with your tracking number.">
 <meta name="theme-color" content="#0B3D91">
 <link rel="icon" type="image/png" href="daboffoods_logo_wordmark.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,17 +27,25 @@
   <div class="section-head">
     <span class="kicker">Track Shipment</span>
     <h1 style="font-size:1.8rem">Check your shipment status</h1>
-    <p>Enter the tracking number provided for your shipment. Only recorded status updates will be shown.</p>
+    <p>Enter your tracking number. For a DHL, FedEx, Aramex or UPS number, choose the carrier and we will take you to its official tracking page.</p>
   </div>
 
   <form class="form-card" id="trackForm" style="padding:20px">
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="carrierSelect" aria-label="Carrier" style="flex:1 1 190px;min-width:0">
+        <option value="">DABOFFOODS tracking number</option>
+        <option value="DHL">DHL</option>
+        <option value="FedEx">FedEx</option>
+        <option value="Aramex">Aramex</option>
+        <option value="UPS">UPS</option>
+      </select>
       <input id="orderIdInput" placeholder="Enter your tracking number" autocomplete="off"
-             aria-label="Order ID" style="flex:1;min-width:0;text-transform:uppercase;font-weight:600">
+             aria-label="Tracking number" style="flex:2 1 220px;min-width:0;text-transform:uppercase;font-weight:600">
       <button class="btn btn-orange" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Track</button>
     </div>
+    <p class="small muted" style="margin-top:12px">Carrier tracking opens the carrier's own website. Updates there come directly from the carrier.</p>
     <div id="recentWrap" class="hidden">
-      <p class="small muted" style="margin-top:14px;font-weight:600">My recent orders on this device:</p>
+      <p class="small muted" style="margin-top:14px;font-weight:600">My recent tracking numbers on this device:</p>
       <div class="chips" id="recentChips"></div>
     </div>
   </form>
@@ -48,11 +57,21 @@
       <div class="skeleton" style="width:65%;margin-top:12px"></div></div>
   </div>
 
+  <!-- Carrier redirect -->
+  <div id="redirectCard" class="card hidden text-center" style="margin-top:18px;padding:28px 22px">
+    <div style="font-size:2.2rem;color:var(--blue)"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+    <h2 style="margin-top:8px">Opening the carrier's website</h2>
+    <p class="muted" id="redirectText">Taking you to the carrier's official tracking page…</p>
+    <a class="btn btn-blue" id="redirectLink" rel="noopener noreferrer" style="margin-top:8px"><i class="fa-solid fa-location-crosshairs"></i> Open tracking page</a>
+    <p class="small muted" style="margin-top:14px">Tracking details on the carrier's website come directly from the carrier. They are not copied into your DABOFFOODS account.</p>
+  </div>
+
   <!-- Not found -->
   <div id="notFound" class="card hidden text-center" style="margin-top:18px;padding:34px 22px">
     <div style="font-size:2.4rem;color:var(--orange)"><i class="fa-solid fa-box-open"></i></div>
-    <h2 style="margin-top:8px">Order not found</h2>
+    <h2 style="margin-top:8px">Shipment not found</h2>
     <p class="muted" id="notFoundMessage">We couldn't find a shipment with that tracking number. Please check it and try again.</p>
+    <div class="btn-row" id="carrierButtons" style="justify-content:center;margin-top:14px"></div>
     <div class="btn-row" style="justify-content:center;margin-top:16px">
       <a class="btn btn-blue" href="contact.html"><i class="fa-solid fa-paper-plane"></i> Contact support</a>
       <a class="btn btn-outline" href="tel:+2348024311091"><i class="fa-solid fa-phone"></i> Call 0802 431 1091</a>
@@ -73,7 +92,8 @@
         </div>
       </div>
       <div class="alert alert-error" id="cancelledBanner"></div>
-      <button class="btn btn-ghost btn-sm hidden" id="refreshUpsTracking" type="button" style="margin-top:12px"><i class="fa-solid fa-rotate"></i> Refresh UPS tracking</button>
+      <a class="btn btn-blue btn-sm hidden" id="carrierLink" target="_blank" rel="noopener noreferrer" style="margin-top:12px"><i class="fa-solid fa-arrow-up-right-from-square"></i> Track on carrier's website</a>
+      <p class="small muted" id="carrierNote" style="margin-top:12px"></p>
 
       <!-- Timeline -->
       <ol class="timeline" id="timeline"></ol>
