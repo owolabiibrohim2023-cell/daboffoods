@@ -1,0 +1,11 @@
+backup-2026-11-05
+functions
+scripts
+*.md
+_x.txt
+functions.py
+firestore.rules
+firestore.indexes.json
+firebase.json
+.firebaserc
+.env*

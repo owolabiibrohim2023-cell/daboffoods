@@ -7,11 +7,12 @@ function httpError(status, code, message) {
 }
 
 function cors(res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = String(process.env.SITE_URL || "").replace(/\/$/, "");
+  res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 }
-
 function send(res, status, body) {
   cors(res);
   res.status(status).json(body);
@@ -37,9 +38,10 @@ function errorResponse(res, err) {
   console.error("API error:", err && err.message ? err.message : err);
   const status = err && err.status ? err.status : 500;
   const code = err && err.code ? err.code : "internal";
+   const known = err && err.status && err.code;
   const message = err && err.code === "not-configured"
     ? "Server credentials are not configured yet."
-    : (err && err.message ? err.message : "Something went wrong. Check the function logs.");
+    : known ? err.message : "Something went wrong. Please try again.";
   send(res, status, { error: code, message });
 }
 

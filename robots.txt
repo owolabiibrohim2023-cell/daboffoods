@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: www.daboffoodsandlogistics.com/sitemap.xml
